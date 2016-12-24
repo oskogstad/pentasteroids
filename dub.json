@@ -1,0 +1,12 @@
+{
+	"name": "asteriods",
+	"authors": [
+		"oskogstad"
+	],
+	"dependencies": {
+		"derelict-sdl2": "~>2.1.0",
+		"derelict-gl3": "~>1.0.19"
+	},
+	"description": "DAsteroids",
+	"license": "MIT"
+}
