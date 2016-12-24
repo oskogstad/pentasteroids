@@ -8,5 +8,6 @@
 		"derelict-gl3": "~>1.0.19"
 	},
 	"description": "DAsteroids",
-	"license": "MIT"
+	"license": "MIT",
+	"targetPath": "build/"
 }

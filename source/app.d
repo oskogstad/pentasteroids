@@ -113,9 +113,7 @@ void main()
     {
         string chomp = chomp(path, ".png");
         chomp = chompPrefix(chomp, "img/menu/");
-        writeln(path);
-        writeln(chomp);
-        menuGFX[chomp] = IMG_LoadTexture(renderer, path.ptr);
+       menuGFX[chomp] = IMG_LoadTexture(renderer, path.ptr);
     }
     foreach(a; menuGFXPaths){assert(a);}
 
@@ -335,16 +333,74 @@ void main()
                 case SDL_KEYUP:
                     if(!game) 
                     {
+                        switch(event.key.keysym.sym)
+                        {
+                            case SDLK_ESCAPE:
+                            {
+                                running = false;
+                                break;
+                            }
+                                
+                            case SDLK_RETURN:
+                            {
+                                switch(selectedIndex)
+                                {
+                                    case MenuItem.START:
+                                        // start/cont game
+                                        game = true;
+                                        gameInProgress = true;
+                                        break;
+                                    case MenuItem.HIGHSCORE:
+                                        // hs here
+                                        break;
+                                    case MenuItem.CREDITS:
+                                        //crdts
+                                        break;
+                                    case MenuItem.QUIT:
+                                        running = false;
+                                        break;  
+                                    
+                                    default:
+                                        break;                                
+                                }
+                                break;
+                            }
+                                
+                            case SDLK_w:
+                            case SDLK_UP:
+                                if(--selectedIndex < 0) selectedIndex = MenuItem.QUIT;
+                                break;
 
+                            case SDLK_s:
+                            case SDLK_DOWN:
+                                if(++selectedIndex > 3) selectedIndex = MenuItem.START;
+                                break;
+                            
+                            default:
+                                break;
+                        }
                     }
-                    break;
+                    {
+                        //switch(event.key.keysym.sym)
+                        //{
+
+                        //}
+                        if(event.key.keysym.sym == SDLK_ESCAPE)
+                        {
+                            game = false;
+                            selectedIndex = MenuItem.START;
+                        }  
+                    }
+
                 default: 
                     break;
            }
         }
+        
+        before = SDL_GetTicks();
 
         // bg color
-        SDL_SetRenderDrawColor(renderer, 0xDD, 0xDD, 0xDD, 0xFF );
+        SDL_SetRenderDrawColor(renderer, 0xDD, 0xDD, 0xDD, 0xFF);
         SDL_RenderClear(renderer);
             
         //SDL_SetRenderDrawColor(renderer, 0xFD, 0xFD, 0xFD, 0xFF);
@@ -353,357 +409,416 @@ void main()
         if(!game)
         {
             // draw logo
-            menuRect.w = current.w; menuRect.h = 209; // i'm sorry
-            menuRect.x = 0; menuRect.y = 200;
+            menuRect.w = current.w; menuRect.h = 160; // i'm sorry
+            menuRect.x = 0; menuRect.y = 450;
             SDL_RenderCopy(renderer, menuGFX["logo"], null, menuRect);
-        }
-        else
-        {
-        if (running)
-        {
-            before = SDL_GetTicks();
+
+            menuRect.h = 100;
             
-            // update game stuff here
-            // move player
-            auto keyBoardState = SDL_GetKeyboardState(null);
-
-            // up or w AND down or s, should result in decay/stopping. Prevent going steady half speed
-            if((keyBoardState[SDL_SCANCODE_UP] || keyBoardState[SDL_SCANCODE_W]) && (keyBoardState[SDL_SCANCODE_DOWN] || keyBoardState[SDL_SCANCODE_S]))
+            // rest of menu
+            menuRect.y = 650;
+            if(selectedIndex == MenuItem.START)
             {
-                // make a function for this
-                if(abs(thrustY) < thrustDecay)
+                if(gameInProgress)
                 {
-                    thrustY = 0;
-                }
-                else if(thrustY > 0)
-                {
-                    thrustY -= thrustDecay;
-                }
-                else 
-                {
-                    thrustY += thrustDecay;
-                }
-            }
-
-            else if((keyBoardState[SDL_SCANCODE_UP] || keyBoardState[SDL_SCANCODE_W]))
-            {
-                // cap if it goes under -1
-                if((thrustY -= thrustGain) < -1) thrustY = -1;
-            }
-            else if((keyBoardState[SDL_SCANCODE_DOWN] || keyBoardState[SDL_SCANCODE_S]))
-            {
-                // cap if it goes over 1
-                if((thrustY += thrustGain) > 1) thrustY= 1;
-            }
-            else
-            {
-                // make a function for this
-                if(abs(thrustY) < thrustDecay)
-                {
-                    thrustY = 0;
-                }
-                else if(thrustY > 0)
-                {
-                    thrustY -= thrustDecay;
-                }
-                else 
-                {
-                    thrustY += thrustDecay;
-                } 
-            }
-
-            //  left or a AND right or d, should result in decay/stopping. Prevent going steady half speed
-            if((keyBoardState[SDL_SCANCODE_LEFT] || keyBoardState[SDL_SCANCODE_A]) && (keyBoardState[SDL_SCANCODE_RIGHT] || keyBoardState[SDL_SCANCODE_D]))
-            {
-                if(abs(thrustX) < thrustDecay)
-                {
-                    thrustX = 0;
-                }
-                else if(thrustX > 0)
-                {
-                    thrustX -= thrustDecay;
-                }
-                else 
-                {
-                    thrustX += thrustDecay;
-                }
-            }
-
-            else if((keyBoardState[SDL_SCANCODE_LEFT] || keyBoardState[SDL_SCANCODE_A]))
-            {
-                // cap if it goes under -1
-                if((thrustX -= thrustGain) < -1) thrustX = -1;
-            }
-            else if((keyBoardState[SDL_SCANCODE_RIGHT] || keyBoardState[SDL_SCANCODE_D]))
-            {
-                // cap if it goes over 1
-                if((thrustX += thrustGain) > 1) thrustX= 1;
-            }
-            else
-            {
-                if(abs(thrustX) < thrustDecay)
-                {
-                    thrustX = 0;
-                }
-                else if(thrustX > 0)
-                {
-                    thrustX -= thrustDecay;
-                }
-                else 
-                {
-                    thrustX += thrustDecay;
-                }
-            }
-
-            // move movelength * thrust
-            spaceShipRect.y += cast(int) ceil(thrustY * moveLength);
-            spaceShipRect.x += cast(int) ceil(thrustX * moveLength);
-
-            // player center pos
-            spaceShipX = (spaceShipRect.x + (spaceShipWidth));
-            spaceShipY = (spaceShipRect.y + (spaceShipHeight));
-
-            // teleport edge detect!
-            if(spaceShipY < 0)
-            {
-                // teleport to current.h + difference
-                spaceShipRect.y = (current.h + spaceShipRect.y);
-            }
-            else if(spaceShipY > current.h)
-            {
-                // teleport to 0 + difference
-                spaceShipRect.y = 0 + (spaceShipRect.y - current.h);
-            }
-
-            if(spaceShipX < 0)
-            {
-                // teleport to current.w + difference
-                spaceShipRect.x = (current.w + spaceShipRect.x);
-            }
-            else if(spaceShipX > current.w)
-            {
-                // teleport to current.w + difference
-                spaceShipRect.x = 0 + (spaceShipRect.x - current.w);
-            }
-
-            auto mouseState = SDL_GetMouseState(&mouseX, &mouseY);
-            crossHairRect.y = mouseY - crossHairHeight, crossHairRect.x = mouseX - crossHairWidth;
-            if (mouseState & SDL_BUTTON(SDL_BUTTON_LEFT)) 
-            {
-                primaryFire = true;
-            }
-            else 
-            {
-                primaryFire = false;
-                sequencePlaying = false;
-                //fireCooldown = 0.5;
-            }
-            if (mouseState & SDL_BUTTON(SDL_BUTTON_RIGHT)) {writeln("RIGHT FIRE");}
-            if (mouseState & SDL_BUTTON(SDL_BUTTON_MIDDLE)) {writeln("MID FIRE");}
-
-
-
-            
-
-            // rotation angle, spaceship look toward mouse
-
-            angle = atan2(cast(float) mouseY - spaceShipY, cast(float) mouseX - spaceShipX);
-            
-            // lasers, offset, all to go in if(fire), sets angle and animation
-            float s = sin(angle);
-            float c = cos(angle);
-            int newLWepXOffset = cast(int) ceil((lWepXOffset * c) - (lWepYOffset * s));
-            int newLWepYOffset = cast(int) ceil((lWepXOffset * s) + (lWepYOffset * c));
-            int newRWepXOffset = cast(int) ceil((rWepXOffset * c) - (rWepYOffset * s));
-            int newRWepYOffset = cast(int) ceil((rWepXOffset * s) + (rWepYOffset * c));
-            angle = angle * TO_DEG;
-            angle += 90f;
-            primaryWeaponRect.x = spaceShipRect.x + newLWepXOffset;
-            primaryWeaponRect.y = spaceShipRect.y + newLWepYOffset;
-            SDL_Point wepRotPoint = { (spaceShipRect.w/2), (spaceShipRect.h/2) };
-
-            // Render stuff to screen
-            // draw player
-            SDL_RenderCopyEx(renderer, spaceShip, null, spaceShipRect, angle, null, 0);
-
-
-
-            // draw lasers
-            if(primaryFire)
-            {
-                if(fireCooldown > 0) 
-                {
-                    fireCooldown -= 0.1;
-                } 
-                else 
-                {
-                    // play random scale 
-                    if(sequencePlaying)
-                    {
-                        // somethingsomething rythm ... or perhaps change array to muted sounds now and then
-                        //if((uniform(1,1001) % 3) != 0)
-                        {
-                            if(++sequenceIndex == primaryFireSFX.length) sequenceIndex = 0;
-                            Mix_PlayChannel(-1, primaryFireSFX[sequenceIndex], 0);
-                        }
-                        
-                    }
-                    else
-                    {
-                        sequenceIndex = 0;
-                        // shuffle array --------------------------------------------------------------
-                        partialShuffle(primaryFireSFX, 3);
-                        Mix_PlayChannel(-1, primaryFireSFX[sequenceIndex], 0);
-                        sequencePlaying = true;
-                    }
-
-
-                    // left wep
-                    //SDL_RenderCopyEx(renderer, primaryWeapon, null, primaryWeaponRect, angle, &wepRotPoint, 0);
-                    PrimaryGFX left;
-                    left.x = primaryWeaponRect.x, left.y = primaryWeaponRect.y;
-                    left.angle = angle - 90;
-                    left.dx = cast(int) (bulletMoveLength * cos(left.angle * TO_RAD));
-                    left.dy = cast(int) (bulletMoveLength * sin(left.angle * TO_RAD));
-                    bullets ~= left;
-
-                    // right wep
-                    primaryWeaponRect.x = spaceShipRect.x + newRWepXOffset;
-                    primaryWeaponRect.y = spaceShipRect.y + newRWepYOffset;
-                    //SDL_RenderCopyEx(renderer, primaryWeapon, null, primaryWeaponRect, angle, &wepRotPoint, 0);  
-                    PrimaryGFX right;
-                    right.x = primaryWeaponRect.x, right.y = primaryWeaponRect.y;
-                    right.angle = angle - 90;
-                    right.dx = cast(int) (bulletMoveLength * cos(right.angle * TO_RAD));
-                    right.dy = cast(int) (bulletMoveLength * sin(right.angle * TO_RAD));
-                    bullets ~= right;
-
-                    fireCooldown = 2.1; 
-                }
-            }
-
-            // move and draw bullets array
-            foreach(ref bullet; bullets)
-            {
-                bullet.x += bullet.dx;
-                bullet.y += bullet.dy;
-
-                // edge detect and destroy
-                if((bullet.x < -50) || (bullet.x > (current.w + 50)) || (bullet.y < - 50) || (bullet.y > (current.h + 50)))
-                {
-                    bullet.del = true;
-                }
-
-                primaryWeaponRect.x = bullet.x;
-                primaryWeaponRect.y = bullet.y;
-                SDL_RenderDrawPoint(renderer, bullet.x + bullet.dx, bullet.y + bullet.dy);
-                SDL_RenderCopyEx(renderer, primaryWeapon, null, primaryWeaponRect, bullet.angle + 90, &wepRotPoint, 0);
-            }
-
-            // crash check wif orbs
-            foreach(ref bullet; bullets)
-            {
-                foreach(ref orb; activeOrbs)
-                {
-                    float dist = distanceSquared(orb.x, orb.y, bullet.x, bullet.y);
-                    if(dist < orb.radius * orb.radius)
-                    {
-                        if(--orb.hitPoints == 0) orb.del = true;
-                        orb.isShaking = true;
-                        Mix_PlayChannel(-1, orbHitSFX[uniform(0, orbHitSFX.length - 1)], 0);
-                        bullet.del = true;
-                    }
-                }
-            }
-
-            bullets = remove!(bullet => bullet.del)(bullets);
-            activeOrbs = remove!(orb => orb.del)(activeOrbs);
-            
-            // orbs
-            // spawn new
-            if(orbSpawnTimer < 0)
-            {
-                Orb o;
-                o.x = uniform(0, current.w);
-                o.hitPoints = 3;
-                o.hitSFXindex = 4;
-                o.shakeTimer = 4;
-                o.y = uniform(0, current.h);
-                o.moveSpeed = uniform(3,6);
-                o.angle = uniform(0,359);
-                o.radius = 128;
-                o.dx = cast(int) (o.moveSpeed * cos(o.angle * TO_RAD));
-                o.dy = cast(int) (o.moveSpeed * sin(o.angle * TO_RAD));
-                int orbIndex = uniform(0, orbTextures.length - 1);
-                o.texture = orbTextures[orbIndex];
-                o.spinningSpeed = uniform(-0.5f, 0.5f);
-                activeOrbs ~= o;
-                orbSpawnTimer = 2;
-            }
-
-            else
-            {
-                orbSpawnTimer -= orbTimerDecay;
-            }
-
-            // update and draw orbs
-            foreach(ref orb; activeOrbs)
-            {
-                orb.x += + orb.dx;
-                orb.y += + orb.dy;
-                // teleport check / destruction check
-                // teleport edge detect!
-                if(orb.y < 0)
-                {
-                    // teleport to current.h + difference
-                    orb.y = (current.h + orb.y);
-                }
-                else if(orb.y > current.h)
-                {
-                    // teleport to 0 + difference
-                    orb.y = 0 + (orb.y - current.h);
-                }
-
-                if(orb.x < 0)
-                {
-                    // teleport to current.w + difference
-                    orb.x = (current.w + orb.x);
-                }
-                else if(orb.x > current.w)
-                {
-                    // teleport to current.w + difference
-                    orb.x = 0 + (orb.x - current.w);
-                }
-
-                orb.angle += orb.spinningSpeed;
-
-                if(orb.isShaking)
-                {
-                    orbRect.x = orb.x - 64 + uniform(-4, 4);
-                    orbRect.y = orb.y - 64 + uniform(-4, 4);
-                    orb.shakeTimer -= 0.1;
-                    if(orb.shakeTimer < 0)
-                    {
-                        orb.isShaking = false;
-                        orb.shakeTimer = 4;
-                    }
+                    SDL_RenderCopy(renderer, menuGFX["continue"], null, menuRect);
                 }
                 else
                 {
-                    orbRect.x = orb.x - 64;
-                    orbRect.y = orb.y - 64;                    
+                    SDL_RenderCopy(renderer, menuGFX["start"], null, menuRect);
                 }
-
-                SDL_RenderCopyEx(renderer, orb.texture, null, orbRect, orb.angle, null, 0);
+            }
+            else 
+            {
+                if(gameInProgress)
+                {
+                    SDL_RenderCopy(renderer, menuGFX["continue_"], null, menuRect);
+                }
+                else
+                {
+                    SDL_RenderCopy(renderer, menuGFX["start_"], null, menuRect);
+                }
             }
             
-            // draw mousecursor
-            SDL_RenderCopy(renderer, crossHair, null, crossHairRect);
-            SDL_RenderPresent(renderer); 
-            }}
-            int sleepTime = FRAME_TIME - (SDL_GetTicks() - before);
-            if (sleepTime > 0) SDL_Delay(sleepTime);
-        
+            menuRect.y += 100;
+            if(selectedIndex == MenuItem.HIGHSCORE)
+            {
+                SDL_RenderCopy(renderer, menuGFX["highscore"], null, menuRect);
+            }
+            else
+            {
+                SDL_RenderCopy(renderer, menuGFX["highscore_"], null, menuRect);
+            }
+            
+            
+            menuRect.y += 100;
+            if(selectedIndex == MenuItem.CREDITS)
+            {
+                SDL_RenderCopy(renderer, menuGFX["credits"], null, menuRect);
+            }
+            else
+            {
+                SDL_RenderCopy(renderer, menuGFX["credits_"], null, menuRect);
+            }            
+            menuRect.y += 100;
+            if(selectedIndex == MenuItem.QUIT)
+            {
+                SDL_RenderCopy(renderer, menuGFX["quit"], null, menuRect);
+            }
+            else
+            {
+                SDL_RenderCopy(renderer, menuGFX["quit_"], null, menuRect);
+            }           
+
+        }
+        else
+        {
+            if (running)
+            {
+                
+                // update game stuff here
+                // move player
+                auto keyBoardState = SDL_GetKeyboardState(null);
+
+                // up or w AND down or s, should result in decay/stopping. Prevent going steady half speed
+                if((keyBoardState[SDL_SCANCODE_UP] || keyBoardState[SDL_SCANCODE_W]) && (keyBoardState[SDL_SCANCODE_DOWN] || keyBoardState[SDL_SCANCODE_S]))
+                {
+                    // make a function for this
+                    if(abs(thrustY) < thrustDecay)
+                    {
+                        thrustY = 0;
+                    }
+                    else if(thrustY > 0)
+                    {
+                        thrustY -= thrustDecay;
+                    }
+                    else 
+                    {
+                        thrustY += thrustDecay;
+                    }
+                }
+
+                else if((keyBoardState[SDL_SCANCODE_UP] || keyBoardState[SDL_SCANCODE_W]))
+                {
+                    // cap if it goes under -1
+                    if((thrustY -= thrustGain) < -1) thrustY = -1;
+                }
+                else if((keyBoardState[SDL_SCANCODE_DOWN] || keyBoardState[SDL_SCANCODE_S]))
+                {
+                    // cap if it goes over 1
+                    if((thrustY += thrustGain) > 1) thrustY= 1;
+                }
+                else
+                {
+                    // make a function for this
+                    if(abs(thrustY) < thrustDecay)
+                    {
+                        thrustY = 0;
+                    }
+                    else if(thrustY > 0)
+                    {
+                        thrustY -= thrustDecay;
+                    }
+                    else 
+                    {
+                        thrustY += thrustDecay;
+                    } 
+                }
+
+                //  left or a AND right or d, should result in decay/stopping. Prevent going steady half speed
+                if((keyBoardState[SDL_SCANCODE_LEFT] || keyBoardState[SDL_SCANCODE_A]) && (keyBoardState[SDL_SCANCODE_RIGHT] || keyBoardState[SDL_SCANCODE_D]))
+                {
+                    if(abs(thrustX) < thrustDecay)
+                    {
+                        thrustX = 0;
+                    }
+                    else if(thrustX > 0)
+                    {
+                        thrustX -= thrustDecay;
+                    }
+                    else 
+                    {
+                        thrustX += thrustDecay;
+                    }
+                }
+
+                else if((keyBoardState[SDL_SCANCODE_LEFT] || keyBoardState[SDL_SCANCODE_A]))
+                {
+                    // cap if it goes under -1
+                    if((thrustX -= thrustGain) < -1) thrustX = -1;
+                }
+                else if((keyBoardState[SDL_SCANCODE_RIGHT] || keyBoardState[SDL_SCANCODE_D]))
+                {
+                    // cap if it goes over 1
+                    if((thrustX += thrustGain) > 1) thrustX= 1;
+                }
+                else
+                {
+                    if(abs(thrustX) < thrustDecay)
+                    {
+                        thrustX = 0;
+                    }
+                    else if(thrustX > 0)
+                    {
+                        thrustX -= thrustDecay;
+                    }
+                    else 
+                    {
+                        thrustX += thrustDecay;
+                    }
+                }
+
+                // move movelength * thrust
+                spaceShipRect.y += cast(int) ceil(thrustY * moveLength);
+                spaceShipRect.x += cast(int) ceil(thrustX * moveLength);
+
+                // player center pos
+                spaceShipX = (spaceShipRect.x + (spaceShipWidth));
+                spaceShipY = (spaceShipRect.y + (spaceShipHeight));
+
+                // teleport edge detect!
+                if(spaceShipY < 0)
+                {
+                    // teleport to current.h + difference
+                    spaceShipRect.y = (current.h + spaceShipRect.y);
+                }
+                else if(spaceShipY > current.h)
+                {
+                    // teleport to 0 + difference
+                    spaceShipRect.y = 0 + (spaceShipRect.y - current.h);
+                }
+
+                if(spaceShipX < 0)
+                {
+                    // teleport to current.w + difference
+                    spaceShipRect.x = (current.w + spaceShipRect.x);
+                }
+                else if(spaceShipX > current.w)
+                {
+                    // teleport to current.w + difference
+                    spaceShipRect.x = 0 + (spaceShipRect.x - current.w);
+                }
+
+                auto mouseState = SDL_GetMouseState(&mouseX, &mouseY);
+                crossHairRect.y = mouseY - crossHairHeight, crossHairRect.x = mouseX - crossHairWidth;
+                if (mouseState & SDL_BUTTON(SDL_BUTTON_LEFT)) 
+                {
+                    primaryFire = true;
+                }
+                else 
+                {
+                    primaryFire = false;
+                    sequencePlaying = false;
+                    //fireCooldown = 0.5;
+                }
+                if (mouseState & SDL_BUTTON(SDL_BUTTON_RIGHT)) {writeln("RIGHT FIRE");}
+                if (mouseState & SDL_BUTTON(SDL_BUTTON_MIDDLE)) {writeln("MID FIRE");}
+
+
+
+                
+
+                // rotation angle, spaceship look toward mouse
+
+                angle = atan2(cast(float) mouseY - spaceShipY, cast(float) mouseX - spaceShipX);
+                
+                // lasers, offset, all to go in if(fire), sets angle and animation
+                float s = sin(angle);
+                float c = cos(angle);
+                int newLWepXOffset = cast(int) ceil((lWepXOffset * c) - (lWepYOffset * s));
+                int newLWepYOffset = cast(int) ceil((lWepXOffset * s) + (lWepYOffset * c));
+                int newRWepXOffset = cast(int) ceil((rWepXOffset * c) - (rWepYOffset * s));
+                int newRWepYOffset = cast(int) ceil((rWepXOffset * s) + (rWepYOffset * c));
+                angle = angle * TO_DEG;
+                angle += 90f;
+                primaryWeaponRect.x = spaceShipRect.x + newLWepXOffset;
+                primaryWeaponRect.y = spaceShipRect.y + newLWepYOffset;
+                SDL_Point wepRotPoint = { (spaceShipRect.w/2), (spaceShipRect.h/2) };
+
+                // Render stuff to screen
+                // draw player
+                SDL_RenderCopyEx(renderer, spaceShip, null, spaceShipRect, angle, null, 0);
+
+
+
+                // draw lasers
+                if(primaryFire)
+                {
+                    if(fireCooldown > 0) 
+                    {
+                        fireCooldown -= 0.1;
+                    } 
+                    else 
+                    {
+                        // play random scale 
+                        if(sequencePlaying)
+                        {
+                            // somethingsomething rythm ... or perhaps change array to muted sounds now and then
+                            //if((uniform(1,1001) % 3) != 0)
+                            {
+                                if(++sequenceIndex == primaryFireSFX.length) sequenceIndex = 0;
+                                Mix_PlayChannel(-1, primaryFireSFX[sequenceIndex], 0);
+                            }
+                            
+                        }
+                        else
+                        {
+                            sequenceIndex = 0;
+                            // shuffle array --------------------------------------------------------------
+                            partialShuffle(primaryFireSFX, 3);
+                            Mix_PlayChannel(-1, primaryFireSFX[sequenceIndex], 0);
+                            sequencePlaying = true;
+                        }
+
+
+                        // left wep
+                        //SDL_RenderCopyEx(renderer, primaryWeapon, null, primaryWeaponRect, angle, &wepRotPoint, 0);
+                        PrimaryGFX left;
+                        left.x = primaryWeaponRect.x, left.y = primaryWeaponRect.y;
+                        left.angle = angle - 90;
+                        left.dx = cast(int) (bulletMoveLength * cos(left.angle * TO_RAD));
+                        left.dy = cast(int) (bulletMoveLength * sin(left.angle * TO_RAD));
+                        bullets ~= left;
+
+                        // right wep
+                        primaryWeaponRect.x = spaceShipRect.x + newRWepXOffset;
+                        primaryWeaponRect.y = spaceShipRect.y + newRWepYOffset;
+                        //SDL_RenderCopyEx(renderer, primaryWeapon, null, primaryWeaponRect, angle, &wepRotPoint, 0);  
+                        PrimaryGFX right;
+                        right.x = primaryWeaponRect.x, right.y = primaryWeaponRect.y;
+                        right.angle = angle - 90;
+                        right.dx = cast(int) (bulletMoveLength * cos(right.angle * TO_RAD));
+                        right.dy = cast(int) (bulletMoveLength * sin(right.angle * TO_RAD));
+                        bullets ~= right;
+
+                        fireCooldown = 2.1; 
+                    }
+                }
+
+                // move and draw bullets array
+                foreach(ref bullet; bullets)
+                {
+                    bullet.x += bullet.dx;
+                    bullet.y += bullet.dy;
+
+                    // edge detect and destroy
+                    if((bullet.x < -50) || (bullet.x > (current.w + 50)) || (bullet.y < - 50) || (bullet.y > (current.h + 50)))
+                    {
+                        bullet.del = true;
+                    }
+
+                    primaryWeaponRect.x = bullet.x;
+                    primaryWeaponRect.y = bullet.y;
+                    SDL_RenderDrawPoint(renderer, bullet.x + bullet.dx, bullet.y + bullet.dy);
+                    SDL_RenderCopyEx(renderer, primaryWeapon, null, primaryWeaponRect, bullet.angle + 90, &wepRotPoint, 0);
+                }
+
+                // crash check wif orbs
+                foreach(ref bullet; bullets)
+                {
+                    foreach(ref orb; activeOrbs)
+                    {
+                        float dist = distanceSquared(orb.x, orb.y, bullet.x, bullet.y);
+                        if(dist < orb.radius * orb.radius)
+                        {
+                            if(--orb.hitPoints == 0) orb.del = true;
+                            orb.isShaking = true;
+                            Mix_PlayChannel(-1, orbHitSFX[uniform(0, orbHitSFX.length - 1)], 0);
+                            bullet.del = true;
+                        }
+                    }
+                }
+
+                bullets = remove!(bullet => bullet.del)(bullets);
+                activeOrbs = remove!(orb => orb.del)(activeOrbs);
+                
+                // orbs
+                // spawn new
+                if(orbSpawnTimer < 0)
+                {
+                    Orb o;
+                    o.x = uniform(0, current.w);
+                    o.hitPoints = 3;
+                    o.hitSFXindex = 4;
+                    o.shakeTimer = 4;
+                    o.y = uniform(0, current.h);
+                    o.moveSpeed = uniform(3,6);
+                    o.angle = uniform(0,359);
+                    o.radius = 128;
+                    o.dx = cast(int) (o.moveSpeed * cos(o.angle * TO_RAD));
+                    o.dy = cast(int) (o.moveSpeed * sin(o.angle * TO_RAD));
+                    int orbIndex = uniform(0, orbTextures.length - 1);
+                    o.texture = orbTextures[orbIndex];
+                    o.spinningSpeed = uniform(-0.5f, 0.5f);
+                    activeOrbs ~= o;
+                    orbSpawnTimer = 2;
+                }
+
+                else
+                {
+                    orbSpawnTimer -= orbTimerDecay;
+                }
+
+                // update and draw orbs
+                foreach(ref orb; activeOrbs)
+                {
+                    orb.x += + orb.dx;
+                    orb.y += + orb.dy;
+                    // teleport check / destruction check
+                    // teleport edge detect!
+                    if(orb.y < 0)
+                    {
+                        // teleport to current.h + difference
+                        orb.y = (current.h + orb.y);
+                    }
+                    else if(orb.y > current.h)
+                    {
+                        // teleport to 0 + difference
+                        orb.y = 0 + (orb.y - current.h);
+                    }
+
+                    if(orb.x < 0)
+                    {
+                        // teleport to current.w + difference
+                        orb.x = (current.w + orb.x);
+                    }
+                    else if(orb.x > current.w)
+                    {
+                        // teleport to current.w + difference
+                        orb.x = 0 + (orb.x - current.w);
+                    }
+
+                    orb.angle += orb.spinningSpeed;
+
+                    if(orb.isShaking)
+                    {
+                        orbRect.x = orb.x - 64 + uniform(-4, 4);
+                        orbRect.y = orb.y - 64 + uniform(-4, 4);
+                        orb.shakeTimer -= 0.1;
+                        if(orb.shakeTimer < 0)
+                        {
+                            orb.isShaking = false;
+                            orb.shakeTimer = 4;
+                        }
+                    }
+                    else
+                    {
+                        orbRect.x = orb.x - 64;
+                        orbRect.y = orb.y - 64;                    
+                    }
+
+                    SDL_RenderCopyEx(renderer, orb.texture, null, orbRect, orb.angle, null, 0);
+                }
+                
+                // draw mousecursor
+                SDL_RenderCopy(renderer, crossHair, null, crossHairRect);
+                //SDL_RenderPresent(renderer); 
+            }
+        }
+        SDL_RenderPresent(renderer); 
+
+        int sleepTime = FRAME_TIME - (SDL_GetTicks() - before);
+        if (sleepTime > 0) SDL_Delay(sleepTime);
     }
 }
 
