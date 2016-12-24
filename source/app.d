@@ -25,10 +25,29 @@ enum MenuItem
     QUIT
 }
 
+enum AppState
+{
+    MENU,
+    HIGHSCORE,
+    CREDITS,
+    GAME
+}
+
 float distanceSquared(int p1x, int p1y, int p2x, int p2y)
 {
     return (p2x - p1x) * (p2x - p1x) + (p2y - p1y) * (p2y - p1y);
 }
+
+
+struct Star
+{
+    int x, y;
+    int pulseSpeed;
+    ubyte currentOpacity;
+    bool rising;
+}
+
+
 
 struct PrimaryGFX 
 {
@@ -74,7 +93,7 @@ void main()
 
     SDL_DisplayMode current;
     SDL_GetCurrentDisplayMode(0, &current);
-         
+    
     auto window = SDL_CreateWindow("Pentasteroids", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, current.w, current.h, 0);
     assert(window);
     auto renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
@@ -90,6 +109,23 @@ void main()
     SDL_ShowCursor(SDL_DISABLE);
 
     // set up game stuff!
+
+    // stars
+    Star[] stars;
+    for(int i = 0; i < 100; i++)
+    {
+        Star s;
+        s.x = uniform(0, current.w);
+        s.y = uniform(0, current.h);
+        s.pulseSpeed = uniform(1,3);
+        s.currentOpacity = cast(ubyte)uniform(20, 200);
+        s.rising = uniform(0,2) == 1 ? true : false;
+
+        stars ~= s;
+    }
+    // stars end
+
+
 
     // menu
     auto menuGFXPaths =
@@ -308,9 +344,9 @@ void main()
 
 
     bool running = true;
-    bool game = false;
     bool gameInProgress = false;
     int selectedIndex = MenuItem.START;
+    int appState = AppState.MENU;
 
     SDL_Event event;
     auto before = SDL_GetTicks();
@@ -331,7 +367,7 @@ void main()
 
                 // handle stuff
                 case SDL_KEYUP:
-                    if(!game) 
+                    if(appState == AppState.MENU) 
                     {
                         switch(event.key.keysym.sym)
                         {
@@ -347,7 +383,7 @@ void main()
                                 {
                                     case MenuItem.START:
                                         // start/cont game
-                                        game = true;
+                                        appState = AppState.GAME;
                                         gameInProgress = true;
                                         break;
                                     case MenuItem.HIGHSCORE:
@@ -380,6 +416,7 @@ void main()
                                 break;
                         }
                     }
+                    else
                     {
                         //switch(event.key.keysym.sym)
                         //{
@@ -387,7 +424,7 @@ void main()
                         //}
                         if(event.key.keysym.sym == SDLK_ESCAPE)
                         {
-                            game = false;
+                            appState = AppState.MENU;
                             selectedIndex = MenuItem.START;
                         }  
                     }
@@ -400,83 +437,120 @@ void main()
         before = SDL_GetTicks();
 
         // bg color
-        SDL_SetRenderDrawColor(renderer, 0xDD, 0xDD, 0xDD, 0xFF);
+        SDL_SetRenderDrawColor(renderer, 0x00, 0x33, 0x33, 0xFF);
         SDL_RenderClear(renderer);
             
         //SDL_SetRenderDrawColor(renderer, 0xFD, 0xFD, 0xFD, 0xFF);
         //SDL_RenderDrawLines(renderer, testRock.vertices.ptr, cast(int) testRock.vertices.length);
 
-        if(!game)
+        switch(appState)
         {
-            // draw logo
-            menuRect.w = current.w; menuRect.h = 160; // i'm sorry
-            menuRect.x = 0; menuRect.y = 450;
-            SDL_RenderCopy(renderer, menuGFX["logo"], null, menuRect);
+            case AppState.MENU:
+            {
+                // draw logo
+                menuRect.w = current.w; menuRect.h = 160; // i'm sorry
+                menuRect.x = 0; menuRect.y = 450;
+                SDL_RenderCopy(renderer, menuGFX["logo"], null, menuRect);
 
-            menuRect.h = 100;
-            
-            // rest of menu
-            menuRect.y = 650;
-            if(selectedIndex == MenuItem.START)
-            {
-                if(gameInProgress)
-                {
-                    SDL_RenderCopy(renderer, menuGFX["continue"], null, menuRect);
-                }
-                else
-                {
-                    SDL_RenderCopy(renderer, menuGFX["start"], null, menuRect);
-                }
-            }
-            else 
-            {
-                if(gameInProgress)
-                {
-                    SDL_RenderCopy(renderer, menuGFX["continue_"], null, menuRect);
-                }
-                else
-                {
-                    SDL_RenderCopy(renderer, menuGFX["start_"], null, menuRect);
-                }
-            }
-            
-            menuRect.y += 100;
-            if(selectedIndex == MenuItem.HIGHSCORE)
-            {
-                SDL_RenderCopy(renderer, menuGFX["highscore"], null, menuRect);
-            }
-            else
-            {
-                SDL_RenderCopy(renderer, menuGFX["highscore_"], null, menuRect);
-            }
-            
-            
-            menuRect.y += 100;
-            if(selectedIndex == MenuItem.CREDITS)
-            {
-                SDL_RenderCopy(renderer, menuGFX["credits"], null, menuRect);
-            }
-            else
-            {
-                SDL_RenderCopy(renderer, menuGFX["credits_"], null, menuRect);
-            }            
-            menuRect.y += 100;
-            if(selectedIndex == MenuItem.QUIT)
-            {
-                SDL_RenderCopy(renderer, menuGFX["quit"], null, menuRect);
-            }
-            else
-            {
-                SDL_RenderCopy(renderer, menuGFX["quit_"], null, menuRect);
-            }           
+                menuRect.h = 100;
 
-        }
-        else
-        {
-            if (running)
-            {
+                // rest of menu
+                menuRect.y = 650;
+                if(selectedIndex == MenuItem.START)
+                {
+                    if(gameInProgress)
+                    {
+                        SDL_RenderCopy(renderer, menuGFX["continue"], null, menuRect);
+                    }
+                    else
+                    {
+                        SDL_RenderCopy(renderer, menuGFX["start"], null, menuRect);
+                    }
+                }
+                else 
+                {
+                    if(gameInProgress)
+                    {
+                        SDL_RenderCopy(renderer, menuGFX["continue_"], null, menuRect);
+                    }
+                    else
+                    {
+                        SDL_RenderCopy(renderer, menuGFX["start_"], null, menuRect);
+                    }
+                }
+            
+                menuRect.y += 100;
                 
-                // update game stuff here
+                if(selectedIndex == MenuItem.HIGHSCORE)
+                {
+                    SDL_RenderCopy(renderer, menuGFX["highscore"], null, menuRect);
+                }
+                else
+                {
+                    SDL_RenderCopy(renderer, menuGFX["highscore_"], null, menuRect);
+                }
+                
+                
+                menuRect.y += 100;
+                if(selectedIndex == MenuItem.CREDITS)
+                {
+                    SDL_RenderCopy(renderer, menuGFX["credits"], null, menuRect);
+                }
+                else
+                {
+                    SDL_RenderCopy(renderer, menuGFX["credits_"], null, menuRect);
+                }            
+                menuRect.y += 100;
+                if(selectedIndex == MenuItem.QUIT)
+                {
+                    SDL_RenderCopy(renderer, menuGFX["quit"], null, menuRect);
+                }
+                else
+                {
+                    SDL_RenderCopy(renderer, menuGFX["quit_"], null, menuRect);
+                }           
+                break;
+            }
+
+            case AppState.HIGHSCORE:
+                break;
+
+            case AppState.CREDITS:
+                break;
+
+            case AppState.GAME:
+            {
+                // draw stars
+                SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_ADD);
+                foreach(ref star; stars)
+                {
+                    SDL_SetRenderDrawColor(renderer, 0xEE, 0xEE, 0xEE, star.currentOpacity);
+                    SDL_RenderDrawPoint(renderer, star.x, star.y);
+                    SDL_RenderDrawPoint(renderer, star.x, star.y - 1);
+                    SDL_RenderDrawPoint(renderer, star.x - 1, star.y);
+                    SDL_RenderDrawPoint(renderer, star.x + 1, star.y);
+                    SDL_RenderDrawPoint(renderer, star.x, star.y + 1);
+                    
+                    if(star.rising)
+                    {
+                        star.currentOpacity += star.pulseSpeed;
+                        if(star.currentOpacity >= 0xFF)
+                        {
+                            star.rising = false;
+                            star.currentOpacity = 0xFF;
+                        }
+                    }
+                    else
+                    {
+                        star.currentOpacity -= star.pulseSpeed;
+                        if(star.currentOpacity <= 0x01)
+                        {
+                            star.rising = true;
+                            star.currentOpacity = 0x21;
+                        }
+                    }
+                }
+
                 // move player
                 auto keyBoardState = SDL_GetKeyboardState(null);
 
@@ -614,10 +688,6 @@ void main()
                 if (mouseState & SDL_BUTTON(SDL_BUTTON_RIGHT)) {writeln("RIGHT FIRE");}
                 if (mouseState & SDL_BUTTON(SDL_BUTTON_MIDDLE)) {writeln("MID FIRE");}
 
-
-
-                
-
                 // rotation angle, spaceship look toward mouse
 
                 angle = atan2(cast(float) mouseY - spaceShipY, cast(float) mouseX - spaceShipX);
@@ -664,7 +734,6 @@ void main()
                         else
                         {
                             sequenceIndex = 0;
-                            // shuffle array --------------------------------------------------------------
                             partialShuffle(primaryFireSFX, 3);
                             Mix_PlayChannel(-1, primaryFireSFX[sequenceIndex], 0);
                             sequencePlaying = true;
@@ -740,7 +809,7 @@ void main()
                     o.x = uniform(0, current.w);
                     o.hitPoints = 3;
                     o.hitSFXindex = 4;
-                    o.shakeTimer = 4;
+                    o.shakeTimer = 6;
                     o.y = uniform(0, current.h);
                     o.moveSpeed = uniform(3,6);
                     o.angle = uniform(0,359);
@@ -762,8 +831,8 @@ void main()
                 // update and draw orbs
                 foreach(ref orb; activeOrbs)
                 {
-                    orb.x += + orb.dx;
-                    orb.y += + orb.dy;
+                    orb.x += orb.dx;
+                    orb.y += orb.dy;
                     // teleport check / destruction check
                     // teleport edge detect!
                     if(orb.y < 0)
@@ -792,8 +861,8 @@ void main()
 
                     if(orb.isShaking)
                     {
-                        orbRect.x = orb.x - 64 + uniform(-4, 4);
-                        orbRect.y = orb.y - 64 + uniform(-4, 4);
+                        orbRect.x = orb.x - 64 + uniform(-7, 7);
+                        orbRect.y = orb.y - 64 + uniform(-7, 7);
                         orb.shakeTimer -= 0.1;
                         if(orb.shakeTimer < 0)
                         {
@@ -813,8 +882,13 @@ void main()
                 // draw mousecursor
                 SDL_RenderCopy(renderer, crossHair, null, crossHairRect);
                 //SDL_RenderPresent(renderer); 
+                break;
             }
+
+            default:
+                break;
         }
+ 
         SDL_RenderPresent(renderer); 
 
         int sleepTime = FRAME_TIME - (SDL_GetTicks() - before);
