@@ -47,8 +47,6 @@ struct Star
     bool rising;
 }
 
-
-
 struct PrimaryGFX 
 {
     int x, y;
@@ -83,6 +81,7 @@ struct Orb
         spinningSpeed, 
         shakeTimer;
 }
+
 void main()
 {
     if (!initSDL()) return;
@@ -109,6 +108,18 @@ void main()
     SDL_ShowCursor(SDL_DISABLE);
 
     // set up game stuff!
+
+    // clouds
+    auto cloudPath = "img/clouds/cloud01_60.png";
+    SDL_Texture *cloud = IMG_LoadTexture(renderer, cloudPath.ptr);
+    assert(cloud);
+    int cloudWidth, cloudHeight;
+    SDL_QueryTexture(cloud, null, null, &cloudWidth, &cloudHeight);
+    auto cloudRect = new SDL_Rect();
+    cloudRect.w = cloudWidth, cloudRect.h = cloudHeight;
+    cloudRect.x = (current.w / 2) - (cloudWidth / 2), cloudRect.y = (current.h / 2) - (cloudHeight / 2);
+    // clouds end
+    
 
     // stars
     Star[] stars;
@@ -348,6 +359,9 @@ void main()
     int selectedIndex = MenuItem.START;
     int appState = AppState.MENU;
 
+    // set this to true with key K, cloud BG will spinn with angle-var
+    bool angleMode = false;
+
     SDL_Event event;
     auto before = SDL_GetTicks();
 
@@ -418,15 +432,21 @@ void main()
                     }
                     else
                     {
-                        //switch(event.key.keysym.sym)
-                        //{
-
-                        //}
-                        if(event.key.keysym.sym == SDLK_ESCAPE)
+                        switch(event.key.keysym.sym)
                         {
-                            appState = AppState.MENU;
-                            selectedIndex = MenuItem.START;
-                        }  
+                            case SDLK_ESCAPE:
+                                appState = AppState.MENU;
+                                selectedIndex = MenuItem.START; 
+                                break;
+
+                            case SDLK_k:
+                                angleMode = !angleMode;
+                                break;
+
+                            default:
+                                break;           
+                        }
+                  
                     }
 
                 default: 
@@ -531,6 +551,7 @@ void main()
                     SDL_RenderDrawPoint(renderer, star.x + 1, star.y);
                     SDL_RenderDrawPoint(renderer, star.x, star.y + 1);
                     
+                    // something is bugged out here ------------------------------------------------------------------------------------------------------------
                     if(star.rising)
                     {
                         star.currentOpacity += star.pulseSpeed;
@@ -549,6 +570,16 @@ void main()
                             star.currentOpacity = 0x21;
                         }
                     }
+                }
+
+                // draw clouds
+                if(angleMode)
+                {
+                    SDL_RenderCopyEx(renderer, cloud, null, cloudRect, -angle, null, 0);
+                }
+                else
+                {
+                    SDL_RenderCopy(renderer, cloud, null, cloudRect);
                 }
 
                 // move player
@@ -706,9 +737,8 @@ void main()
                 SDL_Point wepRotPoint = { (spaceShipRect.w/2), (spaceShipRect.h/2) };
 
                 // Render stuff to screen
-                // draw player
                 SDL_RenderCopyEx(renderer, spaceShip, null, spaceShipRect, angle, null, 0);
-
+                // move and draw player done
 
 
                 // draw lasers
@@ -724,6 +754,8 @@ void main()
                         if(sequencePlaying)
                         {
                             // somethingsomething rythm ... or perhaps change array to muted sounds now and then
+                            // also maybe semi force melody -------------------------------------------------------------------------------------------
+                            // and mix this down in volume, along with orb hit. And add subtle shoot sound to primarywep
                             //if((uniform(1,1001) % 3) != 0)
                             {
                                 if(++sequenceIndex == primaryFireSFX.length) sequenceIndex = 0;
@@ -738,7 +770,6 @@ void main()
                             Mix_PlayChannel(-1, primaryFireSFX[sequenceIndex], 0);
                             sequencePlaying = true;
                         }
-
 
                         // left wep
                         //SDL_RenderCopyEx(renderer, primaryWeapon, null, primaryWeaponRect, angle, &wepRotPoint, 0);
@@ -820,7 +851,7 @@ void main()
                     o.texture = orbTextures[orbIndex];
                     o.spinningSpeed = uniform(-0.5f, 0.5f);
                     activeOrbs ~= o;
-                    orbSpawnTimer = 2;
+                    orbSpawnTimer = uniform(2,4);
                 }
 
                 else
