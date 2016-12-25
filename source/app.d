@@ -1,4 +1,5 @@
-pragma(inline)
+module app;
+
 import std.string;
 import std.stdio;
 import std.conv;
@@ -8,15 +9,15 @@ import std.random;
 import std.datetime;
 import std.file;
 
-import derelict.sdl2.sdl;
-import derelict.sdl2.image;
-import derelict.sdl2.mixer;
-
 import orb;
 import primaryGFX;
 import player;
 import game;
 import menu;
+
+public import derelict.sdl2.sdl;
+public import derelict.sdl2.image;
+public import derelict.sdl2.mixer;
 
 enum MenuItem
 {
@@ -57,30 +58,15 @@ struct PrimaryGFX
     bool del;
 }
 
-struct Orb
-{
-    SDL_Texture* texture;
 
-    int 
-        x, 
-        y,
-        radius,
-        size,
-        dx,
-        dy,
-        moveSpeed,
-        hitPoints,
-        hitSFXindex;
-    
-    bool 
-        hasBeenOnScreen, 
-        del, 
-        isShaking;
-    
-    float 
-        angle, 
-        spinningSpeed, 
-        shakeTimer;
+struct WorldCell
+{
+    // background color
+    ubyte red, green, blue;
+    // todo -------------------------------------------------------------------------------------------------
+    // each cell should have a chord, or set of chords?
+
+    // their own texture?
 }
 
 void main()
@@ -271,7 +257,7 @@ void main()
         writeln(path);
         orbTextures ~= IMG_LoadTexture(renderer, path.toStringz());
     }
-    // foreach(texture; orbTextures){assert(texture);}
+    foreach(texture; orbTextures){assert(texture);}
 
     auto orbTimerDecay = .03;
     auto orbSpawnTimer = 2.1;
@@ -282,7 +268,30 @@ void main()
     bool gameInProgress = false;
     int selectedIndex = MenuItem.START;
     int appState = AppState.MENU;
-    ubyte red = 0, green = 67 , blue = 67;
+    int worldWidth = 3, worldHeight = 3;
+    ubyte currentRed = 0, currentGreen = 67 , currentBlue = 67;
+
+
+    // world grid ------------------------------------------------------------------------ "cant be read at compile time"
+    WorldCell[3][3] worldGrid;
+    for(int i = 0; i < worldHeight; ++i)
+    {
+        for(int j = 0; j < worldWidth; ++j)
+        {
+            // random bgColor for now --------------------------------------------------------------------------------------
+            WorldCell wc;
+            wc.red = cast(ubyte) uniform(20, 90);
+            wc.green = cast(ubyte) uniform(20, 90);
+            wc.blue = cast(ubyte) uniform(20, 90);
+            worldGrid[i][j] = wc;
+        }
+    }
+
+    int cellIndexX = 1;
+    int cellIndexY = 1;
+    WorldCell currentCell = worldGrid[cellIndexX][cellIndexY];
+    // world grid end
+    
     // set this to true with key K, cloud BG will spinn with angle-var
     bool angleMode = false;
 
@@ -392,10 +401,50 @@ void main()
         // bg color
         // create targetBGColor, add change on teleport ---------------------------------------------------------------------------
         // if(newTargetColor) {calc diff to target and find slowest way / 2 perhaps?}
-        //SDL_SetRenderDrawColor(renderer, 0x00, 0x43, 0x43, 0xFF); // want this one maybe ------------------------------------------------------------------
+        // SDL_SetRenderDrawColor(renderer, 0x00, 0x43, 0x43, 0xFF); // want this one maybe ------------------------------------------------------------------
         // SDL_SetRenderDrawColor(renderer, 0x00, 0x73, 0xA3, 0xFF); // sky blue mby
         // no greens prob
-        SDL_SetRenderDrawColor(renderer, red, green, blue, 0xFF);
+
+        currentCell = worldGrid[cellIndexX][cellIndexY];
+
+        if(currentRed != currentCell.red)
+        {
+            // handle red
+            if(currentRed < currentCell.red)
+            {
+                currentRed++;
+            }
+            else
+            {
+                currentRed--;
+            }
+        }
+        if(currentGreen != currentCell.green)
+        {
+            // handle green
+            if(currentGreen < currentCell.green)
+            {
+                currentGreen++;
+            }
+            else
+            {
+                currentGreen--;
+            }
+        }
+        if(currentBlue != currentCell.blue)
+        {
+            // handle blue
+            if(currentBlue < currentCell.blue)
+            {
+                currentBlue++;
+            }
+            else
+            {
+                currentBlue--;
+            }
+        }
+
+        SDL_SetRenderDrawColor(renderer, currentRed, currentGreen, currentBlue, 0xFF);
 
         SDL_RenderClear(renderer);
             
@@ -627,22 +676,28 @@ void main()
                 {
                     // teleport to current.h + difference
                     spaceShipRect.y = (current.h + spaceShipRect.y);
+                    cellIndexY = abs(++cellIndexY % worldHeight);
                 }
                 else if(spaceShipY > current.h)
                 {
                     // teleport to 0 + difference
                     spaceShipRect.y = 0 + (spaceShipRect.y - current.h);
+                    cellIndexY = abs(--cellIndexY % worldHeight);
                 }
 
                 if(spaceShipX < 0)
                 {
                     // teleport to current.w + difference
                     spaceShipRect.x = (current.w + spaceShipRect.x);
+                    cellIndexX = abs(--cellIndexX % worldWidth);
+
                 }
                 else if(spaceShipX > current.w)
                 {
                     // teleport to current.w + difference
                     spaceShipRect.x = 0 + (spaceShipRect.x - current.w);
+                    cellIndexX = abs(++cellIndexX % worldWidth);
+
                 }
 
                 auto mouseState = SDL_GetMouseState(&mouseX, &mouseY);
@@ -661,8 +716,16 @@ void main()
                 if (mouseState & SDL_BUTTON(SDL_BUTTON_MIDDLE)) {writeln("MID FIRE");}
 
                 // rotation angle, spaceship look toward mouse
-
-                angle = atan2(cast(float) mouseY - spaceShipY, cast(float) mouseX - spaceShipX);
+                // or towards middle if angleMode
+                if(angleMode)
+                {
+                    angle = atan2(cast(float)(current.h/2) - spaceShipY, cast(float)(current.w/2) - spaceShipX);
+                }
+                else
+                {
+                    angle = atan2(cast(float) mouseY - spaceShipY, cast(float) mouseX - spaceShipX);
+                }
+                
                 
                 // lasers, offset, all to go in if(fire), sets angle and animation
                 float s = sin(angle);
@@ -851,8 +914,12 @@ void main()
                     SDL_RenderCopyEx(renderer, orb.texture, null, orbRect, orb.angle, null, 0);
                 }
                 
-                // draw mousecursor
-                SDL_RenderCopy(renderer, crossHair, null, crossHairRect);
+                // draw mousecursor, or not
+                if(!angleMode)
+                {
+                    SDL_RenderCopy(renderer, crossHair, null, crossHairRect);
+                }
+                
                 //SDL_RenderPresent(renderer); 
                 break;
             }
