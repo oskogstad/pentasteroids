@@ -110,7 +110,7 @@ void main()
     // set up game stuff!
 
     // clouds
-    auto cloudPath = "img/clouds/cloud01_60.png";
+    auto cloudPath = "img/clouds/cloud01_40.png";
     SDL_Texture *cloud = IMG_LoadTexture(renderer, cloudPath.ptr);
     assert(cloud);
     int cloudWidth, cloudHeight;
@@ -457,7 +457,7 @@ void main()
         before = SDL_GetTicks();
 
         // bg color
-        SDL_SetRenderDrawColor(renderer, 0x00, 0x33, 0x33, 0xFF);
+        SDL_SetRenderDrawColor(renderer, 0x00, 0x43, 0x43, 0xFF);
         SDL_RenderClear(renderer);
             
         //SDL_SetRenderDrawColor(renderer, 0xFD, 0xFD, 0xFD, 0xFF);
@@ -579,6 +579,7 @@ void main()
                 }
                 else
                 {
+                    cloudRect.x = cast(int)(spaceShipRect.x * 0.04) - 400; cloudRect.y = cast(int) (spaceShipRect.y * 0.04) - 300;
                     SDL_RenderCopy(renderer, cloud, null, cloudRect);
                 }
 
