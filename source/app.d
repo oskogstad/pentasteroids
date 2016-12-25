@@ -1,31 +1,24 @@
 module app;
 
-import std.string;
-import std.stdio;
-import std.conv;
-import std.math;
-import std.algorithm;
-import std.random;
-import std.datetime;
-import std.file;
-
 import orb;
 import primaryGFX;
 import player;
 import game;
+import star;
 import menu;
+
+public import std.string;
+public import std.stdio;
+public import std.conv;
+public import std.math;
+public import std.algorithm;
+public import std.random;
+public import std.datetime;
+public import std.file;
 
 public import derelict.sdl2.sdl;
 public import derelict.sdl2.image;
 public import derelict.sdl2.mixer;
-
-enum MenuItem
-{
-    START,
-    HIGHSCORE,
-    CREDITS,
-    QUIT
-}
 
 enum AppState
 {
@@ -35,39 +28,10 @@ enum AppState
     GAME
 }
 
-float distanceSquared(int p1x, int p1y, int p2x, int p2y)
-{
-    return (p2x - p1x) * (p2x - p1x) + (p2y - p1y) * (p2y - p1y);
-}
+int state = AppState.MENU;
+bool gameInProgress = false;
+bool running = true;
 
-
-struct Star
-{
-    int x, y;
-    int pulseSpeed;
-    ubyte currentOpacity;
-    bool rising;
-}
-
-struct PrimaryGFX 
-{
-    int x, y;
-    int dx, dy;
-    float angle;
-    float ttl;
-    bool del;
-}
-
-
-struct WorldCell
-{
-    // background color
-    ubyte red, green, blue;
-    // todo -------------------------------------------------------------------------------------------------
-    // each cell should have a chord, or set of chords?
-
-    // their own texture?
-}
 
 void main()
 {
@@ -82,6 +46,7 @@ void main()
     
     auto window = SDL_CreateWindow("Pentasteroids", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, current.w, current.h, 0);
     assert(window);
+    
     auto renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     assert(renderer);
        
@@ -92,10 +57,12 @@ void main()
     }
 
     SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
+    
     SDL_ShowCursor(SDL_DISABLE);
+    
     Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 4096 );
 
-    // set up game stuff!
+    // game setup
 
     // clouds
     auto cloudPath = "img/clouds/cloud01_40.png";
@@ -124,33 +91,7 @@ void main()
     }
     // stars end
 
-
-
-    // menu
-    SDL_Texture*[string] menuGFX;
-    
-    foreach(path; dirEntries("img/menu/", SpanMode.depth))
-    {
-        writeln(path);
-        string chomp = chomp(path, ".png");
-        chomp = chompPrefix(chomp, "img/menu/");
-        menuGFX[chomp] = IMG_LoadTexture(renderer, path.toStringz());
-    }
-    foreach(a; menuGFX){assert(a);}
-
-    auto menuRect = new SDL_Rect();
-
-    // menu sfx
-
-    Mix_Chunk*[] menuSFX;
-    // make a function for this --------------------------------------------------------------------------------------
-    foreach(path; dirEntries("sfx/menuScale/", SpanMode.depth))
-    {
-        menuSFX ~= Mix_LoadWAV(path.toStringz());
-    }
-    foreach(a;menuSFX){assert(a);}
-    int menuSFXIndexOne, menuSFXIndexTwo, menuSFXIndexThree;
-    // menu done
+    Menu menu = new Menu(renderer, current);
 
     // primary fire sfx
     Mix_Chunk*[] orbHitSFX;
@@ -254,7 +195,6 @@ void main()
     SDL_Texture*[] orbTextures;
     foreach(path; dirEntries("img/orbs/", SpanMode.depth))
     {
-        writeln(path);
         orbTextures ~= IMG_LoadTexture(renderer, path.toStringz());
     }
     foreach(texture; orbTextures){assert(texture);}
@@ -264,10 +204,6 @@ void main()
     Orb[] activeOrbs;
     // orbs end
 
-    bool running = true;
-    bool gameInProgress = false;
-    int selectedIndex = MenuItem.START;
-    int appState = AppState.MENU;
     int worldWidth = 3, worldHeight = 3;
     ubyte currentRed = 0, currentGreen = 67 , currentBlue = 67;
 
@@ -311,74 +247,18 @@ void main()
                     running = false;
                     break;
 
-
-                // handle stuff
                 case SDL_KEYUP:
-                    if(appState == AppState.MENU) 
+                    if(state == AppState.MENU) 
                     {
-                        // play three random menuSFX
-                        menuSFXIndexOne = uniform(0, 4);
-                        menuSFXIndexTwo = uniform(4, 8);
-                        menuSFXIndexThree = uniform(8, 12);
-
-                        Mix_PlayChannel(-1, menuSFX[menuSFXIndexOne], 0);
-                        Mix_PlayChannel(-1, menuSFX[menuSFXIndexTwo], 0);
-                        Mix_PlayChannel(-1, menuSFX[menuSFXIndexThree], 0);
-
-                        switch(event.key.keysym.sym)
-                        {
-                            case SDLK_ESCAPE:
-                            {
-                                running = false;
-                                break;
-                            }
-                                
-                            case SDLK_RETURN:
-                            {
-                                switch(selectedIndex)
-                                {
-                                    case MenuItem.START:
-                                        // start/cont game
-                                        appState = AppState.GAME;
-                                        gameInProgress = true;
-                                        break;
-                                    case MenuItem.HIGHSCORE:
-                                        // hs here
-                                        break;
-                                    case MenuItem.CREDITS:
-                                        //crdts
-                                        break;
-                                    case MenuItem.QUIT:
-                                        running = false;
-                                        break;  
-                                    
-                                    default:
-                                        break;                                
-                                }
-                                break;
-                            }
-                                
-                            case SDLK_w:
-                            case SDLK_UP:
-                                if(--selectedIndex < 0) selectedIndex = MenuItem.QUIT;
-                                break;
-
-                            case SDLK_s:
-                            case SDLK_DOWN:
-                                if(++selectedIndex > 3) selectedIndex = MenuItem.START;
-                                break;
-                            
-                            default:
-                                break;
-                        }
+                        menu.handleInput(event);
                     }
                     else
                     {
                         switch(event.key.keysym.sym)
                         {
                             case SDLK_ESCAPE:
-                                appState = AppState.MENU;
-                                selectedIndex = MenuItem.START; 
+                                state = AppState.MENU;
+                                menu.selectedIndex = MenuItem.START; 
                                 break;
 
                             case SDLK_k:
@@ -390,6 +270,7 @@ void main()
                         }
                   
                     }
+                    break;
 
                 default: 
                     break;
@@ -445,78 +326,13 @@ void main()
         }
 
         SDL_SetRenderDrawColor(renderer, currentRed, currentGreen, currentBlue, 0xFF);
-
         SDL_RenderClear(renderer);
             
-        //SDL_SetRenderDrawColor(renderer, 0xFD, 0xFD, 0xFD, 0xFF);
-        //SDL_RenderDrawLines(renderer, testRock.vertices.ptr, cast(int) testRock.vertices.length);
-
-        switch(appState)
+        switch(state)
         {
             case AppState.MENU:
             {
-                // draw logo
-                menuRect.w = current.w; menuRect.h = 160; // i'm sorry
-                menuRect.x = 0; menuRect.y = 450;
-                SDL_RenderCopy(renderer, menuGFX["logo"], null, menuRect);
-
-                menuRect.h = 100;
-
-                // rest of menu
-                menuRect.y = 650;
-                if(selectedIndex == MenuItem.START)
-                {
-                    if(gameInProgress)
-                    {
-                        SDL_RenderCopy(renderer, menuGFX["continue"], null, menuRect);
-                    }
-                    else
-                    {
-                        SDL_RenderCopy(renderer, menuGFX["start"], null, menuRect);
-                    }
-                }
-                else 
-                {
-                    if(gameInProgress)
-                    {
-                        SDL_RenderCopy(renderer, menuGFX["continue_"], null, menuRect);
-                    }
-                    else
-                    {
-                        SDL_RenderCopy(renderer, menuGFX["start_"], null, menuRect);
-                    }
-                }
-            
-                menuRect.y += 100;
-                
-                if(selectedIndex == MenuItem.HIGHSCORE)
-                {
-                    SDL_RenderCopy(renderer, menuGFX["highscore"], null, menuRect);
-                }
-                else
-                {
-                    SDL_RenderCopy(renderer, menuGFX["highscore_"], null, menuRect);
-                }
-                
-                
-                menuRect.y += 100;
-                if(selectedIndex == MenuItem.CREDITS)
-                {
-                    SDL_RenderCopy(renderer, menuGFX["credits"], null, menuRect);
-                }
-                else
-                {
-                    SDL_RenderCopy(renderer, menuGFX["credits_"], null, menuRect);
-                }            
-                menuRect.y += 100;
-                if(selectedIndex == MenuItem.QUIT)
-                {
-                    SDL_RenderCopy(renderer, menuGFX["quit"], null, menuRect);
-                }
-                else
-                {
-                    SDL_RenderCopy(renderer, menuGFX["quit_"], null, menuRect);
-                }           
+                menu.updateAndDraw(renderer);      
                 break;
             }
 
