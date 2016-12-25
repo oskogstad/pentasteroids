@@ -6,6 +6,7 @@ import std.math;
 import std.algorithm;
 import std.random;
 import std.datetime;
+import std.file;
 
 import derelict.sdl2.sdl;
 import derelict.sdl2.image;
@@ -140,53 +141,24 @@ void main()
 
 
     // menu
-    auto menuGFXPaths =
-    [
-        "img/menu/start.png",
-        "img/menu/start_.png",
-        "img/menu/continue.png",
-        "img/menu/continue_.png",
-        "img/menu/highscore.png",
-        "img/menu/highscore_.png",
-        "img/menu/credits.png",
-        "img/menu/credits_.png",
-        "img/menu/quit.png",
-        "img/menu/quit_.png",
-        "img/menu/logo.png"  
-    ];
-
     SDL_Texture*[string] menuGFX;
     
-    foreach(path; menuGFXPaths)
+    foreach(path; dirEntries("img/menu/", SpanMode.depth))
     {
+        writeln(path);
         string chomp = chomp(path, ".png");
         chomp = chompPrefix(chomp, "img/menu/");
-        menuGFX[chomp] = IMG_LoadTexture(renderer, path.ptr);
+        menuGFX[chomp] = IMG_LoadTexture(renderer, path.toStringz());
     }
-    foreach(a; menuGFXPaths){assert(a);}
+    foreach(a; menuGFX){assert(a);}
 
     auto menuRect = new SDL_Rect();
 
     // menu sfx
-    auto menuSFXPaths = 
-    [
-        "sfx/menuScale/menu01.wav",
-        "sfx/menuScale/menu02.wav",
-        "sfx/menuScale/menu03.wav",
-        "sfx/menuScale/menu04.wav",
-        "sfx/menuScale/menu05.wav",
-        "sfx/menuScale/menu06.wav",
-        "sfx/menuScale/menu07.wav",
-        "sfx/menuScale/menu08.wav",
-        "sfx/menuScale/menu09.wav",
-        "sfx/menuScale/menu10.wav",
-        "sfx/menuScale/menu11.wav",
-        "sfx/menuScale/menu12.wav",
-    ];
 
     Mix_Chunk*[] menuSFX;
     // make a function for this --------------------------------------------------------------------------------------
-    foreach(path; menuSFXPaths)
+    foreach(path; dirEntries("sfx/menuScale/", SpanMode.depth))
     {
         menuSFX ~= Mix_LoadWAV(path.toStringz());
     }
@@ -194,52 +166,20 @@ void main()
     int menuSFXIndexOne, menuSFXIndexTwo, menuSFXIndexThree;
     // menu done
 
-
     // primary fire sfx
     Mix_Chunk*[] orbHitSFX;
     Mix_Chunk*[] primaryFireSFX;
-    auto orbHitPaths =
-    [
-        "sfx/orbHitScale/orbHit01.wav",
-        "sfx/orbHitScale/orbHit02.wav",
-        "sfx/orbHitScale/orbHit03.wav",
-        "sfx/orbHitScale/orbHit04.wav",
-        "sfx/orbHitScale/orbHit05.wav",
-        "sfx/orbHitScale/orbHit06.wav",
-        "sfx/orbHitScale/orbHit07.wav",
-        "sfx/orbHitScale/orbHit08.wav",
-        "sfx/orbHitScale/orbHit09.wav",
-        "sfx/orbHitScale/orbHit10.wav",
-        "sfx/orbHitScale/orbHit11.wav"
-    ];
 
-    auto primaryFireSFXPaths = 
-    [
-        "sfx/primaryScale/01.wav",
-        "sfx/primaryScale/02.wav",
-        "sfx/primaryScale/03.wav",
-        "sfx/primaryScale/04.wav",
-        "sfx/primaryScale/05.wav",
-        "sfx/primaryScale/06.wav",
-        "sfx/primaryScale/07.wav",
-        "sfx/primaryScale/08.wav",
-        "sfx/primaryScale/09.wav",
-        "sfx/primaryScale/10.wav",
-        "sfx/primaryScale/11.wav",
-        "sfx/primaryScale/12.wav",
-        "sfx/primaryScale/13.wav",
-        "sfx/primaryScale/14.wav"
-    ];
-    foreach(soundFilePath; orbHitPaths)
+    foreach(path; dirEntries("sfx/orbHitScale/", SpanMode.depth))
     {
-        orbHitSFX ~= Mix_LoadWAV(soundFilePath.toStringz());
+        orbHitSFX ~= Mix_LoadWAV(path.toStringz());
     }
 
     foreach(a; orbHitSFX){assert(a);}
 
-    foreach(soundFilePath; primaryFireSFXPaths)
+    foreach(path; dirEntries("sfx/primaryScale/", SpanMode.depth))
     {
-        primaryFireSFX ~= Mix_LoadWAV(soundFilePath.toStringz());
+        primaryFireSFX ~= Mix_LoadWAV(path.toStringz());
     }
 
     foreach(a; primaryFireSFX){assert(a);}
@@ -321,68 +261,28 @@ void main()
     
     // aim cursor end
 
-
-    // rocks begin
-    //Rock[] rocks;
-    //SDL_Point[] verts;
-    //auto gen = Random(1);
-    //float v1, v2;
-
-    //Rock testRock;
-    //testRock.x = uniform(0, current.w);
-    //testRock.y = uniform(0, current.h);
-    //testRock.radius = uniform(100,150);
-
-    //for(float a = 0.0; a < 2*PI;)
-    //{
-    //    v1 = testRock.x + (testRock.radius * cos(a));
-    //    v2 = testRock.y + (testRock.radius * sin(a));
-        
-    //    verts ~= SDL_Point(cast(int)v1, cast(int)v2);
-
-    //    // update counter
-    //    a += uniform(20,60)*PI/180.0;
-    //}
-    //verts ~= verts[0];
-    //testRock.vertices = verts;
-    //rocks ~= testRock;
-    // rocks end
-
     // orbs
-
-
-    const auto orbPaths = 
-    [
-        "img/orbs/blue.png",
-        "img/orbs/gold.png",
-        "img/orbs/green.png",
-        "img/orbs/green_purple.png",
-        "img/orbs/pink.png",
-        "img/orbs/purple.png",
-        "img/orbs/red.png",
-        "img/orbs/red_white.png"
-    ];
 
     auto orbRect = new SDL_Rect();
     orbRect.w = 128; orbRect.h = 128;
     SDL_Texture*[] orbTextures;
-    foreach(path; orbPaths)
+    foreach(path; dirEntries("img/orbs/", SpanMode.depth))
     {
-        orbTextures ~= IMG_LoadTexture(renderer, path.ptr);
+        writeln(path);
+        orbTextures ~= IMG_LoadTexture(renderer, path.toStringz());
     }
-    foreach(texture; orbTextures){assert(texture);}
+    // foreach(texture; orbTextures){assert(texture);}
 
     auto orbTimerDecay = .03;
     auto orbSpawnTimer = 2.1;
     Orb[] activeOrbs;
     // orbs end
 
-
     bool running = true;
     bool gameInProgress = false;
     int selectedIndex = MenuItem.START;
     int appState = AppState.MENU;
-
+    ubyte red = 0, green = 67 , blue = 67;
     // set this to true with key K, cloud BG will spinn with angle-var
     bool angleMode = false;
 
@@ -495,7 +395,7 @@ void main()
         //SDL_SetRenderDrawColor(renderer, 0x00, 0x43, 0x43, 0xFF); // want this one maybe ------------------------------------------------------------------
         // SDL_SetRenderDrawColor(renderer, 0x00, 0x73, 0xA3, 0xFF); // sky blue mby
         // no greens prob
-        SDL_SetRenderDrawColor(renderer, 0x89, 0x13, 0x43, 0xFF);
+        SDL_SetRenderDrawColor(renderer, red, green, blue, 0xFF);
 
         SDL_RenderClear(renderer);
             
@@ -612,6 +512,7 @@ void main()
                 }
 
                 // draw clouds
+                // --------------------------------------------------------- toggle angleMode on teleport, also change background patterns?
                 if(angleMode)
                 {
                     SDL_RenderCopyEx(renderer, cloud, null, cloudRect, -angle, null, 0);
