@@ -106,6 +106,7 @@ void main()
 
     SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
     SDL_ShowCursor(SDL_DISABLE);
+    Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 4096 );
 
     // set up game stuff!
 
@@ -160,18 +161,41 @@ void main()
     {
         string chomp = chomp(path, ".png");
         chomp = chompPrefix(chomp, "img/menu/");
-       menuGFX[chomp] = IMG_LoadTexture(renderer, path.ptr);
+        menuGFX[chomp] = IMG_LoadTexture(renderer, path.ptr);
     }
     foreach(a; menuGFXPaths){assert(a);}
 
     auto menuRect = new SDL_Rect();
 
+    // menu sfx
+    auto menuSFXPaths = 
+    [
+        "sfx/menuScale/menu01.wav",
+        "sfx/menuScale/menu02.wav",
+        "sfx/menuScale/menu03.wav",
+        "sfx/menuScale/menu04.wav",
+        "sfx/menuScale/menu05.wav",
+        "sfx/menuScale/menu06.wav",
+        "sfx/menuScale/menu07.wav",
+        "sfx/menuScale/menu08.wav",
+        "sfx/menuScale/menu09.wav",
+        "sfx/menuScale/menu10.wav",
+        "sfx/menuScale/menu11.wav",
+        "sfx/menuScale/menu12.wav",
+    ];
+
+    Mix_Chunk*[] menuSFX;
+    // make a function for this --------------------------------------------------------------------------------------
+    foreach(path; menuSFXPaths)
+    {
+        menuSFX ~= Mix_LoadWAV(path.toStringz());
+    }
+    foreach(a;menuSFX){assert(a);}
+    int menuSFXIndexOne, menuSFXIndexTwo, menuSFXIndexThree;
     // menu done
 
 
-    // audio
     // primary fire sfx
-    Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 4096 );
     Mix_Chunk*[] orbHitSFX;
     Mix_Chunk*[] primaryFireSFX;
     auto orbHitPaths =
@@ -383,6 +407,15 @@ void main()
                 case SDL_KEYUP:
                     if(appState == AppState.MENU) 
                     {
+                        // play three random menuSFX
+                        menuSFXIndexOne = uniform(0, 4);
+                        menuSFXIndexTwo = uniform(4, 8);
+                        menuSFXIndexThree = uniform(8, 12);
+
+                        Mix_PlayChannel(-1, menuSFX[menuSFXIndexOne], 0);
+                        Mix_PlayChannel(-1, menuSFX[menuSFXIndexTwo], 0);
+                        Mix_PlayChannel(-1, menuSFX[menuSFXIndexThree], 0);
+
                         switch(event.key.keysym.sym)
                         {
                             case SDLK_ESCAPE:
@@ -457,7 +490,13 @@ void main()
         before = SDL_GetTicks();
 
         // bg color
-        SDL_SetRenderDrawColor(renderer, 0x00, 0x43, 0x43, 0xFF);
+        // create targetBGColor, add change on teleport ---------------------------------------------------------------------------
+        // if(newTargetColor) {calc diff to target and find slowest way / 2 perhaps?}
+        //SDL_SetRenderDrawColor(renderer, 0x00, 0x43, 0x43, 0xFF); // want this one maybe ------------------------------------------------------------------
+        // SDL_SetRenderDrawColor(renderer, 0x00, 0x73, 0xA3, 0xFF); // sky blue mby
+        // no greens prob
+        SDL_SetRenderDrawColor(renderer, 0x89, 0x13, 0x43, 0xFF);
+
         SDL_RenderClear(renderer);
             
         //SDL_SetRenderDrawColor(renderer, 0xFD, 0xFD, 0xFD, 0xFF);
@@ -742,7 +781,7 @@ void main()
                 // move and draw player done
 
 
-                // draw lasers
+                // create/draw lasers
                 if(primaryFire)
                 {
                     if(fireCooldown > 0) 
