@@ -1,26 +1,67 @@
 module game;
 import app;
+import world;
+import primaryfire;
+import player;
+import menu;
+import orbs;
+import stars;
+import clouds;
 
-float distanceSquared(int p1x, int p1y, int p2x, int p2y)
+bool angleMode = false;
+double angle;
+bool gameInProgress = false;
+
+void setup(SDL_Renderer *renderer)
 {
-    return (p2x - p1x) * (p2x - p1x) + (p2y - p1y) * (p2y - p1y);
+	world.setup(renderer);
+	
+	stars.setup();
+	clouds.setup(renderer);
+	orbs.setup(renderer);
+
+	player.setup(renderer);
+	primaryfire.setup(renderer);
 }
 
-struct WorldCell
+void updateAndDraw(SDL_Renderer *renderer)
 {
-    // background color
-    ubyte red, green, blue;
-    // todo -------------------------------------------------------------------------------------------------
-    // each cell should have a chord, or set of chords?
-
-    // their own texture?
-}
 
 
-class Game
-{
-	this()
+
+	world.updateAndDraw(renderer);
+	if(angleMode)
 	{
+		angle = atan2(cast(float)(currentDisplay.h/2) - spaceShipY, cast(float)(currentDisplay.w/2) - spaceShipX);
+	}
+	else
+	{
+		angle = atan2(cast(float) mouseY - spaceShipY, cast(float) mouseX - spaceShipX);
+	}
+	clouds.updateAndDraw(renderer);
+	stars.updateAndDraw(renderer);
+	primaryfire.updateAndDraw(renderer);
+	orbs.updateAndDraw(renderer);
+	player.updateAndDraw(renderer);
 
+
+}
+
+void handleInput(SDL_Event event)
+{
+	switch(event.key.keysym.sym)
+	{
+		case SDLK_ESCAPE:
+		app.state = AppState.MENU;
+		menu.selectedIndex = MenuItem.START; 
+		break;
+
+		case SDLK_k:
+		angleMode = !angleMode;
+		break;
+
+		default:
+		break;           
 	}
 }
+
