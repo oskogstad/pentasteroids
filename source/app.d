@@ -141,6 +141,7 @@ void main()
     }
 }
 
+
 bool initSDL()
 {
     writeln("Initializing SDL...");
@@ -164,7 +165,7 @@ bool initSDL()
     }
 
     DerelictSDL2Mixer.load();
-
+    // ----------------------------------------------------------------------------------- add test stuff here
     return true;
 }
 

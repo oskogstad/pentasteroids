@@ -7,6 +7,8 @@ SDL_Texture *cloud;
 int cloudWidth, cloudHeight;
 public SDL_Rect *cloudRect;
 
+
+// --------------------------------------------------- move all this to world, as background
 void setup(SDL_Renderer *renderer)
 {
 	auto cloudPath = "img/clouds/cloud01_40.png";

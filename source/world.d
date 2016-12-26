@@ -3,6 +3,7 @@ import app;
 
 struct WorldCell
 {
+	SDL_Texture *background;
     // background color
     ubyte red, green, blue;
     // todo -------------------------------------------------------------------------------------------------
