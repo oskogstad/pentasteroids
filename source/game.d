@@ -6,7 +6,6 @@ import player;
 import menu;
 import orbs;
 import stars;
-import clouds;
 
 bool angleMode = false;
 double angle;
@@ -16,8 +15,6 @@ void setup(SDL_Renderer *renderer)
 {
 	world.setup(renderer);
 	
-	stars.setup();
-	clouds.setup(renderer);
 	orbs.setup(renderer);
 
 	player.setup(renderer);
@@ -26,10 +23,6 @@ void setup(SDL_Renderer *renderer)
 
 void updateAndDraw(SDL_Renderer *renderer)
 {
-
-
-
-	world.updateAndDraw(renderer);
 	if(angleMode)
 	{
 		angle = atan2(cast(float)(currentDisplay.h/2) - spaceShipY, cast(float)(currentDisplay.w/2) - spaceShipX);
@@ -38,13 +31,11 @@ void updateAndDraw(SDL_Renderer *renderer)
 	{
 		angle = atan2(cast(float) mouseY - spaceShipY, cast(float) mouseX - spaceShipX);
 	}
-	stars.updateAndDraw(renderer);
+
+	world.updateAndDraw(renderer);
 	primaryfire.updateAndDraw(renderer);
-	clouds.updateAndDraw(renderer);
 	orbs.updateAndDraw(renderer);
 	player.updateAndDraw(renderer);
-
-
 }
 
 void handleInput(SDL_Event event)

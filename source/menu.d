@@ -31,11 +31,7 @@ void setup(SDL_Renderer* renderer)
 	}
 	foreach(a; menuGFX){assert(a);}
 
-
-	foreach(path; dirEntries("sfx/menuScale/", SpanMode.depth))
-	{
-		menuSFX ~= Mix_LoadWAV(path.toStringz());
-	}
+	app.loadSFXFromDisk("sfx/menuScale/", renderer, menuSFX);
 	foreach(a;menuSFX){assert(a);}
 }
 

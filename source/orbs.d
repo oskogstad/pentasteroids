@@ -28,7 +28,7 @@ struct Orb
 	shakeTimer;
 }
 
-public SDL_Rect *orbRect;
+SDL_Rect *orbRect;
 SDL_Texture*[] orbTextures;
 
 const float TO_DEG = 180/PI;
@@ -43,11 +43,8 @@ void setup(SDL_Renderer *renderer)
 {
 	orbRect = new SDL_Rect();
 	orbRect.w = 128; orbRect.h = 128;
-	foreach(path; dirEntries("img/orbs/", SpanMode.depth))
-	{
-		orbTextures ~= IMG_LoadTexture(renderer, path.toStringz());
-	}
-	foreach(texture; orbTextures){assert(texture);}
+	app.loadGFXFromDisk("img/orbs/", renderer, orbTextures);
+	foreach(texture; orbTextures) assert(texture);
 }
 
 auto orbTimerDecay = .03;

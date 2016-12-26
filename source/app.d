@@ -135,6 +135,7 @@ void main()
             default:
             {
                 writeln("Something bad happened, state switch called default.");
+                running = false;
                 break;
             }
         }
@@ -146,6 +147,21 @@ void main()
     }
 }
 
+void loadGFXFromDisk(string folderPath, SDL_Renderer* renderer, ref SDL_Texture*[] tArray)
+{
+    foreach(filePath; dirEntries(folderPath, SpanMode.depth))
+    {
+        tArray ~= IMG_LoadTexture(renderer, filePath.toStringz());
+    }
+}
+
+void loadSFXFromDisk(string folderPath, SDL_Renderer* renderer, ref Mix_Chunk*[] mArray)
+{
+    foreach(filePath; dirEntries(folderPath, SpanMode.depth))
+    {
+        mArray ~= Mix_LoadWAV(filePath.toStringz());
+    }
+}
 
 bool initSDL()
 {

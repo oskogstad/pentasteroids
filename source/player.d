@@ -5,7 +5,7 @@ import primaryfire;
 import world;
 
 SDL_Texture *spaceShip;
-public SDL_Rect *spaceShipRect;
+SDL_Rect *spaceShipRect;
 int moveLength = 10;
 float thrustX = 0;    
 float thrustY = 0;
@@ -18,8 +18,7 @@ int mouseX, mouseY;
 auto crossHairPath = "img/crosshair.png";
 int crossHairHeight, crossHairWidth;
 SDL_Texture *crossHair;
-public SDL_Rect *crossHairRect;
-
+SDL_Rect *crossHairRect;
 
 void setup(SDL_Renderer *renderer)
 {

@@ -1,17 +1,35 @@
 module world;
+import stars;
+import game;
+import player;
 import app;
 
 struct WorldCell
 {
 	SDL_Texture *background;
+	int backgroundWidth, backgroundHeight;
     // background color
     ubyte red, green, blue;
     // todo -------------------------------------------------------------------------------------------------
     // each cell should have a chord, or set of chords?
-    // their own texture?
 }
+const int WORLD_WIDTH = 3, WORLD_HEIGHT = 3;
+SDL_Rect* backgroundRect;
+SDL_Texture*[] backgrounds;
+ubyte[3][9] backgroundColors = 
+[
+	[11, 11, 11], 
+	[33, 33, 33],
+	[66, 66, 66],
+	[99, 99, 99],
+	[111, 111, 111],
+	[133, 133, 133],
+	[166, 166, 166],
+	[199, 199, 199],
+	[211, 211, 211]
+];
 
-WorldCell[3][3] worldGrid;
+WorldCell[WORLD_HEIGHT][WORLD_WIDTH] worldGrid;
 int worldWidth = 3, worldHeight = 3;
 ubyte currentRed = 0, currentGreen = 67 , currentBlue = 67;
 int cellIndexX = 1;
@@ -20,18 +38,29 @@ WorldCell currentCell;
 
 void setup(SDL_Renderer *renderer) 
 {
-	for(int i = 0; i < worldHeight; ++i){
-		for(int j = 0; j < worldWidth; ++j)
-		{
-            // random bgColor for now --------------------------------------------------------------------------------------
-            // 0x00, 0x43, 0x43 // want this one maybe ------------------------------------------------------------------
-            WorldCell wc;
-            wc.red = cast(ubyte) uniform(20, 90);
-            wc.green = cast(ubyte) uniform(20, 90);
-            wc.blue = cast(ubyte) uniform(20, 90);
-            worldGrid[i][j] = wc;
-        }
-    }
+	stars.setup();
+
+	backgroundRect = new SDL_Rect();
+
+	app.loadGFXFromDisk("img/backgrounds/", renderer, backgrounds);
+	foreach(texture; backgrounds) assert(texture);
+
+	for(int i = 0; i < WORLD_WIDTH * WORLD_HEIGHT; ++i)
+	{
+		int row = i / WORLD_HEIGHT;
+		int col = (i - row) % WORLD_HEIGHT;
+
+		WorldCell wc;
+
+		wc.background = backgrounds[i];
+        SDL_QueryTexture(wc.background, null, null, &wc.backgroundWidth, &wc.backgroundHeight);
+
+        wc.red = backgroundColors[i][0];
+        wc.green = backgroundColors[i][1];
+        wc.blue = backgroundColors[i][2];
+        
+        worldGrid[row][col] = wc;
+	}	
 
     currentCell = worldGrid[cellIndexX][cellIndexY];
 }
@@ -77,4 +106,19 @@ void updateAndDraw(SDL_Renderer *renderer)
 
 	SDL_SetRenderDrawColor(renderer, currentRed, currentGreen, currentBlue, 0xFF);
 	SDL_RenderClear(renderer);
+	
+	stars.updateAndDraw(renderer);
+
+	backgroundRect.w = currentCell.backgroundWidth, backgroundRect.h = currentCell.backgroundHeight;
+	backgroundRect.x = (app.currentDisplay.w / 2) - (currentCell.backgroundWidth / 2), backgroundRect.y = (app.currentDisplay.h / 2) - (currentCell.backgroundHeight / 2);
+
+	if(game.angleMode)
+	{
+		SDL_RenderCopyEx(renderer, currentCell.background, null, backgroundRect, -game.angle, null, 0);
+	}
+	else
+	{
+		backgroundRect.x = cast(int)(player.spaceShipRect.x * 0.04) - 400; backgroundRect.y = cast(int) (player.spaceShipRect.y * 0.04) - 300;
+		SDL_RenderCopy(renderer, currentCell.background, null, backgroundRect);
+	}
 }
