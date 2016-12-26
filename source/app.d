@@ -51,6 +51,11 @@ void main()
         SDL_DestroyWindow(window);
     }
 
+    auto icon = SDL_LoadBMP("img/icon.bmp");
+    assert(icon);
+
+    SDL_SetWindowIcon(window, icon);
+
     SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
     
     SDL_ShowCursor(SDL_DISABLE);
