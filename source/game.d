@@ -32,7 +32,6 @@ void updateAndDraw(SDL_Renderer *renderer)
 		angle = atan2(cast(float) mouseY - spaceShipY, cast(float) mouseX - spaceShipX);
 	}
 
-	world.updateAndDraw(renderer);
 	primaryfire.updateAndDraw(renderer);
 	orbs.updateAndDraw(renderer);
 	player.updateAndDraw(renderer);

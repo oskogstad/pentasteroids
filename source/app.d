@@ -39,7 +39,14 @@ void main()
 
     SDL_GetCurrentDisplayMode(0, &currentDisplay);
     
-    auto window = SDL_CreateWindow("Pentasteroids", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, currentDisplay.w, currentDisplay.h, 0);
+    auto window = SDL_CreateWindow(
+        "Pentasteroids", 
+        SDL_WINDOWPOS_CENTERED, 
+        SDL_WINDOWPOS_CENTERED, 
+        currentDisplay.w, 
+        currentDisplay.h, 
+        0);
+
     assert(window);
     
     auto renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);

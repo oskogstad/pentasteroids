@@ -8,14 +8,15 @@ struct WorldCell
 {
 	SDL_Texture *background;
 	int backgroundWidth, backgroundHeight;
-    // background color
     ubyte red, green, blue;
-    // todo -------------------------------------------------------------------------------------------------
-    // each cell should have a chord, or set of chords?
+    Mix_Chunk*[] chords;
 }
+
 const int WORLD_WIDTH = 3, WORLD_HEIGHT = 3;
+
 SDL_Rect* backgroundRect;
 SDL_Texture*[] backgrounds;
+
 ubyte[3][9] backgroundColors = 
 [
 	[11, 11, 11], 
@@ -30,8 +31,10 @@ ubyte[3][9] backgroundColors =
 ];
 
 WorldCell[WORLD_HEIGHT][WORLD_WIDTH] worldGrid;
+
 int worldWidth = 3, worldHeight = 3;
 ubyte currentRed = 0, currentGreen = 67 , currentBlue = 67;
+
 int cellIndexX = 1;
 int cellIndexY = 1;
 WorldCell currentCell;
@@ -65,44 +68,28 @@ void setup(SDL_Renderer *renderer)
     currentCell = worldGrid[cellIndexX][cellIndexY];
 }
 
+void updateColor(ref ubyte current, ubyte target)
+{
+	if(current != target)
+	{
+		if(current < target)
+		{
+			current++;
+		}
+		else
+		{
+			current--;
+		}	
+	}
+}
 
 void updateAndDraw(SDL_Renderer *renderer)
 {
 	currentCell = worldGrid[cellIndexX][cellIndexY];
 
-	if(currentRed != currentCell.red)
-	{
-		if(currentRed < currentCell.red)
-		{
-			currentRed++;
-		}
-		else
-		{
-			currentRed--;
-		}
-	}
-	if(currentGreen != currentCell.green)
-	{
-		if(currentGreen < currentCell.green)
-		{
-			currentGreen++;
-		}
-		else
-		{
-			currentGreen--;
-		}
-	}
-	if(currentBlue != currentCell.blue)
-	{
-		if(currentBlue < currentCell.blue)
-		{
-			currentBlue++;
-		}
-		else
-		{
-			currentBlue--;
-		}
-	}
+	updateColor(currentRed, currentCell.red);
+	updateColor(currentGreen, currentCell.green);
+	updateColor(currentBlue, currentCell.blue);
 
 	SDL_SetRenderDrawColor(renderer, currentRed, currentGreen, currentBlue, 0xFF);
 	SDL_RenderClear(renderer);
@@ -110,7 +97,8 @@ void updateAndDraw(SDL_Renderer *renderer)
 	stars.updateAndDraw(renderer);
 
 	backgroundRect.w = currentCell.backgroundWidth, backgroundRect.h = currentCell.backgroundHeight;
-	backgroundRect.x = (app.currentDisplay.w / 2) - (currentCell.backgroundWidth / 2), backgroundRect.y = (app.currentDisplay.h / 2) - (currentCell.backgroundHeight / 2);
+	backgroundRect.x = (app.currentDisplay.w / 2) - (currentCell.backgroundWidth / 2);
+	backgroundRect.y = (app.currentDisplay.h / 2) - (currentCell.backgroundHeight / 2);
 
 	if(game.angleMode)
 	{
@@ -118,7 +106,8 @@ void updateAndDraw(SDL_Renderer *renderer)
 	}
 	else
 	{
-		backgroundRect.x = cast(int)(player.spaceShipRect.x * 0.04) - 400; backgroundRect.y = cast(int) (player.spaceShipRect.y * 0.04) - 300;
+		backgroundRect.x = cast(int)(player.spaceShipRect.x * 0.04) - 400; 
+		backgroundRect.y = cast(int) (player.spaceShipRect.y * 0.04) - 300;
 		SDL_RenderCopy(renderer, currentCell.background, null, backgroundRect);
 	}
 }

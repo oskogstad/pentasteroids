@@ -6,17 +6,25 @@ import world;
 
 SDL_Texture *spaceShip;
 SDL_Rect *spaceShipRect;
+
 int moveLength = 10;
 float thrustX = 0;    
 float thrustY = 0;
 float thrustDecay = 0.015;
 float thrustGain = 0.08;
-int spaceShipX, spaceShipY;
-int spaceShipHeight, spaceShipWidth;
 
-int mouseX, mouseY;
+int 
+	spaceShipX, 
+	spaceShipY;
+	spaceShipHeight, 
+	spaceShipWidth,
+	mouseX, 
+	mouseY,
+	crossHairHeight, 
+	crossHairWidth;
+
 auto crossHairPath = "img/crosshair.png";
-int crossHairHeight, crossHairWidth;
+
 SDL_Texture *crossHair;
 SDL_Rect *crossHairRect;
 
@@ -43,9 +51,9 @@ void setup(SDL_Renderer *renderer)
     // shrink /2 for offset when drawing in main loop
     spaceShipWidth /= 2; spaceShipHeight /= 2;
 
-        //shrink /5
-        crossHairWidth /= 5; crossHairHeight /= 5;
-        crossHairRect.w = (crossHairWidth), crossHairRect.h = (crossHairHeight);
+    //shrink /5
+    crossHairWidth /= 5; crossHairHeight /= 5;
+    crossHairRect.w = (crossHairWidth), crossHairRect.h = (crossHairHeight);
 
     // further /2 for offset when drawing in main loop
     crossHairWidth /= 2; crossHairHeight /= 2;
@@ -53,89 +61,62 @@ void setup(SDL_Renderer *renderer)
     // aim cursor end
 }
 
+void updateThrust(ref float thrust)
+{
+	if(abs(thrust) < thrustDecay)
+	{
+		thrust = 0;
+	}
+	else if(thrust > 0)
+	{
+		thrust -= thrustDecay;
+	}
+	else 
+	{
+		thrust += thrustDecay;
+	}
+}
+
+void checkKeysDown(ref float thrust, ubyte pos, ubyte posAlt, ubyte neg, ubyte negAlt)
+{
+	if((pos || posAlt) && (neg || negAlt))
+	{
+		updateThrust(thrust);
+	}
+	else if(neg || negAlt)
+	{
+		if((thrust -= thrustGain) < -1) thrust = -1;
+	}
+	else if(pos || posAlt)
+	{
+		if((thrust += thrustGain) > 1) thrust = 1;
+	}
+	else
+	{
+		updateThrust(thrust);
+	}
+}
+
 void updateAndDraw(SDL_Renderer *renderer)
 {
 	auto keyBoardState = SDL_GetKeyboardState(null);
 
-	if((keyBoardState[SDL_SCANCODE_UP] || keyBoardState[SDL_SCANCODE_W]) && (keyBoardState[SDL_SCANCODE_DOWN] || keyBoardState[SDL_SCANCODE_S]))
-	{
-		if(abs(thrustY) < thrustDecay)
-		{
-			thrustY = 0;
-		}
-		else if(thrustY > 0)
-		{
-			thrustY -= thrustDecay;
-		}
-		else 
-		{
-			thrustY += thrustDecay;
-		}
-	}
+	// y thrust update
+	checkKeysDown(
+		thrustY, 
+		keyBoardState[SDL_SCANCODE_DOWN], 
+		keyBoardState[SDL_SCANCODE_S], 
+		keyBoardState[SDL_SCANCODE_UP], 
+		keyBoardState[SDL_SCANCODE_W]);
 
-	else if((keyBoardState[SDL_SCANCODE_UP] || keyBoardState[SDL_SCANCODE_W]))
-	{
-		if((thrustY -= thrustGain) < -1) thrustY = -1;
-	}
-	else if((keyBoardState[SDL_SCANCODE_DOWN] || keyBoardState[SDL_SCANCODE_S]))
-	{
-		if((thrustY += thrustGain) > 1) thrustY= 1;
-	}
-	else
-	{
-		if(abs(thrustY) < thrustDecay)
-		{
-			thrustY = 0;
-		}
-		else if(thrustY > 0)
-		{
-			thrustY -= thrustDecay;
-		}
-		else 
-		{
-			thrustY += thrustDecay;
-		} 
-	}
+	// x thrust update
+	checkKeysDown(
+		thrustX,
+		keyBoardState[SDL_SCANCODE_RIGHT],
+		keyBoardState[SDL_SCANCODE_D],
+		keyBoardState[SDL_SCANCODE_LEFT],
+		keyBoardState[SDL_SCANCODE_A]);
 
-	if((keyBoardState[SDL_SCANCODE_LEFT] || keyBoardState[SDL_SCANCODE_A]) && (keyBoardState[SDL_SCANCODE_RIGHT] || keyBoardState[SDL_SCANCODE_D]))
-	{
-		if(abs(thrustX) < thrustDecay)
-		{
-			thrustX = 0;
-		}
-		else if(thrustX > 0)
-		{
-			thrustX -= thrustDecay;
-		}
-		else 
-		{
-			thrustX += thrustDecay;
-		}
-	}
-
-	else if((keyBoardState[SDL_SCANCODE_LEFT] || keyBoardState[SDL_SCANCODE_A]))
-	{
-		if((thrustX -= thrustGain) < -1) thrustX = -1;
-	}
-	else if((keyBoardState[SDL_SCANCODE_RIGHT] || keyBoardState[SDL_SCANCODE_D]))
-	{
-		if((thrustX += thrustGain) > 1) thrustX= 1;
-	}
-	else
-	{
-		if(abs(thrustX) < thrustDecay)
-		{
-			thrustX = 0;
-		}
-		else if(thrustX > 0)
-		{
-			thrustX -= thrustDecay;
-		}
-		else 
-		{
-			thrustX += thrustDecay;
-		}
-	}
 
 	spaceShipRect.y += cast(int) ceil(thrustY * moveLength);
 	spaceShipRect.x += cast(int) ceil(thrustX * moveLength);
@@ -158,13 +139,11 @@ void updateAndDraw(SDL_Renderer *renderer)
 	{
 		spaceShipRect.x = (app.currentDisplay.w + spaceShipRect.x);
 		world.cellIndexX = abs(--world.cellIndexX % world.worldWidth);
-
 	}
 	else if(spaceShipX > app.currentDisplay.w)
 	{
 		spaceShipRect.x = 0 + (spaceShipRect.x - app.currentDisplay.w);
 		world.cellIndexX = abs(++world.cellIndexX % world.worldWidth);
-
 	}
 
 	auto mouseState = SDL_GetMouseState(&mouseX, &mouseY);

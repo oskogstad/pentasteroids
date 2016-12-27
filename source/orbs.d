@@ -7,25 +7,25 @@ struct Orb
 	SDL_Texture* texture;
 
 	int 
-	x, 
-	y,
-	radius,
-	size,
-	dx,
-	dy,
-	moveSpeed,
-	hitPoints,
-	hitSFXindex;
+		x, 
+		y,
+		radius,
+		size,
+		dx,
+		dy,
+		moveSpeed,
+		hitPoints,
+		hitSFXindex;
 
 	bool 
-	hasBeenOnScreen, 
-	del, 
-	isShaking;
+		hasBeenOnScreen, 
+		del, 
+		isShaking;
 
 	float 
-	angle, 
-	spinningSpeed, 
-	shakeTimer;
+		angle, 
+		spinningSpeed, 
+		shakeTimer;
 }
 
 SDL_Rect *orbRect;
@@ -33,6 +33,11 @@ SDL_Texture*[] orbTextures;
 
 const float TO_DEG = 180/PI;
 const float TO_RAD = PI/180;
+
+auto orbTimerDecay = .03;
+auto orbSpawnTimer = 2.1;
+
+Orb[] activeOrbs;
 
 float distanceSquared(int p1x, int p1y, int p2x, int p2y)
 {
@@ -42,15 +47,12 @@ float distanceSquared(int p1x, int p1y, int p2x, int p2y)
 void setup(SDL_Renderer *renderer)
 {
 	orbRect = new SDL_Rect();
+	/// --------------------------------------------------------------------------------- temp, need different sized orbs
 	orbRect.w = 128; orbRect.h = 128;
 	app.loadGFXFromDisk("img/orbs/", renderer, orbTextures);
 	foreach(texture; orbTextures) assert(texture);
 }
 
-auto orbTimerDecay = .03;
-auto orbSpawnTimer = 2.1;
-
-Orb[] activeOrbs;
 
 void updateAndDraw(SDL_Renderer *renderer)
 {

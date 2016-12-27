@@ -11,9 +11,15 @@ enum MenuItem
 }
 
 SDL_Texture*[string] menuGFX;
-int menuSFXIndexOne, menuSFXIndexTwo, menuSFXIndexThree;
+
+int 
+	menuSFXIndexOne, 
+	menuSFXIndexTwo, 
+	menuSFXIndexThree;
+
 SDL_Rect* menuRect;
 Mix_Chunk*[] menuSFX;
+
 int selectedIndex;
 int spacing = 100;
 
@@ -29,10 +35,10 @@ void setup(SDL_Renderer* renderer)
 		chomp = chompPrefix(chomp, "img/menu/");
 		menuGFX[chomp] = IMG_LoadTexture(renderer, path.toStringz());
 	}
-	foreach(a; menuGFX){assert(a);}
+	foreach(sfx; menuGFX) assert(sfx);
 
 	app.loadSFXFromDisk("sfx/menuScale/", renderer, menuSFX);
-	foreach(a;menuSFX){assert(a);}
+	foreach(sfx;menuSFX) assert(sfx);
 }
 
 void playSFX()
@@ -85,16 +91,34 @@ void handleInput(SDL_Event event)
 
 		case SDLK_w:
 		case SDLK_UP:
-		if(--selectedIndex < 0) selectedIndex = MenuItem.QUIT;
-		break;
+		{
+			if(--selectedIndex < 0) selectedIndex = MenuItem.QUIT;
+			break;	
+		}
+
 
 		case SDLK_s:
 		case SDLK_DOWN:
-		if(++selectedIndex > 3) selectedIndex = MenuItem.START;
-		break;
+		{
+			if(++selectedIndex > 3) selectedIndex = MenuItem.START;
+			break;
+		}
 
 		default:
 		break;
+	}
+}
+
+
+void drawMenuItem(SDL_Renderer* renderer, string item, string item_, bool condition)
+{
+	if(condition)
+	{
+		SDL_RenderCopy(renderer, menuGFX[item], null, menuRect);
+	}
+	else
+	{
+		SDL_RenderCopy(renderer, menuGFX[item_], null, menuRect);	
 	}
 }
 
@@ -105,62 +129,23 @@ void updateAndDraw(SDL_Renderer* renderer)
 	SDL_RenderCopy(renderer, menuGFX["logo"], null, menuRect);
 
 	menuRect.h = spacing;
-
 	menuRect.y = 650;
+
 	if(selectedIndex == MenuItem.START)
 	{
-		if(game.gameInProgress)
-		{
-			SDL_RenderCopy(renderer, menuGFX["continue"], null, menuRect);
-		}
-		else
-		{
-			SDL_RenderCopy(renderer, menuGFX["start"], null, menuRect);
-		}
+		drawMenuItem(renderer, "continue", "start", game.gameInProgress);
 	}
 	else 
 	{
-		if(game.gameInProgress)
-		{
-			SDL_RenderCopy(renderer, menuGFX["continue_"], null, menuRect);
-		}
-		else
-		{
-			SDL_RenderCopy(renderer, menuGFX["start_"], null, menuRect);
-		}
+		drawMenuItem(renderer, "continue_", "start_", game.gameInProgress);
 	}
 
 	menuRect.y += spacing;
-
-	if(selectedIndex == MenuItem.HIGHSCORE)
-	{
-		SDL_RenderCopy(renderer, menuGFX["highscore"], null, menuRect);
-	}
-	else
-	{
-		SDL_RenderCopy(renderer, menuGFX["highscore_"], null, menuRect);
-	}
-
+	drawMenuItem(renderer, "highscore", "highscore_", selectedIndex == MenuItem.HIGHSCORE);
 
 	menuRect.y += spacing;
-
-	if(selectedIndex == MenuItem.CREDITS)
-	{
-		SDL_RenderCopy(renderer, menuGFX["credits"], null, menuRect);
-	}
-	else
-	{
-		SDL_RenderCopy(renderer, menuGFX["credits_"], null, menuRect);
-	}            
+	drawMenuItem(renderer, "credits", "credits_", selectedIndex == MenuItem.CREDITS);         
 
 	menuRect.y += spacing;
-
-	if(selectedIndex == MenuItem.QUIT)
-	{
-		SDL_RenderCopy(renderer, menuGFX["quit"], null, menuRect);
-	}
-	else
-	{
-		SDL_RenderCopy(renderer, menuGFX["quit_"], null, menuRect);
-	}     
+	drawMenuItem(renderer, "quit", "quit_", selectedIndex == MenuItem.QUIT);  
 }
