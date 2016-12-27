@@ -24,7 +24,7 @@ ubyte[3][9] backgroundColors =
 	[20, 40, 100],
 	[51, 14, 100],
 	[20, 20, 20],
-	[100, 40, 40], // initial cell
+	[200, 200, 200], // initial cell
 	[100, 80, 40],
 	[80, 100, 70],
 	[90, 70, 100]
@@ -106,8 +106,8 @@ void updateAndDraw(SDL_Renderer *renderer)
 	}
 	else
 	{
-		backgroundRect.x = cast(int)(player.spaceShipRect.x * 0.04) - 400; 
-		backgroundRect.y = cast(int) (player.spaceShipRect.y * 0.04) - 300;
+		backgroundRect.x += cast(int)(player.spaceShipRect.x * 0.05); 
+		backgroundRect.y += cast(int) (player.spaceShipRect.y * 0.05);
 		SDL_RenderCopy(renderer, currentCell.background, null, backgroundRect);
 	}
 }
