@@ -15,7 +15,7 @@ float thrustGain = 0.08;
 
 int 
 	spaceShipX, 
-	spaceShipY;
+	spaceShipY,
 	spaceShipHeight, 
 	spaceShipWidth,
 	mouseX, 
@@ -138,12 +138,12 @@ void updateAndDraw(SDL_Renderer *renderer)
 	if(spaceShipX < 0)
 	{
 		spaceShipRect.x = (app.currentDisplay.w + spaceShipRect.x);
-		world.cellIndexX = abs(--world.cellIndexX % world.worldWidth);
+		world.cellIndexX = abs(++world.cellIndexX % world.worldWidth);
 	}
 	else if(spaceShipX > app.currentDisplay.w)
 	{
 		spaceShipRect.x = 0 + (spaceShipRect.x - app.currentDisplay.w);
-		world.cellIndexX = abs(++world.cellIndexX % world.worldWidth);
+		world.cellIndexX = abs(--world.cellIndexX % world.worldWidth);
 	}
 
 	auto mouseState = SDL_GetMouseState(&mouseX, &mouseY);
