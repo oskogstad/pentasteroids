@@ -1,7 +1,4 @@
 module world;
-import stars;
-import game;
-import player;
 import app;
 
 struct WorldCell
@@ -24,7 +21,7 @@ ubyte[3][9] backgroundColors =
 	[20, 40, 100],
 	[51, 14, 100],
 	[20, 20, 20],
-	[200, 200, 200], // initial cell
+	[0, 67, 67], // initial cell
 	[100, 80, 40],
 	[80, 100, 70],
 	[90, 70, 100]

@@ -1,6 +1,5 @@
 module orbs;
 import app;
-import primaryfire;
 
 struct Orb
 {
@@ -56,16 +55,21 @@ void setup(SDL_Renderer *renderer)
 
 void updateAndDraw(SDL_Renderer *renderer)
 {
-	foreach(ref bullet; primaryfire.bullets)
+	player.currentlyBeingHit = false;
+	foreach(ref orb; activeOrbs)
 	{
-		foreach(ref orb; activeOrbs)
+		float ors = orb.radius * orb.radius;
+		float playerDist = distanceSquared(orb.x, orb.y, spaceShipRect.x, spaceShipRect.y);
+		if(playerDist < ors) player.currentlyBeingHit = true;
+
+		foreach(ref bullet; bullets)
 		{
 			float dist = distanceSquared(orb.x, orb.y, bullet.x, bullet.y);
 			if(dist < orb.radius * orb.radius)
 			{
 				if(--orb.hitPoints == 0) orb.del = true;
 				orb.isShaking = true;
-				Mix_PlayChannel(-1, orbHitSFX[uniform(0, orbHitSFX.length - 1)], 0);
+				Mix_PlayChannel(-1, orbHitSFX[uniform(0, orbHitSFX.length)], 0);
 				bullet.del = true;
 			}
 		}

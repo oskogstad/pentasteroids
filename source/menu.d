@@ -1,6 +1,5 @@
 module menu;
 import app;
-import game;
 
 enum MenuItem
 {
@@ -11,6 +10,7 @@ enum MenuItem
 }
 
 SDL_Texture*[string] menuGFX;
+ubyte menuSFXVolume = 60;
 
 int 
 	menuSFXIndexOne, 
@@ -37,8 +37,12 @@ void setup(SDL_Renderer* renderer)
 	}
 	foreach(sfx; menuGFX) assert(sfx);
 
-	app.loadSFXFromDisk("sfx/menuScale/", renderer, menuSFX);
-	foreach(sfx;menuSFX) assert(sfx);
+	app.loadSFXFromDisk("sfx/menuScale/", menuSFX);
+	foreach(sfx;menuSFX) 
+	{
+		assert(sfx);
+		sfx.volume = menuSFXVolume;
+	}
 }
 
 void playSFX()
@@ -80,7 +84,7 @@ void handleInput(SDL_Event event)
 				break;
 
 				case MenuItem.QUIT:
-				running = false;
+				app.running = false;
 				break;  
 
 				default:
@@ -92,7 +96,7 @@ void handleInput(SDL_Event event)
 		case SDLK_w:
 		case SDLK_UP:
 		{
-			if(--selectedIndex < 0) selectedIndex = MenuItem.QUIT;
+			if(--selectedIndex < MenuItem.min) selectedIndex = MenuItem.max;
 			break;	
 		}
 
@@ -100,7 +104,7 @@ void handleInput(SDL_Event event)
 		case SDLK_s:
 		case SDLK_DOWN:
 		{
-			if(++selectedIndex > 3) selectedIndex = MenuItem.START;
+			if(++selectedIndex > MenuItem.max) selectedIndex = MenuItem.min;
 			break;
 		}
 

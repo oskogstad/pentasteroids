@@ -1,7 +1,5 @@
 module primaryfire;
 import app;
-import player;
-import game;
 
 const float TO_DEG = 180/PI;
 const float TO_RAD = PI/180;
@@ -19,11 +17,11 @@ Mix_Chunk*[] orbHitSFX;
 Mix_Chunk*[] bulletFireSFX;
 PrimaryGFX[] bullets;
 
-auto bulletGFXPath = "img/single_green_beam.png";
 SDL_Texture *bulletGFX;
 int bulletGFXHeight, bulletGFXWidth;
 SDL_Rect *bulletGFXRect;
 int bulletMoveLength = 20;
+ubyte bulletVolume = 55;
 float fireCooldown = -1;
 
 // set start pos relative to spaceship
@@ -36,17 +34,22 @@ int sequenceIndex = 0;
 void setup(SDL_Renderer *renderer)
 {
 	bulletGFXRect = new SDL_Rect();
-	bulletGFX = IMG_LoadTexture(renderer, bulletGFXPath.ptr);
+	bulletGFX = IMG_LoadTexture(renderer, "img/single_green_beam.png");
 	SDL_QueryTexture(bulletGFX, null, null, &bulletGFXWidth, &bulletGFXHeight);
 	assert(bulletGFX);
 	bulletGFXRect.w = bulletGFXWidth, bulletGFXRect.h = bulletGFXHeight;
 	bulletGFXRect.x = player.spaceShipRect.x; bulletGFXRect.y = player.spaceShipRect.y;
 
-	app.loadSFXFromDisk("sfx/orbHitScale/", renderer, orbHitSFX);
+	app.loadSFXFromDisk("sfx/orbHitScale/", orbHitSFX);
 	foreach(sfx; orbHitSFX) assert(sfx);
 
-	app.loadSFXFromDisk("sfx/primaryScale/", renderer, bulletFireSFX);
-	foreach(sfx; bulletFireSFX) assert(sfx);	
+	app.loadSFXFromDisk("sfx/primaryScale/", bulletFireSFX);
+	foreach(sfx; bulletFireSFX) assert(sfx);
+
+	foreach(audio; bulletFireSFX) 
+	{
+		audio.volume = bulletVolume;
+	}	
 }
 
 void updateAndDraw(SDL_Renderer *renderer)

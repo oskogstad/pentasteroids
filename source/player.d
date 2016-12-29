@@ -1,11 +1,15 @@
 module player;
 import app;
-import game;
-import primaryfire;
-import world;
+
+Mix_Chunk *playerHitSFX;
+bool currentlyBeingHit;
+int hitPoints = 180;
+bool shake;
 
 SDL_Texture *spaceShip;
 SDL_Rect *spaceShipRect;
+SDL_Texture *crossHair;
+SDL_Rect *crossHairRect;
 
 int moveLength = 10;
 float thrustX = 0;    
@@ -23,25 +27,17 @@ int
 	crossHairHeight, 
 	crossHairWidth;
 
-auto crossHairPath = "img/crosshair.png";
-
-SDL_Texture *crossHair;
-SDL_Rect *crossHairRect;
 
 void setup(SDL_Renderer *renderer)
 {
-	spaceShipRect = new SDL_Rect();
 	crossHairRect = new SDL_Rect();
-	crossHair = IMG_LoadTexture(renderer, crossHairPath.ptr);
+	crossHair = IMG_LoadTexture(renderer, "img/crosshair.png");
 	assert(crossHair);
 	SDL_QueryTexture(crossHair, null, null, &crossHairWidth, &crossHairHeight);
 
-	auto spaceShipPath = "img/spaceship.png";
-
-
-	spaceShip = IMG_LoadTexture(renderer, spaceShipPath.ptr);
+	spaceShipRect = new SDL_Rect();
+	spaceShip = IMG_LoadTexture(renderer, "img/spaceship.png");
 	assert(spaceShip);
-
 	SDL_QueryTexture(spaceShip, null, null, &spaceShipWidth, &spaceShipHeight);
 
 	spaceShipRect.w = spaceShipWidth, spaceShipRect.h = spaceShipHeight;
@@ -57,11 +53,13 @@ void setup(SDL_Renderer *renderer)
 
     // further /2 for offset when drawing in main loop
     crossHairWidth /= 2; crossHairHeight /= 2;
-    
-    // aim cursor end
+    auto arst = "sfx/player_hit.wav";
+    playerHitSFX = Mix_LoadWAV(arst.toStringz());
+    assert(playerHitSFX); 
+    writeln(playerHitSFX);
 }
 
-void updateThrust(ref float thrust)
+void decay(ref float thrust)
 {
 	if(abs(thrust) < thrustDecay)
 	{
@@ -81,7 +79,7 @@ void checkKeysDown(ref float thrust, ubyte pos, ubyte posAlt, ubyte neg, ubyte n
 {
 	if((pos || posAlt) && (neg || negAlt))
 	{
-		updateThrust(thrust);
+		decay(thrust);
 	}
 	else if(neg || negAlt)
 	{
@@ -93,12 +91,32 @@ void checkKeysDown(ref float thrust, ubyte pos, ubyte posAlt, ubyte neg, ubyte n
 	}
 	else
 	{
-		updateThrust(thrust);
+		decay(thrust);
 	}
 }
 
 void updateAndDraw(SDL_Renderer *renderer)
 {
+	if(currentlyBeingHit)
+	{
+		shake = true;
+		if(Mix_Paused(0) || !Mix_Playing(0))
+		{
+			Mix_PlayChannel(0, playerHitSFX, 0);
+		}
+
+		--hitPoints;
+		// if(hitPoints <= 0)
+	}
+	else
+	{
+		shake = false;
+		if(Mix_Playing(0)) 
+		{
+			Mix_Pause(0);
+		}
+	}
+
 	auto keyBoardState = SDL_GetKeyboardState(null);
 
 	// y thrust update
@@ -160,6 +178,12 @@ void updateAndDraw(SDL_Renderer *renderer)
 
 	if (mouseState & SDL_BUTTON(SDL_BUTTON_RIGHT)) {writeln("RIGHT FIRE");}
 	if (mouseState & SDL_BUTTON(SDL_BUTTON_MIDDLE)) {writeln("MID FIRE");}
+
+	if(shake)
+	{
+		spaceShipRect.x += uniform(-7,7);
+		spaceShipRect.y += uniform(-7,7);
+	}
 
 	SDL_RenderCopyEx(renderer, spaceShip, null, spaceShipRect, game.angle, null, 0);
 	if(!game.angleMode) SDL_RenderCopy(renderer, crossHair, null, crossHairRect);

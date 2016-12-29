@@ -1,11 +1,5 @@
 module game;
 import app;
-import world;
-import primaryfire;
-import player;
-import menu;
-import orbs;
-import stars;
 
 bool angleMode = false;
 double angle;
@@ -42,14 +36,24 @@ void handleInput(SDL_Event event)
 	switch(event.key.keysym.sym)
 	{
 		case SDLK_ESCAPE:
-		app.state = AppState.MENU;
-		menu.selectedIndex = MenuItem.START; 
-		break;
+		{
+			app.state = AppState.MENU;
+			menu.selectedIndex = MenuItem.START; 
+			break;			
+		}
 
 		case SDLK_k:
-		angleMode = !angleMode;
-		break;
-
+		{
+			angleMode = !angleMode;
+			break;
+		}
+		
+		case SDLK_o:
+		{
+			orbs.orbSpawnTimer = -1;
+			break;	
+		}
+		
 		default:
 		break;           
 	}

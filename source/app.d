@@ -1,8 +1,12 @@
 module app;
 
-import game;
-import world;
-import menu;
+public import game;
+public import world;
+public import menu;
+public import primaryfire;
+public import player;
+public import orbs;
+public import stars;
 
 public import std.string;
 public import std.stdio;
@@ -67,7 +71,8 @@ void main()
     
     SDL_ShowCursor(SDL_DISABLE);
     
-    Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 4096 );
+    Mix_OpenAudio( 22050, MIX_DEFAULT_FORMAT, 2, 4096);
+    Mix_ReserveChannels(1);
 
     menu.setup(renderer);
     game.setup(renderer);
@@ -162,7 +167,7 @@ void loadGFXFromDisk(string folderPath, SDL_Renderer* renderer, ref SDL_Texture*
     }
 }
 
-void loadSFXFromDisk(string folderPath, SDL_Renderer* renderer, ref Mix_Chunk*[] mArray)
+void loadSFXFromDisk(string folderPath, ref Mix_Chunk*[] mArray)
 {
     foreach(filePath; dirEntries(folderPath, SpanMode.depth))
     {
