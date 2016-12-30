@@ -69,13 +69,13 @@ void updateAndDraw(SDL_Renderer *renderer)
 	foreach(ref orb; activeOrbs)
 	{
 		float ors = orb.radius * orb.radius;
-		float playerDist = distanceSquared(orb.x, orb.y, spaceShipRect.x, spaceShipRect.y);
+		float playerDist = distanceSquared(orb.x, orb.y, player.xPos, player.yPos);
 		if(playerDist < ors) player.currentlyBeingHit = true;
 
 		foreach(ref bullet; bullets)
 		{
 			float dist = distanceSquared(orb.x, orb.y, bullet.x, bullet.y);
-			if(dist < orb.radius * orb.radius)
+			if(dist < ors)
 			{
 				if(--orb.hitPoints == 0) orb.del = true;
 				orb.isShaking = true;

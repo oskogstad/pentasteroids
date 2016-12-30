@@ -12,6 +12,7 @@ SDL_Texture *crossHair;
 SDL_Rect *crossHairRect;
 
 int moveLength = 10;
+int xPos, yPos;
 float thrustX = 0;    
 float thrustY = 0;
 float thrustDecay = 0.015;
@@ -36,7 +37,7 @@ void setup(SDL_Renderer *renderer)
 	SDL_QueryTexture(crossHair, null, null, &crossHairWidth, &crossHairHeight);
 
 	spaceShipRect = new SDL_Rect();
-	spaceShip = IMG_LoadTexture(renderer, "img/spaceship.png");
+	spaceShip = IMG_LoadTexture(renderer, "img/player.png");
 	assert(spaceShip);
 	SDL_QueryTexture(spaceShip, null, null, &spaceShipWidth, &spaceShipHeight);
 
@@ -182,6 +183,9 @@ void updateAndDraw(SDL_Renderer *renderer)
 		spaceShipRect.x += uniform(-7,7);
 		spaceShipRect.y += uniform(-7,7);
 	}
+	
+	xPos = spaceShipRect.x + spaceShipWidth;
+	yPos = spaceShipRect.y + spaceShipHeight;
 
 	SDL_RenderCopyEx(renderer, spaceShip, null, spaceShipRect, game.angle, null, 0);
 	if(!game.angleMode) SDL_RenderCopy(renderer, crossHair, null, crossHairRect);

@@ -12,7 +12,7 @@ struct Blast
 {
 	SDL_Texture* texture;
 	BlastSize size;
-	bool del;
+	bool del, shake;
 	int 
 		x, 
 		y,
@@ -51,8 +51,22 @@ void updateAndDraw(SDL_Renderer *renderer)
 		{
 			blast.del = true;
 		}
-		blastDRect.x = blast.x - blast.w/2;
-		blastDRect.y = blast.y - blast.h/2;
+		if(blast.animationFrame < 11)
+		{
+			blast.shake = true;
+		}
+
+		if(blast.shake)
+		{
+			blastDRect.x = (blast.x - blast.w/2) + uniform(-4, 4);
+			blastDRect.y = (blast.y - blast.h/2) + uniform(-4, 4);
+		}
+		else
+		{
+			blastDRect.x = blast.x - blast.w/2;
+			blastDRect.y = blast.y - blast.h/2;	
+		}
+
 		blastDRect.w = blast.w;
 		blastDRect.h = blast.h;
 	

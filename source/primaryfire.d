@@ -34,7 +34,7 @@ int sequenceIndex = 0;
 void setup(SDL_Renderer *renderer)
 {
 	bulletGFXRect = new SDL_Rect();
-	bulletGFX = IMG_LoadTexture(renderer, "img/single_green_beam.png");
+	bulletGFX = IMG_LoadTexture(renderer, "img/primaryBullet.png");
 	SDL_QueryTexture(bulletGFX, null, null, &bulletGFXWidth, &bulletGFXHeight);
 	assert(bulletGFX);
 	bulletGFXRect.w = bulletGFXWidth, bulletGFXRect.h = bulletGFXHeight;
