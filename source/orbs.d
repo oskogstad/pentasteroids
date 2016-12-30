@@ -9,6 +9,7 @@ struct Orb
 		x, 
 		y,
 		radius,
+		radiusSquared,
 		size,
 		dx,
 		dy,
@@ -68,14 +69,14 @@ void updateAndDraw(SDL_Renderer *renderer)
 	player.currentlyBeingHit = false;
 	foreach(ref orb; activeOrbs)
 	{
-		float ors = orb.radius * orb.radius;
+		float prs = player.radius * player.radius;
 		float playerDist = distanceSquared(orb.x, orb.y, player.xPos, player.yPos);
-		if(playerDist < ors) player.currentlyBeingHit = true;
+		if(playerDist < (orb.radiusSquared + player.radiusSquared)) player.currentlyBeingHit = true;
 
 		foreach(ref bullet; bullets)
 		{
 			float dist = distanceSquared(orb.x, orb.y, bullet.x, bullet.y);
-			if(dist < ors)
+			if(dist < (orb.radiusSquared + primaryfire.radiusSquared))
 			{
 				if(--orb.hitPoints == 0) orb.del = true;
 				orb.isShaking = true;
@@ -101,8 +102,9 @@ void updateAndDraw(SDL_Renderer *renderer)
 		o.moveSpeed = uniform(3,6);
 		o.angle = uniform(0,359);
 		o.radius = 128;
-		o.dx = cast(int) (o.moveSpeed * cos(o.angle * TO_RAD));
-		o.dy = cast(int) (o.moveSpeed * sin(o.angle * TO_RAD));
+		o.radiusSquared = o.radius * o.radius;
+		o.dx = cast(int) (o.moveSpeed * cos(o.angle));
+		o.dy = cast(int) (o.moveSpeed * sin(o.angle));
 		int orbIndex = uniform(0, smallOrbTextures.length);
 		o.texture = smallOrbTextures[orbIndex];
 		o.animationOffset = uniform(0, SMALL_ORB_FRAMES);

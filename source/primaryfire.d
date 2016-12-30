@@ -1,15 +1,15 @@
 module primaryfire;
 import app;
 
-const float TO_DEG = 180/PI;
-const float TO_RAD = PI/180;
-
 struct PrimaryGFX 
 {
-	int x, y;
-	int dx, dy;
+	int 
+		x, 
+		y, 
+		dx, 
+		dy;
+
 	float angle;
-	float ttl;
 	bool del;
 }
 
@@ -23,9 +23,7 @@ SDL_Rect *bulletGFXRect;
 int bulletMoveLength = 20;
 ubyte bulletVolume = 55;
 float fireCooldown = -1;
-
-// set start pos relative to spaceship
-int lWepXOffset = 4, lWepYOffset = 14, rWepXOffset = 4, rWepYOffset = 136;
+int radiusSquared = 100; // eyeballed from photoshop :D
 bool primaryFire, leftFire;
 bool sequencePlaying = false;
 int sequenceIndex = 0;
@@ -54,18 +52,6 @@ void setup(SDL_Renderer *renderer)
 
 void updateAndDraw(SDL_Renderer *renderer)
 {
-	float s = sin(game.angle);
-	float c = cos(game.angle);
-	int newLWepXOffset = cast(int) ceil((lWepXOffset * c) - (lWepYOffset * s));
-	int newLWepYOffset = cast(int) ceil((lWepXOffset * s) + (lWepYOffset * c));
-	int newRWepXOffset = cast(int) ceil((rWepXOffset * c) - (rWepYOffset * s));
-	int newRWepYOffset = cast(int) ceil((rWepXOffset * s) + (rWepYOffset * c));
-	game.angle = game.angle * TO_DEG;
-	game.angle += 90f;
-	bulletGFXRect.x = player.spaceShipRect.x + newLWepXOffset;
-	bulletGFXRect.y = player.spaceShipRect.y + newLWepYOffset;
-	SDL_Point wepRotPoint = { (player.spaceShipRect.w/2), (player.spaceShipRect.h/2) };
-
 
 	if(primaryFire)
 	{
@@ -90,19 +76,21 @@ void updateAndDraw(SDL_Renderer *renderer)
 			}
 
 			PrimaryGFX left;
-			left.x = bulletGFXRect.x, left.y = bulletGFXRect.y;
-			left.angle = angle - 90;
-			left.dx = cast(int) (bulletMoveLength * cos(left.angle * TO_RAD));
-			left.dy = cast(int) (bulletMoveLength * sin(left.angle * TO_RAD));
+			left.angle = angle + 0.08;
+			left.x = cast(int) (player.xPos + player.radius * cos(left.angle)); 
+			left.y = cast(int) (player.yPos + player.radius * sin(left.angle));
+
+			left.dx = cast(int) (bulletMoveLength * cos(left.angle));
+			left.dy = cast(int) (bulletMoveLength * sin(left.angle));
 			bullets ~= left;
 
-			bulletGFXRect.x = player.spaceShipRect.x + newRWepXOffset;
-			bulletGFXRect.y = player.spaceShipRect.y + newRWepYOffset;
 			PrimaryGFX right;
-			right.x = bulletGFXRect.x, right.y = bulletGFXRect.y;
-			right.angle = angle - 90;
-			right.dx = cast(int) (bulletMoveLength * cos(right.angle * TO_RAD));
-			right.dy = cast(int) (bulletMoveLength * sin(right.angle * TO_RAD));
+			right.angle = angle - 0.08;
+			right.x = cast(int) (player.xPos + player.radius * cos(right.angle));
+			right.y = cast(int) (player.yPos + player.radius * sin(right.angle));
+
+			right.dx = cast(int) (bulletMoveLength * cos(right.angle));
+			right.dy = cast(int) (bulletMoveLength * sin(right.angle));
 			bullets ~= right;
 
 			fireCooldown = 2.1; 
@@ -111,17 +99,16 @@ void updateAndDraw(SDL_Renderer *renderer)
 
 	foreach(ref bullet; bullets)
 	{
-		bullet.x += bullet.dx;
-		bullet.y += bullet.dy;
-
 		if((bullet.x < -50) || (bullet.x > (app.currentDisplay.w + 50)) || (bullet.y < - 50) || (bullet.y > (app.currentDisplay.h + 50)))
 		{
 			bullet.del = true;
 		}
 
-		bulletGFXRect.x = bullet.x;
-		bulletGFXRect.y = bullet.y;
-		SDL_RenderDrawPoint(renderer, bullet.x, bullet.y);
-		SDL_RenderCopyEx(renderer, bulletGFX, null, bulletGFXRect, bullet.angle + 90, &wepRotPoint, 0);
+		bulletGFXRect.x = bullet.x - bulletGFXRect.w/2;
+		bulletGFXRect.y = bullet.y - bulletGFXRect.h/2;
+		SDL_RenderCopy(renderer, bulletGFX, null, bulletGFXRect);
+
+		bullet.x += bullet.dx;
+		bullet.y += bullet.dy;
 	}
 }

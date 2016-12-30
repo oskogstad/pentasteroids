@@ -12,17 +12,16 @@ SDL_Texture *crossHair;
 SDL_Rect *crossHairRect;
 
 int moveLength = 10;
-int xPos, yPos;
 float thrustX = 0;    
 float thrustY = 0;
 float thrustDecay = 0.015;
 float thrustGain = 0.08;
 
 int 
-	spaceShipX, 
-	spaceShipY,
-	spaceShipHeight, 
-	spaceShipWidth,
+	xPos, 
+	yPos,
+	radius,
+	radiusSquared,
 	mouseX, 
 	mouseY,
 	crossHairHeight, 
@@ -39,14 +38,16 @@ void setup(SDL_Renderer *renderer)
 	spaceShipRect = new SDL_Rect();
 	spaceShip = IMG_LoadTexture(renderer, "img/player.png");
 	assert(spaceShip);
-	SDL_QueryTexture(spaceShip, null, null, &spaceShipWidth, &spaceShipHeight);
 
-	spaceShipRect.w = spaceShipWidth, spaceShipRect.h = spaceShipHeight;
+	SDL_QueryTexture(spaceShip, null, null, &radius, &radius);
+	spaceShipRect.w = radius, spaceShipRect.h = radius; // yeah, looks nice, right?
+	radius /= 2;
+	radiusSquared = radius * radius;
+
+	// start in center
 	spaceShipRect.x = (app.currentDisplay.w / 2) - (spaceShipRect.w / 2);
 	spaceShipRect.y = (app.currentDisplay.h / 2) - (spaceShipRect.h / 2);
 
-    // shrink /2 for offset when drawing in main loop
-    spaceShipWidth /= 2; spaceShipHeight /= 2;
 
     //shrink /5
     crossHairWidth /= 5; crossHairHeight /= 5;
@@ -138,26 +139,26 @@ void updateAndDraw(SDL_Renderer *renderer)
 	spaceShipRect.y += cast(int) ceil(thrustY * moveLength);
 	spaceShipRect.x += cast(int) ceil(thrustX * moveLength);
 
-	spaceShipX = (spaceShipRect.x + (spaceShipWidth));
-	spaceShipY = (spaceShipRect.y + (spaceShipHeight));
+	xPos = (spaceShipRect.x + (radius));
+	yPos = (spaceShipRect.y + (radius));
 
-	if(spaceShipY < 0)
+	if(yPos < 0)
 	{
 		spaceShipRect.y = (app.currentDisplay.h + spaceShipRect.y);
 		world.cellIndexY = abs(++world.cellIndexY % world.worldHeight);
 	}
-	else if(spaceShipY > app.currentDisplay.h)
+	else if(yPos > app.currentDisplay.h)
 	{
 		spaceShipRect.y = 0 + (spaceShipRect.y - app.currentDisplay.h);
 		world.cellIndexY = abs(--world.cellIndexY % world.worldHeight);
 	}
 
-	if(spaceShipX < 0)
+	if(xPos < 0)
 	{
 		spaceShipRect.x = (app.currentDisplay.w + spaceShipRect.x);
 		world.cellIndexX = abs(++world.cellIndexX % world.worldWidth);
 	}
-	else if(spaceShipX > app.currentDisplay.w)
+	else if(xPos > app.currentDisplay.w)
 	{
 		spaceShipRect.x = 0 + (spaceShipRect.x - app.currentDisplay.w);
 		world.cellIndexX = abs(--world.cellIndexX % world.worldWidth);
@@ -183,10 +184,10 @@ void updateAndDraw(SDL_Renderer *renderer)
 		spaceShipRect.x += uniform(-7,7);
 		spaceShipRect.y += uniform(-7,7);
 	}
-	
-	xPos = spaceShipRect.x + spaceShipWidth;
-	yPos = spaceShipRect.y + spaceShipHeight;
 
-	SDL_RenderCopyEx(renderer, spaceShip, null, spaceShipRect, game.angle, null, 0);
+	xPos = spaceShipRect.x + radius;
+	yPos = spaceShipRect.y + radius;
+
+	SDL_RenderCopyEx(renderer, spaceShip, null, spaceShipRect, (game.angle * TO_DEG + 90), null, 0); // +90 because rotation stuff 
 	if(!game.angleMode) SDL_RenderCopy(renderer, crossHair, null, crossHairRect);
 }
