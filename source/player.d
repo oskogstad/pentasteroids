@@ -53,10 +53,8 @@ void setup(SDL_Renderer *renderer)
 
     // further /2 for offset when drawing in main loop
     crossHairWidth /= 2; crossHairHeight /= 2;
-    auto arst = "sfx/player_hit.wav";
-    playerHitSFX = Mix_LoadWAV(arst.toStringz());
+    playerHitSFX = Mix_LoadWAV("sfx/player_hit.wav");
     assert(playerHitSFX); 
-    writeln(playerHitSFX);
 }
 
 void decay(ref float thrust)

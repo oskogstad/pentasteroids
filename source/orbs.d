@@ -30,10 +30,7 @@ struct Orb
 }
 
 SDL_Rect* orbSRect, orbDRect;
-SDL_Texture*[] orbTextures;
-
-SDL_Surface* smallOrbSurface;
-SDL_Texture* smallOrbTexture;
+SDL_Texture*[] smallOrbTextures;
 
 const int SMALL_ORB_FRAMES = 40;
 uint sprite;
@@ -53,22 +50,16 @@ float distanceSquared(int p1x, int p1y, int p2x, int p2y)
 
 void setup(SDL_Renderer *renderer)
 {
-	//smallOrbSurface = IMG_Load("img/orbs/small_orb.png");
-	//assert(smallOrbSurface);
-	//smallOrbTexture = SDL_CreateTextureFromSurface(renderer, smallOrbSurface);
-	smallOrbTexture = IMG_LoadTexture(renderer, "img/orbs/small_orb.png");
-
 	orbSRect = new SDL_Rect();
 	orbDRect = new SDL_Rect();
-
 
 	/// --------------------------------------------------------------------------------- temp, need different sized orbs
 	orbSRect.w = 128; orbSRect.h = 128;
 	orbSRect.y = 0;
 
 	orbDRect.w = 128; orbDRect.h = 128;
-	app.loadGFXFromDisk("img/orbs/", renderer, orbTextures);
-	foreach(texture; orbTextures) assert(texture);
+	app.loadGFXFromDisk("img/orbs/small/", renderer, smallOrbTextures);
+	foreach(texture; smallOrbTextures) assert(texture);
 }
 
 
@@ -88,13 +79,14 @@ void updateAndDraw(SDL_Renderer *renderer)
 			{
 				if(--orb.hitPoints == 0) orb.del = true;
 				orb.isShaking = true;
+				ringblasts.createBlast(bullet.x, bullet.y, BlastSize.SMALL);
 				Mix_PlayChannel(-1, orbHitSFX[uniform(0, orbHitSFX.length)], 0);
 				bullet.del = true;
 			}
 		}
 	}
 
-	bullets = remove!(bullet => bullet.del)(bullets);
+	primaryfire.bullets = remove!(bullet => bullet.del)(bullets);
 	activeOrbs = remove!(orb => orb.del)(activeOrbs);
 
 
@@ -111,8 +103,8 @@ void updateAndDraw(SDL_Renderer *renderer)
 		o.radius = 128;
 		o.dx = cast(int) (o.moveSpeed * cos(o.angle * TO_RAD));
 		o.dy = cast(int) (o.moveSpeed * sin(o.angle * TO_RAD));
-		int orbIndex = uniform(0, orbTextures.length - 1);
-		//o.texture = orbTextures[orbIndex];
+		int orbIndex = uniform(0, smallOrbTextures.length);
+		o.texture = smallOrbTextures[orbIndex];
 		o.animationOffset = uniform(0, SMALL_ORB_FRAMES);
 		o.animationDivisor = uniform(50, 80);
 		o.spinningSpeed = uniform(-0.5f, 0.5f);
@@ -170,6 +162,6 @@ void updateAndDraw(SDL_Renderer *renderer)
 		sprite = ((app.ticks/ orb.animationDivisor) + orb.animationOffset) % SMALL_ORB_FRAMES;
 		orbSRect.x = sprite * 128;
 
-		SDL_RenderCopyEx(renderer, smallOrbTexture, orbSRect, orbDRect, orb.angle, null, 0);
+		SDL_RenderCopyEx(renderer, orb.texture, orbSRect, orbDRect, orb.angle, null, 0);
 	}
 }
