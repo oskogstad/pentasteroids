@@ -14,7 +14,9 @@ struct Orb
 		dy,
 		moveSpeed,
 		hitPoints,
-		hitSFXindex;
+		hitSFXindex,
+		animationOffset, // random offset so they all dont sync anim
+		animationDivisor; // random animation speed
 
 	bool 
 		hasBeenOnScreen, 
@@ -27,8 +29,14 @@ struct Orb
 		shakeTimer;
 }
 
-SDL_Rect *orbRect;
+SDL_Rect* orbSRect, orbDRect;
 SDL_Texture*[] orbTextures;
+
+SDL_Surface* smallOrbSurface;
+SDL_Texture* smallOrbTexture;
+
+const int SMALL_ORB_FRAMES = 40;
+uint sprite;
 
 const float TO_DEG = 180/PI;
 const float TO_RAD = PI/180;
@@ -45,9 +53,20 @@ float distanceSquared(int p1x, int p1y, int p2x, int p2y)
 
 void setup(SDL_Renderer *renderer)
 {
-	orbRect = new SDL_Rect();
+	//smallOrbSurface = IMG_Load("img/orbs/small_orb.png");
+	//assert(smallOrbSurface);
+	//smallOrbTexture = SDL_CreateTextureFromSurface(renderer, smallOrbSurface);
+	smallOrbTexture = IMG_LoadTexture(renderer, "img/orbs/small_orb.png");
+
+	orbSRect = new SDL_Rect();
+	orbDRect = new SDL_Rect();
+
+
 	/// --------------------------------------------------------------------------------- temp, need different sized orbs
-	orbRect.w = 128; orbRect.h = 128;
+	orbSRect.w = 128; orbSRect.h = 128;
+	orbSRect.y = 0;
+
+	orbDRect.w = 128; orbDRect.h = 128;
 	app.loadGFXFromDisk("img/orbs/", renderer, orbTextures);
 	foreach(texture; orbTextures) assert(texture);
 }
@@ -93,7 +112,9 @@ void updateAndDraw(SDL_Renderer *renderer)
 		o.dx = cast(int) (o.moveSpeed * cos(o.angle * TO_RAD));
 		o.dy = cast(int) (o.moveSpeed * sin(o.angle * TO_RAD));
 		int orbIndex = uniform(0, orbTextures.length - 1);
-		o.texture = orbTextures[orbIndex];
+		//o.texture = orbTextures[orbIndex];
+		o.animationOffset = uniform(0, SMALL_ORB_FRAMES);
+		o.animationDivisor = uniform(50, 80);
 		o.spinningSpeed = uniform(-0.5f, 0.5f);
 		activeOrbs ~= o;
 		orbSpawnTimer = uniform(2,4);
@@ -129,10 +150,10 @@ void updateAndDraw(SDL_Renderer *renderer)
 
 		orb.angle += orb.spinningSpeed;
 
-		if(orb.isShaking)
+		if(orb.isShaking || player.shake)
 		{
-			orbRect.x = orb.x - 64 + uniform(-7, 7);
-			orbRect.y = orb.y - 64 + uniform(-7, 7);
+			orbDRect.x = orb.x - 64 + uniform(-7, 7);
+			orbDRect.y = orb.y - 64 + uniform(-7, 7);
 			orb.shakeTimer -= 0.1;
 			if(orb.shakeTimer < 0)
 			{
@@ -142,10 +163,13 @@ void updateAndDraw(SDL_Renderer *renderer)
 		}
 		else
 		{
-			orbRect.x = orb.x - 64;
-			orbRect.y = orb.y - 64;                    
+			orbDRect.x = orb.x - 64;
+			orbDRect.y = orb.y - 64;                    
 		}
 
-		SDL_RenderCopyEx(renderer, orb.texture, null, orbRect, orb.angle, null, 0);
+		sprite = ((app.ticks/ orb.animationDivisor) + orb.animationOffset) % SMALL_ORB_FRAMES;
+		orbSRect.x = sprite * 128;
+
+		SDL_RenderCopyEx(renderer, smallOrbTexture, orbSRect, orbDRect, orb.angle, null, 0);
 	}
 }

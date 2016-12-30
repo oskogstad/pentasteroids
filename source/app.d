@@ -32,6 +32,7 @@ enum AppState
 int state = AppState.MENU;
 bool running = true;
 SDL_DisplayMode currentDisplay;
+uint ticks;
 
 void main()
 {
@@ -78,7 +79,7 @@ void main()
     game.setup(renderer);
 
     SDL_Event event;
-    auto before = SDL_GetTicks();
+    ticks = SDL_GetTicks();
 
     immutable int FRAME_TIME = cast(uint)(1e3 / 60); // 60 FPS
     immutable float FRAME_TIME_SEC = FRAME_TIME / 1e3f;
@@ -116,7 +117,7 @@ void main()
             }
         }
 
-        before = SDL_GetTicks();
+        ticks = SDL_GetTicks();
 
         world.updateAndDraw(renderer);
 
@@ -154,7 +155,7 @@ void main()
 
         SDL_RenderPresent(renderer); 
 
-        int sleepTime = FRAME_TIME - (SDL_GetTicks() - before);
+        int sleepTime = FRAME_TIME - (SDL_GetTicks() - ticks);
         if (sleepTime > 0) SDL_Delay(sleepTime);
     }
 }
