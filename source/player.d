@@ -241,10 +241,7 @@ void updateAndDraw(SDL_Renderer *renderer)
 			SDL_RenderCopy(renderer, dyingOverlayMiddle, null, dyingOverlayRect);
 		}
 
-		// draw top
 		ubyte alphaMod = cast(ubyte) (((cast(float)damageTaken)/hitPoints) * 255);
-		writeln(alphaMod);
-
 		dyingOverlayRect.x = uniform(-3, 1);
 		dyingOverlayRect.y = uniform(-3, 1);
 		SDL_SetTextureAlphaMod(dyingOverlayTop, alphaMod);
