@@ -69,7 +69,6 @@ void updateAndDraw(SDL_Renderer *renderer)
 	player.currentlyBeingHit = false;
 	foreach(ref orb; activeOrbs)
 	{
-		float prs = player.radius * player.radius;
 		float playerDist = distanceSquared(orb.x, orb.y, player.xPos, player.yPos);
 		if(playerDist < (orb.radiusSquared + player.radiusSquared)) player.currentlyBeingHit = true;
 
@@ -95,13 +94,13 @@ void updateAndDraw(SDL_Renderer *renderer)
 	{
 		Orb o;
 		o.x = uniform(0, currentDisplay.w);
-		o.hitPoints = 3;
+		o.hitPoints = uniform(3,6);
 		o.hitSFXindex = 4;
 		o.shakeTimer = 6;
 		o.y = uniform(0, currentDisplay.h);
 		o.moveSpeed = uniform(3,6);
 		o.angle = uniform(0,359);
-		o.radius = 128;
+		o.radius = 64;
 		o.radiusSquared = o.radius * o.radius;
 		o.dx = cast(int) (o.moveSpeed * cos(o.angle));
 		o.dy = cast(int) (o.moveSpeed * sin(o.angle));

@@ -23,6 +23,7 @@ SDL_Rect *bulletGFXRect;
 int bulletMoveLength = 20;
 ubyte bulletVolume = 55;
 float fireCooldown = -1;
+float angleOffset = 0.1;
 int radiusSquared = 100; // eyeballed from photoshop :D
 bool primaryFire, leftFire;
 bool sequencePlaying = false;
@@ -76,7 +77,7 @@ void updateAndDraw(SDL_Renderer *renderer)
 			}
 
 			PrimaryGFX left;
-			left.angle = angle + 0.08;
+			left.angle = angle + angleOffset;
 			left.x = cast(int) (player.xPos + player.radius * cos(left.angle)); 
 			left.y = cast(int) (player.yPos + player.radius * sin(left.angle));
 
@@ -85,7 +86,7 @@ void updateAndDraw(SDL_Renderer *renderer)
 			bullets ~= left;
 
 			PrimaryGFX right;
-			right.angle = angle - 0.08;
+			right.angle = angle - angleOffset;
 			right.x = cast(int) (player.xPos + player.radius * cos(right.angle));
 			right.y = cast(int) (player.yPos + player.radius * sin(right.angle));
 

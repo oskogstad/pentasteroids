@@ -110,6 +110,13 @@ void main()
                     break;
                 }
 
+                case SDL_MOUSEWHEEL:
+                {
+                    primaryfire.angleOffset += 0.05;
+                    if(primaryfire.angleOffset > 1.3) primaryfire.angleOffset = 0.05;
+                    break;
+                }
+                
                 default: 
                 {
                     break;
