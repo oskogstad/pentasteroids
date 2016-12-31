@@ -1,4 +1,3 @@
-module menu;
 import app;
 
 enum MenuItem

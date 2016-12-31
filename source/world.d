@@ -1,4 +1,3 @@
-module world;
 import app;
 
 struct WorldCell
@@ -16,11 +15,11 @@ SDL_Texture*[] backgrounds;
 
 ubyte[3][9] backgroundColors = 
 [
-	[0, 67, 67], 
-	[6, 62, 103],
-	[20, 40, 100],
-	[51, 14, 100],
-	[20, 20, 20],
+	[47, 84, 78], 
+	[33, 59, 55],
+	[60, 100, 100],
+	[54, 75, 84],
+	[37, 52, 59],
 	[0, 67, 67], // initial cell
 	[100, 80, 40],
 	[80, 100, 70],

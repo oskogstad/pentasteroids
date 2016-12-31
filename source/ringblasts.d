@@ -1,4 +1,3 @@
-module ringblasts;
 import app;
 
 enum BlastSize

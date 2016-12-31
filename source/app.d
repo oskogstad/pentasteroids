@@ -1,6 +1,5 @@
-module app;
-
 public import game;
+public import gameover;
 public import world;
 public import menu;
 public import primaryfire;

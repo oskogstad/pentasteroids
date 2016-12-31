@@ -1,4 +1,3 @@
-module player;
 import app;
 
 Mix_Chunk *playerHitSFX;
@@ -162,7 +161,8 @@ void updateAndDraw(SDL_Renderer *renderer)
 	}
 
 	auto mouseState = SDL_GetMouseState(&mouseX, &mouseY);
-	crossHairRect.y = mouseY - crossHairHeight, crossHairRect.x = mouseX - crossHairWidth; // w and h allready /2
+	// w and h allready /2
+	crossHairRect.y = mouseY - crossHairHeight, crossHairRect.x = mouseX - crossHairWidth; 
 	if (mouseState & SDL_BUTTON(SDL_BUTTON_LEFT)) 
 	{
 		primaryfire.primaryFire = true;

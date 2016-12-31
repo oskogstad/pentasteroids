@@ -1,4 +1,3 @@
-module stars;
 import app;
 
 struct Star

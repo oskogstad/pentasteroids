@@ -1,4 +1,3 @@
-module primaryfire;
 import app;
 
 struct PrimaryGFX 

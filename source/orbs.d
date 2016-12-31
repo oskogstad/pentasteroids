@@ -1,4 +1,3 @@
-module orbs;
 import app;
 
 struct Orb
@@ -16,8 +15,8 @@ struct Orb
 		moveSpeed,
 		hitPoints,
 		hitSFXindex,
-		animationOffset, // random offset so they all dont sync anim
-		animationDivisor; // random animation speed
+		animationOffset, 
+		animationDivisor;
 
 	bool 
 		hasBeenOnScreen, 
