@@ -16,12 +16,12 @@ float thrustX = 0;
 float thrustY = 0;
 float thrustDecay = 0.015;
 float thrustGain = 0.08;
+float radiusSquared;
 
 int 
 	xPos, 
 	yPos,
 	radius,
-	radiusSquared,
 	mouseX, 
 	mouseY,
 	crossHairHeight, 
@@ -43,7 +43,7 @@ void setup(SDL_Renderer *renderer)
 	SDL_QueryTexture(spaceShip, null, null, &twidth, &theight);
 	spaceShipRect.w = twidth, spaceShipRect.h = theight;
 	radius = twidth / 2;
-	player.radiusSquared = 80 * 80; // manual test
+	player.radiusSquared = 79 * 79; // manual test
 
 	xPos = app.currentDisplay.w/2;
 	yPos = app.currentDisplay.h/2;

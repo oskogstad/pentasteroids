@@ -55,6 +55,13 @@ void handleInput(SDL_Event event)
 			orbs.orbSpawnTimer = -1;
 			break;	
 		}
+
+		case SDLK_c:
+		{
+			orbs.activeOrbs.length = 0;
+			break;
+		}
+
 		
 		default:
 		break;           
