@@ -45,9 +45,6 @@ void setup(SDL_Renderer *renderer)
 	radius = twidth / 2;
 	player.radiusSquared = 80 * 80; // manual test
 
-	// start in center
-	spaceShipRect.x = (app.currentDisplay.w / 2) - (spaceShipRect.w / 2);
-	spaceShipRect.y = (app.currentDisplay.h / 2) - (spaceShipRect.h / 2);
 	xPos = app.currentDisplay.w/2;
 	yPos = app.currentDisplay.h/2;
 
@@ -180,7 +177,7 @@ void updateAndDraw(SDL_Renderer *renderer)
 
 	spaceShipRect.x = xPos - 80;
 	spaceShipRect.y = yPos - 80;
-	
+
 	if(shake)
 	{
 		spaceShipRect.x += uniform(-7,7);
