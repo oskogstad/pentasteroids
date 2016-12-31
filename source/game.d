@@ -27,10 +27,21 @@ void updateAndDraw(SDL_Renderer *renderer)
 		angle = atan2(cast(float) mouseY - player.yPos, cast(float) mouseX - player.xPos);
 	}
 
-	primaryfire.updateAndDraw(renderer);
-	orbs.updateAndDraw(renderer);
-	ringblasts.updateAndDraw(renderer);
-	player.updateAndDraw(renderer);
+	if(!player.dead)
+	{
+		primaryfire.updateAndDraw(renderer);
+		orbs.updateAndDraw(renderer);
+		ringblasts.updateAndDraw(renderer);
+		player.updateAndDraw(renderer);
+	}
+	else
+	{
+		// play sfx, lost hammer
+		// draw dyinggfx at max alpha
+		// fade in black overlay
+		// show score
+		// 
+	}
 }
 
 void handleInput(SDL_Event event)
@@ -59,7 +70,7 @@ void handleInput(SDL_Event event)
 		case SDLK_c:
 		{
 			orbs.activeOrbs.length = 0;
-			break;
+			break;	
 		}
 
 		

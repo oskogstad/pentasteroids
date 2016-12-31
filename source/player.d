@@ -3,13 +3,19 @@ import app;
 
 Mix_Chunk *playerHitSFX;
 bool currentlyBeingHit;
-int hitPoints = 180;
-bool shake;
+int damageTaken = 0; // 3 sec. of standing in orbs
+int hitPoints, hitPointsMidThreshold, hitPointsTopThreshold;
+bool shake, dead;
 
-SDL_Texture *spaceShip;
-SDL_Rect *spaceShipRect;
-SDL_Texture *crossHair;
-SDL_Rect *crossHairRect;
+SDL_Texture* playerTexture;
+SDL_Rect* playerTextureRect;
+SDL_Texture* crossHair;
+SDL_Rect* crossHairRect;
+SDL_Texture* 
+	dyingOverlayTop,
+	dyingOverlayMiddle,
+	dyingOverlayBottom;
+SDL_Rect* dyingOverlayRect;
 
 int moveLength = 10;
 float thrustX = 0;    
@@ -30,20 +36,36 @@ int
 
 void setup(SDL_Renderer *renderer)
 {
+	hitPoints = 180;
+	hitPointsMidThreshold = cast(int) (hitPoints * 0.4);
+	hitPointsTopThreshold = cast(int) (hitPoints * 0.6);
+
+	dyingOverlayRect = new SDL_Rect();
+	dyingOverlayTop = IMG_LoadTexture(renderer, "img/dying_overlay_top.png");
+	assert(dyingOverlayTop);
+	dyingOverlayMiddle = IMG_LoadTexture(renderer, "img/dying_overlay_middle.png");
+	assert(dyingOverlayMiddle);
+	dyingOverlayBottom = IMG_LoadTexture(renderer, "img/dying_overlay_bottom.png");
+	assert(dyingOverlayBottom);
+
+	int overlayW, overlayH;
+	SDL_QueryTexture(dyingOverlayTop, null, null, &overlayW, &overlayH);
+	dyingOverlayRect.w = overlayW; dyingOverlayRect.h = overlayH;
+
 	crossHairRect = new SDL_Rect();
 	crossHair = IMG_LoadTexture(renderer, "img/crosshair.png");
 	assert(crossHair);
 	SDL_QueryTexture(crossHair, null, null, &crossHairWidth, &crossHairHeight);
 
-	spaceShipRect = new SDL_Rect();
-	spaceShip = IMG_LoadTexture(renderer, "img/player.png");
-	assert(spaceShip);
+	playerTextureRect = new SDL_Rect();
+	playerTexture = IMG_LoadTexture(renderer, "img/player.png");
+	assert(playerTexture);
 
 	int twidth, theight;
-	SDL_QueryTexture(spaceShip, null, null, &twidth, &theight);
-	spaceShipRect.w = twidth, spaceShipRect.h = theight;
+	SDL_QueryTexture(playerTexture, null, null, &twidth, &theight);
+	playerTextureRect.w = twidth, playerTextureRect.h = theight;
 	radius = twidth / 2;
-	player.radiusSquared = 79 * 79; // manual test
+	player.radiusSquared = 79 * 79; // something is broken with orb-player-crash-detection
 
 	xPos = app.currentDisplay.w/2;
 	yPos = app.currentDisplay.h/2;
@@ -96,26 +118,6 @@ void checkKeysDown(ref float thrust, ubyte pos, ubyte posAlt, ubyte neg, ubyte n
 
 void updateAndDraw(SDL_Renderer *renderer)
 {
-	if(currentlyBeingHit)
-	{
-		shake = true;
-		if(Mix_Paused(0) || !Mix_Playing(0))
-		{
-			Mix_PlayChannel(0, playerHitSFX, 0);
-		}
-
-		--hitPoints;
-		// if(hitPoints <= 0)
-	}
-	else
-	{
-		shake = false;
-		if(Mix_Playing(0)) 
-		{
-			Mix_Pause(0);
-		}
-	}
-
 	auto keyBoardState = SDL_GetKeyboardState(null);
 
 	// y thrust update
@@ -175,15 +177,77 @@ void updateAndDraw(SDL_Renderer *renderer)
 	if (mouseState & SDL_BUTTON(SDL_BUTTON_MIDDLE)) {writeln("MID FIRE");}
 
 
-	spaceShipRect.x = xPos - 80;
-	spaceShipRect.y = yPos - 80;
+	playerTextureRect.x = xPos - 80;
+	playerTextureRect.y = yPos - 80;
+
+	if(currentlyBeingHit)
+	{
+		shake = true;
+		if(Mix_Paused(0) || !Mix_Playing(0))
+		{
+			Mix_PlayChannel(0, playerHitSFX, 0);
+		}
+
+		++damageTaken;
+		if(damageTaken >= hitPoints)
+		{
+			dead = true;
+		}
+	}
+	else
+	{
+		shake = false;
+		if(Mix_Playing(0)) 
+		{
+			Mix_Pause(0);
+		}
+		if(damageTaken > 0) --damageTaken;
+	}
 
 	if(shake)
 	{
-		spaceShipRect.x += uniform(-7,7);
-		spaceShipRect.y += uniform(-7,7);
+		playerTextureRect.x += uniform(-7,7);
+		playerTextureRect.y += uniform(-7,7);
 	}
 
-	SDL_RenderCopyEx(renderer, spaceShip, null, spaceShipRect, (game.angle * TO_DEG + 90), null, 0); // +90 because rotation stuff 
+
+	SDL_RenderCopyEx(renderer, playerTexture, null, playerTextureRect, (game.angle * TO_DEG + 90), null, 0); // +90 because rotation stuff 
 	if(!game.angleMode) SDL_RenderCopy(renderer, crossHair, null, crossHairRect);
+
+	if(damageTaken > 0)
+	{
+		// X lands between A and B, map to Y between C and D:
+		// Y = (X-A)/(B-A) * (D-C) + C
+
+		if(damageTaken > hitPointsTopThreshold)
+		{
+			ubyte alphaMod = cast(ubyte)( 
+				(((cast(float)damageTaken) - hitPointsTopThreshold) / (hitPoints - hitPointsTopThreshold)) * 255
+				);
+			dyingOverlayRect.x = uniform(-3, 1);
+			dyingOverlayRect.y = uniform(-3, 1);
+			SDL_SetTextureAlphaMod(dyingOverlayBottom, alphaMod);
+			SDL_RenderCopy(renderer, dyingOverlayBottom, null, dyingOverlayRect);
+		}
+		
+		if(damageTaken > hitPointsMidThreshold)
+		{
+			ubyte alphaMod = cast(ubyte)(
+				(((cast(float)damageTaken) - hitPointsMidThreshold) / (hitPoints - hitPointsMidThreshold)) * 255
+				);
+			dyingOverlayRect.x = uniform(-3, 1);
+			dyingOverlayRect.y = uniform(-3, 1);
+			SDL_SetTextureAlphaMod(dyingOverlayMiddle, alphaMod);
+			SDL_RenderCopy(renderer, dyingOverlayMiddle, null, dyingOverlayRect);
+		}
+
+		// draw top
+		ubyte alphaMod = cast(ubyte) (((cast(float)damageTaken)/hitPoints) * 255);
+		writeln(alphaMod);
+
+		dyingOverlayRect.x = uniform(-3, 1);
+		dyingOverlayRect.y = uniform(-3, 1);
+		SDL_SetTextureAlphaMod(dyingOverlayTop, alphaMod);
+		SDL_RenderCopy(renderer, dyingOverlayTop, null, dyingOverlayRect);
+	}
 }

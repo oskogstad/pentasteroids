@@ -103,8 +103,8 @@ void updateAndDraw(SDL_Renderer *renderer)
 	}
 	else
 	{
-		backgroundRect.x += cast(int)(player.spaceShipRect.x * 0.05); 
-		backgroundRect.y += cast(int) (player.spaceShipRect.y * 0.05);
+		backgroundRect.x += cast(int)(player.xPos * 0.05); 
+		backgroundRect.y += cast(int) (player.yPos * 0.05);
 		SDL_RenderCopy(renderer, currentCell.background, null, backgroundRect);
 	}
 }

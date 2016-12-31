@@ -37,7 +37,6 @@ void setup(SDL_Renderer *renderer)
 	SDL_QueryTexture(bulletGFX, null, null, &bulletGFXWidth, &bulletGFXHeight);
 	assert(bulletGFX);
 	bulletGFXRect.w = bulletGFXWidth, bulletGFXRect.h = bulletGFXHeight;
-	bulletGFXRect.x = player.spaceShipRect.x; bulletGFXRect.y = player.spaceShipRect.y;
 
 	app.loadSFXFromDisk("sfx/orbHitScale/", orbHitSFX);
 	foreach(sfx; orbHitSFX) assert(sfx);
