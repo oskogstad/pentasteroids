@@ -36,9 +36,6 @@ SDL_Texture*[] smallOrbTextures;
 const int SMALL_ORB_FRAMES = 40;
 uint sprite;
 
-const float TO_DEG = 180/PI;
-const float TO_RAD = PI/180;
-
 auto orbTimerDecay = .03;
 auto orbSpawnTimer = 2.1;
 
@@ -93,8 +90,9 @@ void updateAndDraw(SDL_Renderer *renderer)
 	activeOrbs = remove!(orb => orb.del)(activeOrbs);
 
 
-	if(orbSpawnTimer < 0)
+	if(orbSpawnTimer < 0 && !player.dead)
 	{
+		// size, divisor name, texture, radius, spawntimer - keeps getting faster over time,  ------------------------------
 		Orb o;
 		o.x = uniform(0, currentDisplay.w);
 		o.hitPoints = uniform(3,6);
@@ -148,7 +146,7 @@ void updateAndDraw(SDL_Renderer *renderer)
 
 		if(orb.isShaking || player.shake)
 		{
-			orbDRect.x = orb.x - 64 + uniform(-7, 7);
+			orbDRect.x = orb.x - 64 + uniform(-7, 7); // size -----------------------------------------------------------
 			orbDRect.y = orb.y - 64 + uniform(-7, 7);
 			orb.shakeTimer -= 0.1;
 			if(orb.shakeTimer < 0)
@@ -159,7 +157,7 @@ void updateAndDraw(SDL_Renderer *renderer)
 		}
 		else
 		{
-			orbDRect.x = orb.x - 64;
+			orbDRect.x = orb.x - 64; // size -----------------------------------------------------------
 			orbDRect.y = orb.y - 64;                    
 		}
 

@@ -49,7 +49,7 @@ void playSFX()
 {
 	menuSFXIndexOne = uniform(0, 4);
 	menuSFXIndexTwo = uniform(4, 8);
-	menuSFXIndexThree = uniform(8, 12);
+	menuSFXIndexThree = uniform(8, 11); // last one cut, a bit dist ---------------------------------------------------------
 
 	Mix_PlayChannel(-1, menuSFX[menuSFXIndexOne], 0);
 	Mix_PlayChannel(-1, menuSFX[menuSFXIndexTwo], 0);

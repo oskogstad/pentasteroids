@@ -3,7 +3,7 @@ import app;
 
 Mix_Chunk *playerHitSFX;
 bool currentlyBeingHit;
-int damageTaken = 0; // 3 sec. of standing in orbs
+int damageTaken = 0;
 int hitPoints, hitPointsMidThreshold, hitPointsTopThreshold;
 bool shake, dead;
 
@@ -162,7 +162,7 @@ void updateAndDraw(SDL_Renderer *renderer)
 	}
 
 	auto mouseState = SDL_GetMouseState(&mouseX, &mouseY);
-	crossHairRect.y = mouseY - crossHairHeight, crossHairRect.x = mouseX - crossHairWidth;
+	crossHairRect.y = mouseY - crossHairHeight, crossHairRect.x = mouseX - crossHairWidth; // w and h allready /2
 	if (mouseState & SDL_BUTTON(SDL_BUTTON_LEFT)) 
 	{
 		primaryfire.primaryFire = true;
@@ -177,7 +177,7 @@ void updateAndDraw(SDL_Renderer *renderer)
 	if (mouseState & SDL_BUTTON(SDL_BUTTON_MIDDLE)) {writeln("MID FIRE");}
 
 
-	playerTextureRect.x = xPos - 80;
+	playerTextureRect.x = xPos - 80; // temp, trying to find bug
 	playerTextureRect.y = yPos - 80;
 
 	if(currentlyBeingHit)
@@ -224,7 +224,7 @@ void updateAndDraw(SDL_Renderer *renderer)
 			ubyte alphaMod = cast(ubyte)( 
 				(((cast(float)damageTaken) - hitPointsTopThreshold) / (hitPoints - hitPointsTopThreshold)) * 255
 				);
-			dyingOverlayRect.x = uniform(-3, 1);
+			dyingOverlayRect.x = uniform(-3, 1); // textures are 1923*1083
 			dyingOverlayRect.y = uniform(-3, 1);
 			SDL_SetTextureAlphaMod(dyingOverlayBottom, alphaMod);
 			SDL_RenderCopy(renderer, dyingOverlayBottom, null, dyingOverlayRect);
@@ -235,7 +235,7 @@ void updateAndDraw(SDL_Renderer *renderer)
 			ubyte alphaMod = cast(ubyte)(
 				(((cast(float)damageTaken) - hitPointsMidThreshold) / (hitPoints - hitPointsMidThreshold)) * 255
 				);
-			dyingOverlayRect.x = uniform(-3, 1);
+			dyingOverlayRect.x = uniform(-3, 1); // textures are 1923*1083
 			dyingOverlayRect.y = uniform(-3, 1);
 			SDL_SetTextureAlphaMod(dyingOverlayMiddle, alphaMod);
 			SDL_RenderCopy(renderer, dyingOverlayMiddle, null, dyingOverlayRect);

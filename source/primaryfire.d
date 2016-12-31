@@ -53,7 +53,7 @@ void setup(SDL_Renderer *renderer)
 void updateAndDraw(SDL_Renderer *renderer)
 {
 
-	if(primaryFire)
+	if(primaryFire && !player.dead)
 	{
 		if(fireCooldown > 0) 
 		{
