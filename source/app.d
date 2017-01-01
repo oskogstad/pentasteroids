@@ -21,6 +21,7 @@ public import std.file;
 public import derelict.sdl2.sdl;
 public import derelict.sdl2.image;
 public import derelict.sdl2.mixer;
+public import derelict.sdl2.ttf;
 
 enum AppState
 {
@@ -208,6 +209,8 @@ bool initSDL()
 
     DerelictSDL2Mixer.load();
     // ----------------------------------------------------------------------------------- add test stuff here
+
+    DerelictSDL2ttf.load();
     return true;
 }
 

@@ -30,7 +30,7 @@ ubyte[3][9] backgroundColors =
 WorldCell[WORLD_HEIGHT][WORLD_WIDTH] worldGrid;
 
 int worldWidth = 3, worldHeight = 3;
-ubyte currentRed = 0, currentGreen = 67 , currentBlue = 67;
+ubyte currentRed = 0, currentGreen = 0 , currentBlue = 0;
 
 int cellIndexX = 1;
 int cellIndexY = 1;
@@ -41,6 +41,8 @@ void setup(SDL_Renderer *renderer)
 	stars.setup();
 
 	backgroundRect = new SDL_Rect();
+	xMargin = 10;
+	yMargin = 20;
 
 	app.loadGFXFromDisk("img/backgrounds/", renderer, backgrounds);
 	foreach(texture; backgrounds) assert(texture);
@@ -94,17 +96,25 @@ void updateAndDraw(SDL_Renderer *renderer)
 	stars.updateAndDraw(renderer);
 
 	backgroundRect.w = currentCell.backgroundWidth, backgroundRect.h = currentCell.backgroundHeight;
-	backgroundRect.x = (app.currentDisplay.w / 2) - (currentCell.backgroundWidth / 2);
-	backgroundRect.y = (app.currentDisplay.h / 2) - (currentCell.backgroundHeight / 2);
 
 	if(game.angleMode)
 	{
+		backgroundRect.x = currentCell.backgroundWidth/2; 
+		backgroundRect.y =  currentCell.backgroundHeight/2;
 		SDL_RenderCopyEx(renderer, currentCell.background, null, backgroundRect, -game.angle*TO_DEG, null, 0);
 	}
 	else
 	{
-		backgroundRect.x += cast(int)(player.xPos * 0.05); 
-		backgroundRect.y += cast(int) (player.yPos * 0.05);
+		int ax = (app.currentDisplay.w/2) - xMargin;
+		int ay = (app.currentDisplay.h/2) - yMargin;
+		int bx = (app.currentDisplay.w/2) + xMargin;
+		int by = (app.currentDisplay.h/2) + yMargin;
+		
+		int newX = ((player.xPos / app.currentDisplay.w) * (bx - ax)) + ax;
+		int newY = ((player.yPos / app.currentDisplay.h) * (by - ay)) + ay;
+
+		backgroundRect.x = newX - currentCell.backgroundWidth/2; 
+		backgroundRect.y = newY - currentCell.backgroundHeight/2;
 		SDL_RenderCopy(renderer, currentCell.background, null, backgroundRect);
 	}
 }

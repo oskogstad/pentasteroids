@@ -66,6 +66,9 @@ void handleInput(SDL_Event event)
 		orbs.orbSpawnTimer = 2.1;
 		ringblasts.activeBlasts.length = 0;
 		primaryfire.bullets.length = 0;
+		gameover.continueAlpha = 0;
+		gameover.fadeScreenAlpha = 0;
+		gameover.playedSFX = false;
 		return;
 	}
 
