@@ -6,6 +6,7 @@ public import primaryfire;
 public import player;
 public import orbs;
 public import stars;
+public import sparks;
 public import ringblasts;
 
 public import std.string;

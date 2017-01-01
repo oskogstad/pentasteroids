@@ -79,6 +79,7 @@ void updateAndDraw(SDL_Renderer *renderer)
 				if(--orb.hitPoints == 0) orb.del = true;
 				orb.isShaking = true;
 				ringblasts.createBlast(bullet.x, bullet.y, BlastSize.SMALL);
+				sparks.createSparks(bullet.x, bullet.y, bullet.dx, bullet.dy, bullet.angle, uniform(8,17));
 				Mix_PlayChannel(-1, orbHitSFX[uniform(0, orbHitSFX.length)], 0);
 				bullet.del = true;
 			}

@@ -12,6 +12,7 @@ const int WORLD_WIDTH = 3, WORLD_HEIGHT = 3;
 
 SDL_Rect* backgroundRect;
 SDL_Texture*[] backgrounds;
+int yMargin, xMargin;
 
 ubyte[3][9] backgroundColors = 
 [
@@ -51,7 +52,7 @@ void setup(SDL_Renderer *renderer)
 
 		WorldCell wc;
 
-		wc.background = backgrounds[i];
+		wc.background = backgrounds[0];
         SDL_QueryTexture(wc.background, null, null, &wc.backgroundWidth, &wc.backgroundHeight);
 
         wc.red = backgroundColors[i][0];
@@ -98,7 +99,7 @@ void updateAndDraw(SDL_Renderer *renderer)
 
 	if(game.angleMode)
 	{
-		SDL_RenderCopyEx(renderer, currentCell.background, null, backgroundRect, -game.angle, null, 0);
+		SDL_RenderCopyEx(renderer, currentCell.background, null, backgroundRect, -game.angle*TO_DEG, null, 0);
 	}
 	else
 	{

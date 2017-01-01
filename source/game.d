@@ -15,6 +15,7 @@ void setup(SDL_Renderer *renderer)
 	player.setup(renderer);
 	primaryfire.setup(renderer);
 	ringblasts.setup(renderer);
+	sparks.setup();
 }
 
 void updateAndDraw(SDL_Renderer *renderer)
@@ -37,6 +38,7 @@ void updateAndDraw(SDL_Renderer *renderer)
 	primaryfire.updateAndDraw(renderer);
 	orbs.updateAndDraw(renderer);
 	ringblasts.updateAndDraw(renderer);
+	sparks.updateAndDraw(renderer);
 
 	if(!player.dead)
 	{
