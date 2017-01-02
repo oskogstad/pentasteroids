@@ -14,7 +14,7 @@ void setup(SDL_Renderer* renderer)
 	fadeScreen = IMG_LoadTexture(renderer, "img/fade_screen.png");
 	assert(fadeScreen);
 
-	continueTexture = IMG_LoadTexture(renderer, "img/continue.png");
+	continueTexture = IMG_LoadTexture(renderer, "img/menu/anykey.png");
 
 	fadeScreenRect = new SDL_Rect();
 	fadeScreenRect.w = app.currentDisplay.w;

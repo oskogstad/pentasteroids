@@ -68,13 +68,17 @@ void main()
     auto icon = SDL_LoadBMP("img/icon.bmp");
     assert(icon);
 
+    auto fontMedium = TTF_OpenFont("font/Cornerstone.ttf", 24);
+    writeln("err: " ~ to!string(TTF_GetError()));
+    assert(fontMedium);
+    
+
     SDL_SetWindowIcon(window, icon);
 
     SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
     
     SDL_ShowCursor(SDL_DISABLE);
     
-    Mix_OpenAudio( 22050, MIX_DEFAULT_FORMAT, 2, 4096);
     Mix_ReserveChannels(1);
 
     menu.setup(renderer);
@@ -187,7 +191,7 @@ void loadSFXFromDisk(string folderPath, ref Mix_Chunk*[] mArray)
 
 bool initSDL()
 {
-    writeln("Initializing SDL...");
+    writeln("Initializing SDL ...");
 
     DerelictSDL2.load();
     if (SDL_Init(SDL_INIT_EVERYTHING))
@@ -197,7 +201,7 @@ bool initSDL()
         return false;
     }
 
-    writeln("Initializing SDL image...");
+    writeln("Initializing SDL image ...");
 
     DerelictSDL2Image.load();
     if ((IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG) != IMG_INIT_PNG)
@@ -207,10 +211,26 @@ bool initSDL()
         return false;
     }
 
+    writeln("Initializing SDL Mixer ...");
+    
     DerelictSDL2Mixer.load();
-    // ----------------------------------------------------------------------------------- add test stuff here
+    if(Mix_OpenAudio( 22050, MIX_DEFAULT_FORMAT, 2, 4096))
+    {
+        writeln("PANIC");
+        writeln("Failed to initialize SDL Mixer!\n\t", Mix_GetError().fromStringz());
+        return false;
+    }
 
+    writeln("Initializing SDL TTF ...")
+    
     DerelictSDL2ttf.load();
+    if(TFF_Init())
+    {
+        writeln("PANIC");
+        writeln("Failed to initialize SDL TTF!\n\t", TTF_GetError().fromStringz());
+        return false;
+    }
+
     return true;
 }
 

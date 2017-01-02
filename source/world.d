@@ -41,8 +41,8 @@ void setup(SDL_Renderer *renderer)
 	stars.setup();
 
 	backgroundRect = new SDL_Rect();
-	xMargin = 10;
-	yMargin = 20;
+	xMargin = 800;
+	yMargin = 600;
 
 	app.loadGFXFromDisk("img/backgrounds/", renderer, backgrounds);
 	foreach(texture; backgrounds) assert(texture);
