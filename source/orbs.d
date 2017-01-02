@@ -60,10 +60,10 @@ void setup(SDL_Renderer *renderer)
 }
 
 
-void updateAndDraw(SDL_Renderer *renderer)
+void updateAndDraw(SDL_Renderer *renderer) 
 {
 	player.currentlyBeingHit = false;
-	foreach(ref orb; activeOrbs)
+	foreach(orb; activeOrbs)
 	{
 		float playerDist = distanceSquared(orb.x, orb.y, player.xPos, player.yPos);
 		if(playerDist < (orb.radiusSquared + player.radiusSquared))
@@ -79,8 +79,8 @@ void updateAndDraw(SDL_Renderer *renderer)
 				if(--orb.hitPoints == 0) orb.del = true;
 				orb.isShaking = true;
 				ringblasts.createBlast(bullet.x, bullet.y, BlastSize.SMALL);
-				score.currentScore += uniform(10000, 50000); // --------------------------------------------------
-				sparks.createSparks(bullet.x, bullet.y, bullet.dx, bullet.dy, bullet.angle, uniform(8,17));
+				score.currentScore += uniform(250000, 500000); // --------------------------------------------------
+				sparks.createSparks(bullet.x, bullet.y, bullet.dx, bullet.dy, bullet.angle, uniform(3,8));
 				Mix_PlayChannel(-1, orbHitSFX[uniform(0, orbHitSFX.length)], 0);
 				bullet.del = true;
 			}

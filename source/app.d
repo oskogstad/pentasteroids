@@ -9,6 +9,7 @@ public import stars;
 public import sparks;
 public import ringblasts;
 public import score;
+public import highscore;
 
 public import std.string;
 public import std.stdio;
@@ -84,6 +85,8 @@ void main()
 
     menu.setup(renderer);
     game.setup(renderer);
+    highscore.setup(renderer);
+
 
     SDL_Event event;
     ticks = SDL_GetTicks();
@@ -235,7 +238,7 @@ bool initSDL()
     writeln("Initializing SDL Mixer ...");
     
     DerelictSDL2Mixer.load();
-    if(Mix_OpenAudio( 22050, MIX_DEFAULT_FORMAT, 2, 4096))
+    if(Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 4096))
     {
         writeln("PANIC");
         writeln("Failed to initialize SDL Mixer!\n\t", Mix_GetError().fromStringz());
