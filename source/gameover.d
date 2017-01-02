@@ -3,8 +3,8 @@ import app;
 bool playedSFX = false;
 Mix_Chunk* gameOverSFX;
 ubyte fadeScreenAlpha, continueAlpha;
-SDL_Texture* continueTexture, fadeScreen;
-SDL_Rect* fadeScreenRect, continueRect;
+SDL_Texture* continueTexture, fadeScreen, finalScore;
+SDL_Rect* fadeScreenRect, continueRect, finalScoRect;
 
 void setup(SDL_Renderer* renderer)
 {	
@@ -30,6 +30,8 @@ void setup(SDL_Renderer* renderer)
 
 	fadeScreenAlpha = 0;
 	continueAlpha = 0;
+
+	finalScoRect = new SDL_Rect();
 }
 
 void updateAndDraw(SDL_Renderer* renderer)
@@ -37,6 +39,7 @@ void updateAndDraw(SDL_Renderer* renderer)
 	if(!playedSFX)
 	{
 		Mix_PlayChannel(-1, gameOverSFX, 0);
+		createFinalScoreTexture(renderer);
 		playedSFX = true;
 	}
 
@@ -59,6 +62,18 @@ void updateAndDraw(SDL_Renderer* renderer)
 	{
 		if(continueAlpha != 250) continueAlpha += 10;
 	}
+
 	SDL_SetTextureAlphaMod(continueTexture, continueAlpha);
 	SDL_RenderCopy(renderer, continueTexture, null, continueRect);
+	
+	SDL_SetTextureAlphaMod(finalScore, continueAlpha);
+	SDL_RenderCopy(renderer, finalScore, null, finalScoRect);
+}
+
+void createFinalScoreTexture(SDL_Renderer* renderer)
+{
+	app.createTexture(renderer, 0, 0, "Score: " ~ to!string(currentScore), 
+		app.fontMedium, &finalScore, finalScoRect, score.color);
+	finalScoRect.x = app.currentDisplay.w/2 - finalScoRect.w/2;
+	finalScoRect.y = 400;
 }

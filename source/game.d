@@ -16,6 +16,7 @@ void setup(SDL_Renderer *renderer)
 	primaryfire.setup(renderer);
 	ringblasts.setup(renderer);
 	sparks.setup();
+	score.setup();
 }
 
 void updateAndDraw(SDL_Renderer *renderer)
@@ -42,6 +43,7 @@ void updateAndDraw(SDL_Renderer *renderer)
 
 	if(!player.dead)
 	{
+		score.updateAndDraw(renderer);
 		player.updateAndDraw(renderer);
 	}
 	else
@@ -69,6 +71,7 @@ void handleInput(SDL_Event event)
 		gameover.continueAlpha = 0;
 		gameover.fadeScreenAlpha = 0;
 		gameover.playedSFX = false;
+		score.currentScore = 0;
 		return;
 	}
 

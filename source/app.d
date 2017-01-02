@@ -8,6 +8,7 @@ public import orbs;
 public import stars;
 public import sparks;
 public import ringblasts;
+public import score;
 
 public import std.string;
 public import std.stdio;
@@ -17,6 +18,7 @@ public import std.algorithm;
 public import std.random;
 public import std.datetime;
 public import std.file;
+public import std.json;
 
 public import derelict.sdl2.sdl;
 public import derelict.sdl2.image;
@@ -35,6 +37,7 @@ int state = AppState.MENU;
 bool running = true;
 SDL_DisplayMode currentDisplay;
 uint ticks;
+TTF_Font* fontMedium;
 
 void main()
 {
@@ -68,10 +71,8 @@ void main()
     auto icon = SDL_LoadBMP("img/icon.bmp");
     assert(icon);
 
-    auto fontMedium = TTF_OpenFont("font/Cornerstone.ttf", 24);
-    writeln("err: " ~ to!string(TTF_GetError()));
+    fontMedium = TTF_OpenFont("font/Cornerstone.ttf", 70);
     assert(fontMedium);
-    
 
     SDL_SetWindowIcon(window, icon);
 
@@ -189,6 +190,26 @@ void loadSFXFromDisk(string folderPath, ref Mix_Chunk*[] mArray)
     }
 }
 
+void createTexture(SDL_Renderer* renderer, int x, int y, string text,
+        TTF_Font* font, SDL_Texture **texture, SDL_Rect* rect, SDL_Color textColor) 
+{
+    int textWidth;
+    int textHeight;
+    SDL_Surface *surface;
+
+    surface = TTF_RenderText_Solid(font, text.toStringz(), textColor);
+    assert(surface);
+    *texture = SDL_CreateTextureFromSurface(renderer, surface);
+    assert(texture);
+    textWidth = surface.w;
+    textHeight = surface.h;
+    SDL_FreeSurface(surface);
+    rect.x = x;
+    rect.y = y;
+    rect.w = textWidth;
+    rect.h = textHeight;
+}
+
 bool initSDL()
 {
     writeln("Initializing SDL ...");
@@ -221,10 +242,10 @@ bool initSDL()
         return false;
     }
 
-    writeln("Initializing SDL TTF ...")
+    writeln("Initializing SDL TTF ...");
     
     DerelictSDL2ttf.load();
-    if(TFF_Init())
+    if(TTF_Init())
     {
         writeln("PANIC");
         writeln("Failed to initialize SDL TTF!\n\t", TTF_GetError().fromStringz());
