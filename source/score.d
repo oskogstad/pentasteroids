@@ -13,6 +13,7 @@ void setup()
 void updateAndDraw(SDL_Renderer* renderer)
 {
 	currentScore++;
-	app.createTexture(renderer, 20, 20, to!string(currentScore), app.fontMedium, &texture, scoRect, color);
+	scoRect.x = 20; scoRect.y = 20;
+	app.createTexture(renderer, scoRect.w, scoRect.h, to!string(currentScore), app.fontMedium, &texture, color);
 	SDL_RenderCopy(renderer, texture, null, scoRect);
 }

@@ -83,6 +83,9 @@ void createSparks(int x, int y ,int dx, int dy, float angle, int count)
 		s.y = y;
 		s.dx = -dx;
 		s.dy = -dy;
+		float length = sqrt(cast(float)s.dx*s.dx + s.dy*s.dy);
+		s.dx /= cast(int)length;
+		s.dy /= cast(int)length;
 		// -------------------------------------------------------------------- wtb maths
 		if(s.dx > 0)
 		{

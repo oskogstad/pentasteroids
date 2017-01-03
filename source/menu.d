@@ -69,20 +69,21 @@ void handleInput(SDL_Event event)
 
 		case SDLK_RETURN:
 		{
-			switch(selectedIndex)
+			switch(selectedIndex) with (MenuItem)
 			{
-				case MenuItem.START:
+				case START:
 				app.state = AppState.GAME;
 				game.gameInProgress = true;
 				break;
 
-				case MenuItem.HIGHSCORE:
+				case HIGHSCORE:
+				app.state = AppState.HIGHSCORE;
 				break;
 
-				case MenuItem.CREDITS:
+				case CREDITS:
 				break;
 
-				case MenuItem.QUIT:
+				case QUIT:
 				app.running = false;
 				break;  
 

@@ -39,7 +39,12 @@ void updateAndDraw(SDL_Renderer* renderer)
 	if(!playedSFX)
 	{
 		Mix_PlayChannel(-1, gameOverSFX, 0);
-		createFinalScoreTexture(renderer);
+		app.createTexture(renderer, finalScoRect.w, finalScoRect.h, 
+			"Score: " ~ to!string(currentScore), 
+			app.fontMedium, &finalScore, score.color);
+		assert(finalScore);
+		finalScoRect.x = app.currentDisplay.w/2 - finalScoRect.w/2;
+		finalScoRect.y = 400;		
 		playedSFX = true;
 	}
 
@@ -68,12 +73,4 @@ void updateAndDraw(SDL_Renderer* renderer)
 	
 	SDL_SetTextureAlphaMod(finalScore, continueAlpha);
 	SDL_RenderCopy(renderer, finalScore, null, finalScoRect);
-}
-
-void createFinalScoreTexture(SDL_Renderer* renderer)
-{
-	app.createTexture(renderer, 0, 0, "Score: " ~ to!string(currentScore), 
-		app.fontMedium, &finalScore, finalScoRect, score.color);
-	finalScoRect.x = app.currentDisplay.w/2 - finalScoRect.w/2;
-	finalScoRect.y = 400;
 }

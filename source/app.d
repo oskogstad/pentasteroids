@@ -108,14 +108,29 @@ void main()
 
                 case SDL_KEYUP:
                 {
-                    if(state == AppState.MENU)
+                    switch(state) with (AppState)
                     {
-                        menu.handleInput(event);
+                        case MENU:
+                        {
+                            menu.handleInput(event);
+                            break;
+                        }
+
+                        case GAME:
+                        {
+                            game.handleInput(event);
+                            break;
+                        }
+
+                        case HIGHSCORE:
+                        {
+                            highscore.handleInput(event);
+                            break;
+                        }
+
+                        default:
+                            break;
                     }
-                    else
-                    {
-                        game.handleInput(event);
-                    }  
                     break;
                 }
 
@@ -138,25 +153,26 @@ void main()
 
         world.updateAndDraw(renderer);
 
-        switch(state)
+        switch(state) with (AppState)
         {
-            case AppState.MENU:
+            case MENU:
             {
                 menu.updateAndDraw(renderer);      
                 break;
             }
 
-            case AppState.HIGHSCORE:
+            case HIGHSCORE:
+            {
+                highscore.updateAndDraw(renderer);
+                break;
+            }
+
+            case CREDITS:
             {
                 break;
             }
 
-            case AppState.CREDITS:
-            {
-                break;
-            }
-
-            case AppState.GAME:
+            case GAME:
             {
                 game.updateAndDraw(renderer);
                 break;
@@ -193,24 +209,20 @@ void loadSFXFromDisk(string folderPath, ref Mix_Chunk*[] mArray)
     }
 }
 
-void createTexture(SDL_Renderer* renderer, int x, int y, string text,
-        TTF_Font* font, SDL_Texture **texture, SDL_Rect* rect, SDL_Color textColor) 
+void createTexture(SDL_Renderer* renderer, ref int width, ref int height, string text,
+    TTF_Font* font, SDL_Texture **texture, SDL_Color textColor) 
 {
-    int textWidth;
-    int textHeight;
     SDL_Surface *surface;
-
     surface = TTF_RenderText_Solid(font, text.toStringz(), textColor);
     assert(surface);
+    
+    if(*texture) SDL_DestroyTexture(*texture);
     *texture = SDL_CreateTextureFromSurface(renderer, surface);
     assert(texture);
-    textWidth = surface.w;
-    textHeight = surface.h;
+    
+    width = surface.w;
+    height = surface.h;
     SDL_FreeSurface(surface);
-    rect.x = x;
-    rect.y = y;
-    rect.w = textWidth;
-    rect.h = textHeight;
 }
 
 bool initSDL()

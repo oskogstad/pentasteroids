@@ -63,7 +63,7 @@ void setup(SDL_Renderer *renderer)
 void updateAndDraw(SDL_Renderer *renderer) 
 {
 	player.currentlyBeingHit = false;
-	foreach(orb; activeOrbs)
+	foreach(ref orb; activeOrbs)
 	{
 		float playerDist = distanceSquared(orb.x, orb.y, player.xPos, player.yPos);
 		if(playerDist < (orb.radiusSquared + player.radiusSquared))
