@@ -3,7 +3,8 @@ import app;
 JSONValue scoreJSON;
 string filename = "highscore.json";
 Highscore[] highscores;
-SDL_Rect* highscoRect;
+SDL_Rect* highscoRect, headerRect, goBackRect;
+SDL_Texture* header, goBack;
 
 struct Highscore
 {
@@ -23,6 +24,8 @@ struct Highscore
 void setup(SDL_Renderer* renderer)
 {
 	highscoRect = new SDL_Rect();
+	headerRect = new SDL_Rect();
+	goBackRect = new SDL_Rect();
 
 	if(exists(filename))
 	{
@@ -74,10 +77,23 @@ void setup(SDL_Renderer* renderer)
 
         highscores ~= h;
 	}
+
+	app.createTexture(renderer, headerRect.w, headerRect.h, "highscore",
+		app.fontLarge, &header, score.color);
+	assert(header);
+	headerRect.x = app.currentDisplay.w/2 - headerRect.w/2;
+	headerRect.y = 50;
+
+	app.createTexture(renderer, goBackRect.w, goBackRect.h, "press esc to go back",
+		app.fontSmall, &goBack, score.color);
+	assert(header);
+	goBackRect.x = app.currentDisplay.w/2 - goBackRect.w/2;
 }
 
 void updateAndDraw(SDL_Renderer* renderer)
 {
+	SDL_RenderCopy(renderer, header, null, headerRect);
+
 	int yOffset = 200;
 	int xOffset = 300;
 
@@ -99,6 +115,9 @@ void updateAndDraw(SDL_Renderer* renderer)
 
 		yOffset += highscore.scoreHeight;
 	}
+
+	goBackRect.y = yOffset + 20;
+	SDL_RenderCopy(renderer, goBack, null, goBackRect);
 }
 
 bool checkScore(long score)

@@ -74,7 +74,9 @@ void main()
     assert(fontMedium);
     fontLarge = TTF_OpenFont(fontPath.toStringz(), 100);
     assert(fontLarge);
-    
+    fontSmall = TTF_OpenFont(fontPath.toStringz(), 40);
+    assert(fontSmall);
+
     auto icon = SDL_LoadBMP("img/icon.bmp");
     assert(icon);
 
