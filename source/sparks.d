@@ -3,16 +3,16 @@ import app;
 struct Spark
 {
 	int
-	x,
-	y,
-	dx,
-	dy,
-	ttl;
+		x,
+		y,
+		dx,
+		dy,
+		ttl;
 
 	ubyte
-	red,
-	green,
-	blue;
+		red,
+		green,
+		blue;
 
 	float angle;
 	bool del;

@@ -1,15 +1,23 @@
 import app;
 
-JSONValue currentHighScore;
+JSONValue scoreJSON;
 string filename = "highscore.json";
-Highscore[] textures;
+Highscore[] highscores;
 SDL_Rect* highscoRect;
 
 struct Highscore
 {
-	SDL_Texture* texture;
+	SDL_Texture* 
+		scoreTexture, 
+		nameTexture;
+	
 	long score;
-	int width, height;
+	
+	int 
+		scoreWidth, 
+		scoreHeight,
+		nameWidth,
+		nameHeight;
 }
 
 void setup(SDL_Renderer* renderer)
@@ -19,14 +27,14 @@ void setup(SDL_Renderer* renderer)
 	if(exists(filename))
 	{
 		string filetext = to!string(read(filename));
-		currentHighScore = parseJSON(filetext);
+		scoreJSON = parseJSON(filetext);
 	}
 
 	else
 	{
-		currentHighScore["lastEntry"] = "---";
-		currentHighScore["gamesPlayed"] = 0;
-		currentHighScore["highscores"] = 
+		scoreJSON["lastEntry"] = "---";
+		scoreJSON["gamesPlayed"] = 0;
+		scoreJSON["highscores"] = 
 		[
 			"OJS 999999999999",
 			"HAL 900090009000",
@@ -40,37 +48,56 @@ void setup(SDL_Renderer* renderer)
 			"EOF 111111111111"
 		];
 
-		append(filename, currentHighScore.toString());
+		append(filename, scoreJSON.toString());
 	}
 
 	assert(exists(filename));
 
-	// create all menu-items, with delays, textures
-	foreach(uint index, highscore; currentHighScore["highscores"])
+	
+	foreach(uint index, highscore; scoreJSON["highscores"])
 	{
 		Highscore h;
+		// name [0], score [1]
 		auto splitline = split(highscore.toString().replace("\"", ""));
 		h.score = to!long(splitline[1]);
-		app.createTexture(renderer, h.width, h.height, highscore.toString().replace("\"", ""),
-        app.fontMedium, &h.texture, score.color);
-        assert(h.texture);
-        textures ~= h;
+		
+		// score texture
+		app.createTexture(renderer, h.scoreWidth, h.scoreHeight, splitline[1],
+        	app.fontMedium, &h.scoreTexture, score.color);
+        assert(h.scoreTexture);
+        
+        // name texture
+        string nameAndNumber = to!string(index + 1) ~ ". "~ splitline[0];
+        app.createTexture(renderer, h.nameWidth, h.nameHeight, nameAndNumber,
+        	app.fontMedium, &h.nameTexture, score.color);
+        assert(h.nameTexture);
+
+        highscores ~= h;
 	}
 }
 
 void updateAndDraw(SDL_Renderer* renderer)
 {
-	int offset = 0;
-	foreach(highscore; textures)
-	{
-		highscoRect.w = highscore.width;
-		highscoRect.h = highscore.height;
+	int yOffset = 200;
+	int xOffset = 300;
 
-		highscoRect.x = app.currentDisplay.w/2 - highscoRect.w/2;
-		highscoRect.y = 0 + offset;
-		writeln(highscoRect);
-		SDL_RenderCopy(renderer, highscore.texture, null, highscoRect);
-		offset += highscore.height;
+	foreach(highscore; highscores)
+	{
+		// score
+		highscoRect.w = highscore.scoreWidth;
+		highscoRect.h = highscore.scoreHeight;
+		highscoRect.x = app.currentDisplay.w - highscoRect.w - xOffset;
+		highscoRect.y = 0 + yOffset;
+		SDL_RenderCopy(renderer, highscore.scoreTexture, null, highscoRect);
+
+		// name
+		highscoRect.w = highscore.nameWidth;
+		highscoRect.h = highscore.nameHeight;
+		highscoRect.x = 0 + xOffset;
+		highscoRect.y = 0 + yOffset;
+		SDL_RenderCopy(renderer, highscore.nameTexture, null, highscoRect);
+
+		yOffset += highscore.scoreHeight;
 	}
 }
 

@@ -98,7 +98,8 @@ void updateAndDraw(SDL_Renderer *renderer)
 
 	foreach(ref bullet; bullets)
 	{
-		if((bullet.x < -50) || (bullet.x > (app.currentDisplay.w + 50)) || (bullet.y < - 50) || (bullet.y > (app.currentDisplay.h + 50)))
+		if((bullet.x < - 50) || (bullet.x > (app.currentDisplay.w + 50)) || 
+			(bullet.y < - 50) || (bullet.y > (app.currentDisplay.h + 50)))
 		{
 			bullet.del = true;
 		}

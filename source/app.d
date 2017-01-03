@@ -38,7 +38,8 @@ int state = AppState.MENU;
 bool running = true;
 SDL_DisplayMode currentDisplay;
 uint ticks;
-TTF_Font* fontMedium;
+TTF_Font* fontSmall, fontMedium, fontLarge, fontYuge;
+const string fontPath = "font/Cornerstone.ttf";
 
 void main()
 {
@@ -68,12 +69,14 @@ void main()
         SDL_DestroyRenderer(renderer);
         SDL_DestroyWindow(window);
     }
-
+    
+    fontMedium = TTF_OpenFont(fontPath.toStringz(), 70);
+    assert(fontMedium);
+    fontLarge = TTF_OpenFont(fontPath.toStringz(), 100);
+    assert(fontLarge);
+    
     auto icon = SDL_LoadBMP("img/icon.bmp");
     assert(icon);
-
-    fontMedium = TTF_OpenFont("font/Cornerstone.ttf", 70);
-    assert(fontMedium);
 
     SDL_SetWindowIcon(window, icon);
 
@@ -86,7 +89,6 @@ void main()
     menu.setup(renderer);
     game.setup(renderer);
     highscore.setup(renderer);
-
 
     SDL_Event event;
     ticks = SDL_GetTicks();
