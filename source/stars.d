@@ -56,6 +56,5 @@ void updateAndDraw(SDL_Renderer *renderer)
 		SDL_RenderDrawPoint(renderer, star.x + 1, star.y);
 		SDL_RenderDrawPoint(renderer, star.x, star.y + 1);
 	}
-
 }
 

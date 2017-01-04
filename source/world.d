@@ -105,10 +105,10 @@ void updateAndDraw(SDL_Renderer *renderer)
 	}
 	else
 	{
-		int ax = (app.currentDisplay.w/2) - xMargin;
-		int bx = (app.currentDisplay.w/2) + xMargin;
-		int ay = (app.currentDisplay.h/2) - yMargin;
-		int by = (app.currentDisplay.h/2) + yMargin;
+		int ax = (app.middleX) - xMargin;
+		int bx = (app.middleX) + xMargin;
+		int ay = (app.middleY) - yMargin;
+		int by = (app.middleY) + yMargin;
 		
 		int newX = ((player.xPos / app.currentDisplay.w) * (bx - ax)) + ax;
 		int newY = ((player.yPos / app.currentDisplay.h) * (by - ay)) + ay;

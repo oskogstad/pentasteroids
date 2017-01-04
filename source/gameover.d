@@ -43,7 +43,7 @@ void updateAndDraw(SDL_Renderer* renderer)
 			"Score: " ~ to!string(currentScore), 
 			app.fontMedium, &finalScore, score.color);
 		assert(finalScore);
-		finalScoRect.x = app.currentDisplay.w/2 - finalScoRect.w/2;
+		finalScoRect.x = app.middleX - finalScoRect.w/2;
 		finalScoRect.y = 400;		
 		playedSFX = true;
 	}

@@ -66,8 +66,8 @@ void setup(SDL_Renderer *renderer)
 	radius = twidth / 2;
 	player.radiusSquared = 79 * 79; // something is broken with orb-player-crash-detection
 
-	xPos = app.currentDisplay.w/2;
-	yPos = app.currentDisplay.h/2;
+	xPos = app.middleX;
+	yPos = app.middleY;
 
     //shrink /5
     crossHairWidth /= 5; crossHairHeight /= 5;

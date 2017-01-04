@@ -40,6 +40,7 @@ SDL_DisplayMode currentDisplay;
 uint ticks;
 TTF_Font* fontSmall, fontMedium, fontLarge, fontYuge;
 const string fontPath = "font/Cornerstone.ttf";
+int middleX, middleY;
 
 void main()
 {
@@ -70,6 +71,9 @@ void main()
         SDL_DestroyWindow(window);
     }
     
+    middleX = currentDisplay.w/2;
+    middleY = currentDisplay.h/2;
+
     fontMedium = TTF_OpenFont(fontPath.toStringz(), 70);
     assert(fontMedium);
     fontLarge = TTF_OpenFont(fontPath.toStringz(), 100);

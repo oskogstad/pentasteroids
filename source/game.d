@@ -24,8 +24,8 @@ void updateAndDraw(SDL_Renderer *renderer)
 	if(angleMode)
 	{
 		angle = atan2(
-			cast(float)(currentDisplay.h/2) - player.yPos,
-			cast(float)(currentDisplay.w/2) - player.xPos
+			cast(float)(app.middleY) - player.yPos,
+			cast(float)(app.middleX) - player.xPos
 			);
 	}
 	else
