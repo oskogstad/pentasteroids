@@ -11,9 +11,7 @@ struct Highscore
 	SDL_Texture* 
 		scoreTexture, 
 		nameTexture;
-	
-	long score;
-	
+		
 	int 
 		scoreWidth, 
 		scoreHeight,
@@ -121,7 +119,6 @@ void createHighScoreTextures(SDL_Renderer* renderer)
 	foreach(uint index, highscore; scoreJSON["highscores"])
 	{
 		Highscore h;
-		h.score = to!long(highscore["score"].toString().replace("\"", ""));		
 		
 		// name texture
         string nameAndNumber = to!string(index + 1) ~ ". "~ highscore["name"].str;
