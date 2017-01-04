@@ -45,7 +45,7 @@ float distanceSquared(int p1x, int p1y, int p2x, int p2y)
 	return (p2x - p1x) * (p2x - p1x) + (p2y - p1y) * (p2y - p1y);
 }
 
-void setup(SDL_Renderer *renderer)
+void setup()
 {
 	orbSRect = new SDL_Rect();
 	orbDRect = new SDL_Rect();
@@ -60,12 +60,13 @@ void setup(SDL_Renderer *renderer)
 }
 
 
-void updateAndDraw(SDL_Renderer *renderer) 
+void updateAndDraw() 
 {
 	player.currentlyBeingHit = false;
 	foreach(ref orb; activeOrbs)
 	{
 		float playerDist = distanceSquared(orb.x, orb.y, player.xPos, player.yPos);
+		//writeln("Dist: " ~ to!string(playerDist) ~ ", r2: " ~ to!string(orb.radiusSquared + player.radiusSquared));
 		if(playerDist < (orb.radiusSquared + player.radiusSquared))
 		{
 			player.currentlyBeingHit = true;

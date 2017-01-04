@@ -7,19 +7,19 @@ bool gameInProgress = false;
 const float TO_DEG = 180/PI;
 const float TO_RAD = PI/180;
 
-void setup(SDL_Renderer *renderer)
+void setup()
 {
- 	gameover.setup(renderer);
-	world.setup(renderer);
-	orbs.setup(renderer);
-	player.setup(renderer);
-	primaryfire.setup(renderer);
-	ringblasts.setup(renderer);
+ 	gameover.setup();
+	world.setup();
+	orbs.setup();
+	player.setup();
+	primaryfire.setup();
+	ringblasts.setup();
 	sparks.setup();
 	score.setup();
 }
 
-void updateAndDraw(SDL_Renderer *renderer)
+void updateAndDraw()
 {
 	if(angleMode)
 	{
@@ -36,19 +36,19 @@ void updateAndDraw(SDL_Renderer *renderer)
 			);
 	}
 	
-	primaryfire.updateAndDraw(renderer);
-	orbs.updateAndDraw(renderer);
-	ringblasts.updateAndDraw(renderer);
-	sparks.updateAndDraw(renderer);
+	primaryfire.updateAndDraw();
+	orbs.updateAndDraw();
+	ringblasts.updateAndDraw();
+	sparks.updateAndDraw();
 
 	if(!player.dead)
 	{
-		score.updateAndDraw(renderer);
-		player.updateAndDraw(renderer);
+		score.updateAndDraw();
+		player.updateAndDraw();
 	}
 	else
 	{
-		gameover.updateAndDraw(renderer);
+		gameover.updateAndDraw();
 	}
 }
 
@@ -72,6 +72,8 @@ void handleInput(SDL_Event event)
 		gameover.fadeScreenAlpha = 0;
 		gameover.playedSFX = false;
 		score.currentScore = 0;
+		primaryfire.primaryFire = false;
+		primaryfire.sequencePlaying = false;
 		return;
 	}
 
@@ -106,4 +108,3 @@ void handleInput(SDL_Event event)
 		break;           
 	}
 }
-

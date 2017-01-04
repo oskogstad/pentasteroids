@@ -1,6 +1,7 @@
 {
 	"fileVersion": 1,
 	"versions": {
+		"derelict-fmod": "2.0.4",
 		"derelict-gl3": "1.0.19",
 		"derelict-sdl2": "2.1.0",
 		"derelict-util": "2.0.6"

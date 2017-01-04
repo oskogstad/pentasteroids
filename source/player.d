@@ -33,7 +33,7 @@ int
 	crossHairWidth;
 
 
-void setup(SDL_Renderer *renderer)
+void setup()
 {
 	hitPoints = 180;
 	hitPointsMidThreshold = cast(int) (hitPoints * 0.4);
@@ -64,7 +64,7 @@ void setup(SDL_Renderer *renderer)
 	SDL_QueryTexture(playerTexture, null, null, &twidth, &theight);
 	playerTextureRect.w = twidth, playerTextureRect.h = theight;
 	radius = twidth / 2;
-	player.radiusSquared = 79 * 79; // something is broken with orb-player-crash-detection
+	player.radiusSquared = 80 * 80; // something is broken with orb-player-crash-detection
 
 	xPos = app.middleX;
 	yPos = app.middleY;
@@ -115,7 +115,7 @@ void checkKeysDown(ref float thrust, ubyte pos, ubyte posAlt, ubyte neg, ubyte n
 	}
 }
 
-void updateAndDraw(SDL_Renderer *renderer)
+void updateAndDraw()
 {
 	auto keyBoardState = SDL_GetKeyboardState(null);
 
@@ -163,15 +163,17 @@ void updateAndDraw(SDL_Renderer *renderer)
 	auto mouseState = SDL_GetMouseState(&mouseX, &mouseY);
 	// w and h allready /2
 	crossHairRect.y = mouseY - crossHairHeight, crossHairRect.x = mouseX - crossHairWidth; 
-	if (mouseState & SDL_BUTTON(SDL_BUTTON_LEFT)) 
-	{
-		primaryfire.primaryFire = true;
-	}
-	else 
-	{
-		primaryfire.primaryFire = false;
-		primaryfire.sequencePlaying = false;
-	}
+	
+	// trying something 
+	//if (mouseState & SDL_BUTTON(SDL_BUTTON_LEFT)) 
+	//{
+	//	primaryfire.primaryFire = true;
+	//}
+	//else 
+	//{
+	//	primaryfire.primaryFire = false;
+	//	primaryfire.sequencePlaying = false;
+	//}
 
 	if (mouseState & SDL_BUTTON(SDL_BUTTON_RIGHT)) {writeln("RIGHT FIRE");}
 	if (mouseState & SDL_BUTTON(SDL_BUTTON_MIDDLE)) {writeln("MID FIRE");}

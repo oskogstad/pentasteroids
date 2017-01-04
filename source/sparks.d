@@ -27,7 +27,7 @@ void setup()
 	sparkRect.w = 12; sparkRect.h = 22;
 }
 
-void updateAndDraw(SDL_Renderer* renderer)
+void updateAndDraw()
 {
 	foreach(ref spark; activeSparks)
 	{

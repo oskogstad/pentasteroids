@@ -21,15 +21,16 @@ int bulletGFXHeight, bulletGFXWidth;
 SDL_Rect *bulletGFXRect;
 int bulletMoveLength = 20;
 ubyte bulletVolume = 55;
+ubyte orbHitVolume = 70; // ---------------------------------------------------- tune with music
 float fireCooldown = -1;
 float angleOffset = 0.1;
 int radiusSquared = 100; // eyeballed from photoshop :D
-bool primaryFire, leftFire;
+bool primaryFire = false;
 bool sequencePlaying = false;
 int sequenceIndex = 0;
 
 
-void setup(SDL_Renderer *renderer)
+void setup()
 {
 	bulletGFXRect = new SDL_Rect();
 	bulletGFX = IMG_LoadTexture(renderer, "img/primaryBullet.png");
@@ -38,18 +39,22 @@ void setup(SDL_Renderer *renderer)
 	bulletGFXRect.w = bulletGFXWidth, bulletGFXRect.h = bulletGFXHeight;
 
 	app.loadSFXFromDisk("sfx/orbHitScale/", orbHitSFX);
-	foreach(sfx; orbHitSFX) assert(sfx);
+	foreach(audio; orbHitSFX)
+	{
+		assert(audio);
+		audio.volume = orbHitVolume;
+	} 
 
 	app.loadSFXFromDisk("sfx/primaryScale/", bulletFireSFX);
-	foreach(sfx; bulletFireSFX) assert(sfx);
 
 	foreach(audio; bulletFireSFX) 
 	{
+		assert(audio);
 		audio.volume = bulletVolume;
 	}	
 }
 
-void updateAndDraw(SDL_Renderer *renderer)
+void updateAndDraw()
 {
 
 	if(primaryFire && !player.dead)

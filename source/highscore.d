@@ -12,6 +12,8 @@ struct Highscore
 		scoreTexture, 
 		nameTexture;
 		
+	ulong score;
+
 	int 
 		scoreWidth, 
 		scoreHeight,
@@ -19,7 +21,7 @@ struct Highscore
 		nameHeight;
 }
 
-void setup(SDL_Renderer* renderer)
+void setup()
 {
 	highscoRect = new SDL_Rect();
 	headerRect = new SDL_Rect();
@@ -34,16 +36,16 @@ void setup(SDL_Renderer* renderer)
 	else
 	{
 		string j = `{"highscores":[
-			{"name":"OJS","score":999999999999},
+			{"name":"OJS","score":9999999999999},
 			{"name":"HAL","score":900090009000},
-			{"name":"CET","score":888888888888},
-			{"name":"PET","score":777777777777},
-			{"name":"ETLA","score":666666666666},
-			{"name":"TUT","score":555555555555},
-			{"name":"WTD","score":444444444444},
-			{"name":"OMG","score":333333333333},
-			{"name":"ADN","score":222222222222},
-			{"name":"EOF","score":111111111111}]}`;
+			{"name":"CET","score":88888888888},
+			{"name":"PET","score":7777777777},
+			{"name":"ETLA","score":666666666},
+			{"name":"TUT","score":55555555},
+			{"name":"WTD","score":4444444},
+			{"name":"OMG","score":333333},
+			{"name":"ADN","score":22222},
+			{"name":"EOF","score":1111}]}`;
 
 		scoreJSON = parseJSON(j);
 		scoreJSON["lastEntry"] = "---";
@@ -54,7 +56,7 @@ void setup(SDL_Renderer* renderer)
 
 	assert(exists(filename));
 
-	createHighScoreTextures(renderer);
+	createHighScoreTextures();
 
 	app.createTexture(renderer, headerRect.w, headerRect.h, "highscore",
 		app.fontLarge, &header, score.color);
@@ -68,7 +70,7 @@ void setup(SDL_Renderer* renderer)
 	goBackRect.x = app.middleX - goBackRect.w/2;
 }
 
-void updateAndDraw(SDL_Renderer* renderer)
+void updateAndDraw()
 {
 	SDL_RenderCopy(renderer, header, null, headerRect);
 
@@ -98,7 +100,7 @@ void updateAndDraw(SDL_Renderer* renderer)
 	SDL_RenderCopy(renderer, goBack, null, goBackRect);
 }
 
-bool checkScore(long score)
+bool checkScore(ulong score)
 {
 	foreach(highscore; highscores)
 	{
@@ -107,27 +109,33 @@ bool checkScore(long score)
 	return false;
 }
 
-void addNewScore(string name, long score)
+void addNewScore(string name, ulong score)
 {
-
+	string j = `{"name":"` ~ name ~ `","score":` ~ to!string(score) ~ `}`;
+	scoreJSON["highscores"].array ~= parseJSON(j);
+	scoreJSON["highscores"].array.sort!((a, b) => a["score"].integer > b["score"].integer);	
+	scoreJSON["highscores"].array.length = 10;
+	createHighScoreTextures();
+	std.file.write(filename, scoreJSON.toString());
 }
 
-void createHighScoreTextures(SDL_Renderer* renderer)
+void createHighScoreTextures()
 {
 	highscores.length = 0;
 
 	foreach(uint index, highscore; scoreJSON["highscores"])
 	{
 		Highscore h;
-		
+		h.score = highscore["score"].integer;
+
 		// name texture
         string nameAndNumber = to!string(index + 1) ~ ". "~ highscore["name"].str;
-        app.createTexture(renderer, h.nameWidth, h.nameHeight, nameAndNumber,
+        app.createTexture(app.renderer, h.nameWidth, h.nameHeight, nameAndNumber,
         	app.fontMedium, &h.nameTexture, score.color);
         assert(h.nameTexture);
-		
+
 		// score texture
-		app.createTexture(renderer, h.scoreWidth, h.scoreHeight, to!string(highscore["score"]),
+		app.createTexture(app.renderer, h.scoreWidth, h.scoreHeight, to!string(highscore["score"]),
         	app.fontMedium, &h.scoreTexture, score.color);
         assert(h.scoreTexture);
         

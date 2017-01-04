@@ -10,6 +10,7 @@ public import sparks;
 public import ringblasts;
 public import score;
 public import highscore;
+public import entername;
 
 public import std.string;
 public import std.stdio;
@@ -25,18 +26,21 @@ public import derelict.sdl2.sdl;
 public import derelict.sdl2.image;
 public import derelict.sdl2.mixer;
 public import derelict.sdl2.ttf;
+public import derelict.fmod.fmod;
 
 enum AppState
 {
     MENU,
     HIGHSCORE,
     CREDITS,
-    GAME
+    GAME,
+    ENTER_NAME
 }
 
 int state = AppState.MENU;
 bool running = true;
 SDL_DisplayMode currentDisplay;
+SDL_Renderer* renderer;
 uint ticks;
 TTF_Font* fontSmall, fontMedium, fontLarge, fontYuge;
 const string fontPath = "font/Cornerstone.ttf";
@@ -62,7 +66,7 @@ void main()
 
     assert(window);
     
-    auto renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     assert(renderer);
 
     scope(exit)
@@ -92,9 +96,9 @@ void main()
     
     Mix_ReserveChannels(1);
 
-    menu.setup(renderer);
-    game.setup(renderer);
-    highscore.setup(renderer);
+    menu.setup();
+    game.setup();
+    highscore.setup();
 
     SDL_Event event;
     ticks = SDL_GetTicks();
@@ -111,6 +115,24 @@ void main()
                 case SDL_QUIT:
                 {
                     running = false;
+                    break;
+                }
+
+                case SDL_MOUSEBUTTONDOWN:
+                {
+                    if(state == AppState.GAME)
+                    {
+                        if(event.button.button == SDL_BUTTON_LEFT)
+                        {
+                            primaryfire.primaryFire = !primaryfire.primaryFire;
+                            if(!primaryfire.primaryFire)
+                            {
+                                primaryfire.fireCooldown = 0;
+                                primaryfire.sequencePlaying = false;
+                            } 
+                        }
+
+                    }
                     break;
                 }
 
@@ -133,6 +155,11 @@ void main()
                         case HIGHSCORE:
                         {
                             highscore.handleInput(event);
+                            break;
+                        }
+
+                        case ENTER_NAME:
+                        {
                             break;
                         }
 
@@ -159,19 +186,19 @@ void main()
 
         ticks = SDL_GetTicks();
 
-        world.updateAndDraw(renderer);
+        world.updateAndDraw();
 
         switch(state) with (AppState)
         {
             case MENU:
             {
-                menu.updateAndDraw(renderer);      
+                menu.updateAndDraw();      
                 break;
             }
 
             case HIGHSCORE:
             {
-                highscore.updateAndDraw(renderer);
+                highscore.updateAndDraw();
                 break;
             }
 
@@ -182,7 +209,13 @@ void main()
 
             case GAME:
             {
-                game.updateAndDraw(renderer);
+                game.updateAndDraw();
+                break;
+            }
+
+            case ENTER_NAME:
+            {
+                entername.updateAndDraw();
                 break;
             }
 
@@ -258,7 +291,7 @@ bool initSDL()
     writeln("Initializing SDL Mixer ...");
     
     DerelictSDL2Mixer.load();
-    if(Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 4096))
+    if(Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 1024))
     {
         writeln("PANIC");
         writeln("Failed to initialize SDL Mixer!\n\t", Mix_GetError().fromStringz());
@@ -281,7 +314,14 @@ bool initSDL()
 void cleanupSDL()
 {
     writeln("Cleaning up..");
-    Mix_CloseAudio();
+    
+    TTF_Quit();
     IMG_Quit();
+    Mix_CloseAudio();
     SDL_Quit();
+
+    DerelictSDL2ttf.unload();
+    DerelictSDL2Image.unload();
+    DerelictSDL2Mixer.unload();
+    DerelictSDL2.unload();
 }

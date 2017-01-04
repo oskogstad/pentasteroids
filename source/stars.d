@@ -25,7 +25,7 @@ void setup()
 	}
 }
 
-void updateAndDraw(SDL_Renderer *renderer)
+void updateAndDraw()
 {
 	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_ADD);
 	foreach(ref star; stars)

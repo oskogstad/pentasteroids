@@ -36,7 +36,7 @@ int cellIndexX = 1;
 int cellIndexY = 1;
 WorldCell currentCell;
 
-void setup(SDL_Renderer *renderer) 
+void setup() 
 {
 	stars.setup();
 
@@ -82,7 +82,7 @@ void updateColor(ref ubyte current, ubyte target)
 	}
 }
 
-void updateAndDraw(SDL_Renderer *renderer)
+void updateAndDraw()
 {
 	currentCell = worldGrid[cellIndexX][cellIndexY];
 
@@ -93,7 +93,7 @@ void updateAndDraw(SDL_Renderer *renderer)
 	SDL_SetRenderDrawColor(renderer, currentRed, currentGreen, currentBlue, 0xFF);
 	SDL_RenderClear(renderer);
 	
-	stars.updateAndDraw(renderer);
+	stars.updateAndDraw();
 
 	backgroundRect.w = currentCell.backgroundWidth, backgroundRect.h = currentCell.backgroundHeight;
 

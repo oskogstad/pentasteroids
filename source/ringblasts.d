@@ -28,7 +28,7 @@ const int SMALL_BLAST_FRAMES = 49;
 const int MEDIUM_BLAST_FRAMES = 20;
 const int BIG_BLAST_FRAMES = 30;
 
-void setup(SDL_Renderer *renderer)
+void setup()
 {
 	app.loadGFXFromDisk("img/blasts/", renderer, blastTextures);
 	foreach(texture; blastTextures) assert(texture);
@@ -38,7 +38,7 @@ void setup(SDL_Renderer *renderer)
 	blastDRect = new SDL_Rect();
 }
 
-void updateAndDraw(SDL_Renderer *renderer)
+void updateAndDraw()
 {
 	activeBlasts = remove!(blast => blast.del)(activeBlasts);
 	foreach(ref blast; activeBlasts)

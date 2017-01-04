@@ -6,7 +6,7 @@ ubyte fadeScreenAlpha, continueAlpha;
 SDL_Texture* continueTexture, fadeScreen, finalScore;
 SDL_Rect* fadeScreenRect, continueRect, finalScoRect;
 
-void setup(SDL_Renderer* renderer)
+void setup()
 {	
 	gameOverSFX = Mix_LoadWAV("sfx/game_over.wav");
 	assert(gameOverSFX);
@@ -34,8 +34,14 @@ void setup(SDL_Renderer* renderer)
 	finalScoRect = new SDL_Rect();
 }
 
-void updateAndDraw(SDL_Renderer* renderer)
+void updateAndDraw()
 {
+	if(highscore.checkScore(score.currentScore)) 
+	{
+		app.state = AppState.ENTER_NAME;
+		return;
+	}
+	
 	if(!playedSFX)
 	{
 		Mix_PlayChannel(-1, gameOverSFX, 0);

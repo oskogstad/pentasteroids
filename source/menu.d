@@ -22,7 +22,7 @@ Mix_Chunk*[] menuSFX;
 int selectedIndex;
 int spacing = 100;
 
-void setup(SDL_Renderer* renderer)
+void setup()
 {	    
 	selectedIndex = MenuItem.START;
 
@@ -114,7 +114,7 @@ void handleInput(SDL_Event event)
 }
 
 
-void drawMenuItem(SDL_Renderer* renderer, string item, string item_, bool condition)
+void drawMenuItem(string item, string item_, bool condition)
 {
 	if(condition)
 	{
@@ -126,7 +126,7 @@ void drawMenuItem(SDL_Renderer* renderer, string item, string item_, bool condit
 	}
 }
 
-void updateAndDraw(SDL_Renderer* renderer)
+void updateAndDraw()
 {
 	menuRect.w = app.currentDisplay.w; menuRect.h = 160; 
 	menuRect.x = 0; menuRect.y = 450;
@@ -137,19 +137,19 @@ void updateAndDraw(SDL_Renderer* renderer)
 
 	if(selectedIndex == MenuItem.START)
 	{
-		drawMenuItem(renderer, "continue", "start", game.gameInProgress);
+		drawMenuItem("continue", "start", game.gameInProgress);
 	}
 	else 
 	{
-		drawMenuItem(renderer, "continue_", "start_", game.gameInProgress);
+		drawMenuItem("continue_", "start_", game.gameInProgress);
 	}
 
 	menuRect.y += spacing;
-	drawMenuItem(renderer, "highscore", "highscore_", selectedIndex == MenuItem.HIGHSCORE);
+	drawMenuItem("highscore", "highscore_", selectedIndex == MenuItem.HIGHSCORE);
 
 	menuRect.y += spacing;
-	drawMenuItem(renderer, "credits", "credits_", selectedIndex == MenuItem.CREDITS);         
+	drawMenuItem("credits", "credits_", selectedIndex == MenuItem.CREDITS);         
 
 	menuRect.y += spacing;
-	drawMenuItem(renderer, "quit", "quit_", selectedIndex == MenuItem.QUIT);  
+	drawMenuItem("quit", "quit_", selectedIndex == MenuItem.QUIT);  
 }
