@@ -162,7 +162,7 @@ void updateAndDraw()
 			orbDRect.y = orb.y - 64;                    
 		}
 
-		sprite = ((app.ticks/ orb.animationDivisor) + orb.animationOffset) % SMALL_ORB_FRAMES;
+		sprite = ((app.ticks / orb.animationDivisor) + orb.animationOffset) % SMALL_ORB_FRAMES;
 		orbSRect.x = sprite * 128;
 
 		SDL_RenderCopyEx(renderer, orb.texture, orbSRect, orbDRect, orb.angle, null, 0);
