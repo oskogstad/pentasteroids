@@ -81,32 +81,20 @@ void createSparks(int x, int y ,int dx, int dy, float angle, int count)
 		s.angle = angle;
 		s.x = x;
 		s.y = y;
-		s.dx = -dx;
-		s.dy = -dy;
-		float length = sqrt(cast(float)s.dx*s.dx + s.dy*s.dy);
-		s.dx /= cast(int)length;
-		s.dy /= cast(int)length;
-		// -------------------------------------------------------------------- wtb maths
-		if(s.dx > 0)
-		{
-			s.dx += uniform(1,10);
-		}
-		else
-		{
-			s.dx -= uniform(-10, 0);
-		}
+		float newDX = -dx;
+		float newDY = -dy;
 
-		if(s.dy > 0)
-		{
-			s.dy += uniform(1, 15);
-		}
-		else
-		{
-			s.dy -= uniform(-15, 0);
-		}
+		float length = sqrt(newDX * newDX + newDY * newDY);
+		
+		newDX /= length;
+		newDY /= length;
+		
+		newDX += uniform(-0.4f, 0.4f);
+		newDY += uniform(-0.4f, 0.4f);
 
-		s.dx /= 2;
-		s.dy /= 2;
+		s.dx = cast(int)(newDX * uniform(3, 6));
+		s.dy = cast(int)(newDY *uniform(3,6));
+
 		s.ttl = uniform(50, 100);
 		s.red = to!ubyte(uniform(0, 255));
 		s.green = to!ubyte(uniform(0, 255));
