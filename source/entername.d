@@ -102,8 +102,9 @@ void handleInput(SDL_Event event)
 	{
 		if(charIndex > 4)
 		{
-			app.state = AppState.HIGHSCORE;
 			highscore.addNewScore(cast(string)initials, score.currentScore);
+			game.resetGame();
+			app.state = AppState.HIGHSCORE;
 		}
 	}
 
