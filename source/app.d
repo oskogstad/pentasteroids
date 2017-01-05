@@ -99,6 +99,7 @@ void main()
     menu.setup();
     game.setup();
     highscore.setup();
+    entername.setup();
 
     SDL_Event event;
     ticks = SDL_GetTicks();
@@ -160,6 +161,7 @@ void main()
 
                         case ENTER_NAME:
                         {
+                            entername.handleInput(event);
                             break;
                         }
 

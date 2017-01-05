@@ -66,8 +66,7 @@ void updateAndDraw()
 	foreach(ref orb; activeOrbs)
 	{
 		float playerDist = distanceSquared(orb.x, orb.y, player.xPos, player.yPos);
-		//writeln("Dist: " ~ to!string(playerDist) ~ ", r2: " ~ to!string(orb.radiusSquared + player.radiusSquared));
-		if(playerDist < (orb.radiusSquared + player.radiusSquared))
+		if(playerDist < (orb.radius + player.radius)^^2)
 		{
 			player.currentlyBeingHit = true;
 		} 
@@ -75,7 +74,7 @@ void updateAndDraw()
 		foreach(ref bullet; bullets)
 		{
 			float dist = distanceSquared(orb.x, orb.y, bullet.x, bullet.y);
-			if(dist < (orb.radiusSquared + primaryfire.radiusSquared))
+			if(dist < (orb.radius + primaryfire.radius)^^2)
 			{
 				if(--orb.hitPoints == 0) orb.del = true;
 				orb.isShaking = true;

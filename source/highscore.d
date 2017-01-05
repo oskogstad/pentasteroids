@@ -83,14 +83,14 @@ void updateAndDraw()
 		highscoRect.w = highscore.scoreWidth;
 		highscoRect.h = highscore.scoreHeight;
 		highscoRect.x = app.currentDisplay.w - highscoRect.w - xOffset;
-		highscoRect.y = 0 + yOffset;
+		highscoRect.y = yOffset;
 		SDL_RenderCopy(renderer, highscore.scoreTexture, null, highscoRect);
 
 		// name
 		highscoRect.w = highscore.nameWidth;
 		highscoRect.h = highscore.nameHeight;
-		highscoRect.x = 0 + xOffset;
-		highscoRect.y = 0 + yOffset;
+		highscoRect.x = xOffset;
+		highscoRect.y = yOffset;
 		SDL_RenderCopy(renderer, highscore.nameTexture, null, highscoRect);
 
 		yOffset += highscore.scoreHeight;
