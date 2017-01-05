@@ -34,54 +34,13 @@ MenuTexture[7] menuTextures;
 
 void setup()
 {
-	menuTextures[0].create(
-		app.middleX, 
-		200, 
-		"new highscore!",
-		app.fontLarge
-	);
-	
-	menuTextures[1].create(
-		app.middleX, 
-		400, 
-		"enter initials",
-		app.fontMedium
-	);
-
-	menuTextures[2].create(
-		app.middleX - charOffset, 
-		700, 
-		"-",
-		app.fontLarge
-	);
-
-	menuTextures[3].create(
-		app.middleX, 
-		700, 
-		"-",
-		app.fontLarge
-	);
-
-	menuTextures[4].create(
-		app.middleX + charOffset, 
-		700, 
-		"-",
-		app.fontLarge
-	);
-
-	menuTextures[5].create(
-		app.middleX, 
-		900, 
-		"or press escape to not be on the list all like :(",
-		app.fontSmall
-	);
-
-	menuTextures[6].create(
-		app.middleX, 
-		1000, 
-		"press enter to confirm",
-		app.fontMedium
-	);	
+	menuTextures[0].create(app.middleX, 200, "new highscore!", app.fontLarge);
+	menuTextures[1].create(app.middleX, 400, "enter initials", app.fontMedium);
+	menuTextures[2].create(app.middleX - charOffset, 700, "-", app.fontLarge);
+	menuTextures[3].create(app.middleX, 700, "-", app.fontLarge);
+	menuTextures[4].create(app.middleX + charOffset, 700, "-", app.fontLarge);
+	menuTextures[5].create(app.middleX,	900, "or press escape", app.fontSmall);
+	menuTextures[6].create(app.middleX, 1000, "press enter to confirm", app.fontMedium);	
 }
 		
 
