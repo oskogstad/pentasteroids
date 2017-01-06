@@ -14,7 +14,6 @@ void setup()
 	orbs.setup();
 	player.setup();
 	primaryfire.setup();
-	ringblasts.setup();
 	sparks.setup();
 	score.setup();
 }

@@ -27,6 +27,11 @@ void setup()
 	headerRect = new SDL_Rect();
 	goBackRect = new SDL_Rect();
 
+	scope(failure)
+	{
+		
+	}
+
 	if(exists(filename))
 	{
 		string filetext = to!string(read(filename));

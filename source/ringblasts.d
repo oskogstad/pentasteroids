@@ -2,67 +2,58 @@ import app;
 
 struct Blast 
 {
-	SDL_Texture* texture;
-	Size size;
 	bool del, shake;
 	int 
 		x, 
 		y,
-		w,
-		h,
-		animationFrame;
+		radius,
+		targetRadius;
 }
 
 Blast[] activeBlasts;
-SDL_Texture*[] blastTextures;
-SDL_Rect* blastSRect, blastDRect;
-
-const int SMALL_BLAST_FRAMES = 49;
-const int MEDIUM_BLAST_FRAMES = 20;
-const int LARGE_BLAST_FRAMES = 30;
-
-void setup()
-{
-	app.loadGFXFromDisk("img/blasts/", renderer, blastTextures);
-	foreach(texture; blastTextures) assert(texture);
-	
-	blastSRect = new SDL_Rect();
-	blastSRect.y = 0;
-	blastDRect = new SDL_Rect();
-}
+SDL_Point*[] circlePoints;
+const int NUM_SIDES = 120;
+const float ANGLE_STEP = (PI * 2) / NUM_SIDES;
 
 void updateAndDraw()
 {
 	activeBlasts = remove!(blast => blast.del)(activeBlasts);
+
+	// set draw color to black
+
 	foreach(ref blast; activeBlasts)
 	{
-		blastSRect.w = blast.w;
-		blastSRect.h = blast.h;
-		blastSRect.x = blast.animationFrame-- * blast.w;
-		if(blast.animationFrame == 0)
-		{
-			blast.del = true;
-		}
-		if(blast.animationFrame < 11)
-		{
-			blast.shake = true;
-		}
-
+		int x, y;
 		if(blast.shake)
 		{
-			blastDRect.x = (blast.x - blast.w/2) + uniform(-4, 4);
-			blastDRect.y = (blast.y - blast.h/2) + uniform(-4, 4);
+			x = blast.x + uniform(-3, 3);
+			y = blast.y + uniform(-3, 3);
 		}
 		else
 		{
-			blastDRect.x = blast.x - blast.w/2;
-			blastDRect.y = blast.y - blast.h/2;	
+			x = blast.x;
+			y = blast.y;
 		}
 
-		blastDRect.w = blast.w;
-		blastDRect.h = blast.h;
-	
-		SDL_RenderCopy(renderer, blast.texture, blastSRect, blastDRect);
+		calcCirclePoints(x, y);
+		blast.radius += 0.1;
+		if(blast.radius >= blast.targetRadius) blast.del = true;
+	}
+
+	SDL_RenderDrawLines(renderer, circlePoints[0], circlePoints.length);
+}
+
+void calcCirclePoints(int x, int y)
+{
+	circlePoints.length = 0;
+
+	for(int i = 0; i != NUM_SIDES; i++)
+	{
+		SDL_Point* start = new SDL_Point();
+		SDL_Point* end = new SDL_Point();
+
+		
+		circlePoints ~= p;
 	}
 }
 
@@ -71,30 +62,20 @@ void createBlast(int x, int y, Size bs)
 	Blast b;
 	b.x = x;
 	b.y = y;
+	b.radius = 2;
 
 	if(bs == Size.SMALL)
 	{
-		b.texture = blastTextures[0];
-		b.w = 256;
-		b.h = 256;
-		b.animationFrame = SMALL_BLAST_FRAMES - 1;
-
+		b.targetRadius = bs;
 	} 
 	else if(bs == Size.MEDIUM)
 	{
-		b.texture = blastTextures[0];
-		b.w = 512;
-		b.h = 512;
-		b.animationFrame = MEDIUM_BLAST_FRAMES - 1;
+		b.targetRadius = bs/2;
 	} 
 	else
 	{
-		b.texture = blastTextures[2];
-		b.w = 1024;
-		b.h = 1024;
-		b.animationFrame = LARGE_BLAST_FRAMES - 1;
+		b.targetRadius = bs/2;
 	} 
-	b.size = bs;
 
 	activeBlasts ~= b;
 }

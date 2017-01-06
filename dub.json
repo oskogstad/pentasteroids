@@ -1,5 +1,5 @@
 {
-	"name": "asteriods",
+	"name": "pentasteriod",
 	"authors": [
 		"oskogstad"
 	],
@@ -7,7 +7,6 @@
 		"derelict-sdl2": "~>2.1.0",
 		"derelict-fmod": "~>2.0.4",
 	},
-	"description": "DAsteroids",
-	"license": "MIT",
+	"description": "pentasteroid, space orb shooter",
 	"targetPath": "build/"
 }
