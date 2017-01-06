@@ -59,7 +59,7 @@ void resetGame()
 	player.dead = false;
 	player.damageTaken = 0;
 	orbs.activeOrbs.length = 0;
-	orbs.orbSpawnTimer = 2.1;
+	orbs.resetTimers();
 	ringblasts.activeBlasts.length = 0;
 	primaryfire.bullets.length = 0;
 	gameover.continueAlpha = 0;
@@ -97,7 +97,7 @@ void handleInput(SDL_Event event)
 		
 		case SDLK_o:
 		{
-			orbs.orbSpawnTimer = -1;
+			//orbs.orbSpawnTimer = -1;
 			break;	
 		}
 

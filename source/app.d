@@ -5,6 +5,7 @@ public import menu;
 public import primaryfire;
 public import player;
 public import orbs;
+public import orb;
 public import stars;
 public import sparks;
 public import ringblasts;
@@ -36,7 +37,7 @@ enum AppState
     GAME,
     ENTER_NAME
 }
-
+const int FPS = 60;
 int state = AppState.MENU;
 bool running = true;
 SDL_DisplayMode currentDisplay;
@@ -104,7 +105,7 @@ void main()
     SDL_Event event;
     ticks = SDL_GetTicks();
 
-    immutable int FRAME_TIME = cast(uint)(1e3 / 60); // 60 FPS
+    immutable int FRAME_TIME = cast(uint)(1e3 / FPS);
     immutable float FRAME_TIME_SEC = FRAME_TIME / 1e3f;
     
     while(running)

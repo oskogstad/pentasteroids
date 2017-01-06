@@ -1,64 +1,179 @@
 import app;
 
-struct Orb
-{
-	SDL_Texture* texture;
-
-	int 
-		x, 
-		y,
-		radius,
-		radiusSquared,
-		size,
-		dx,
-		dy,
-		moveSpeed,
-		hitPoints,
-		hitSFXindex,
-		animationOffset, 
-		animationDivisor;
-
-	bool 
-		hasBeenOnScreen, 
-		del, 
-		isShaking;
-
-	float 
-		angle, 
-		spinningSpeed, 
-		shakeTimer;
-}
-
 SDL_Rect* orbSRect, orbDRect;
 SDL_Texture*[] smallOrbTextures;
-
-const int SMALL_ORB_FRAMES = 40;
-uint sprite;
-
-auto orbTimerDecay = .03;
-auto orbSpawnTimer = 2.1;
-
+SDL_Texture*[] mediumOrbTextures;
 Orb[] activeOrbs;
+
+const int ORB_FRAMES_SMALL = 40;
+const int ORB_FRAMES_MEDIUM = 5;
+const int ORB_FRAMES_LARGE = 40;
+
+uint sprite;
+int
+	orbMargin,
+	smallOrbMin,
+	smallOrbXMax,
+	smallOrbYMax,
+	mediumOrbMin,
+	mediumOrbXMax,
+	mediumOrbYMax,
+	largeOrbMin,
+	largeOrbXMax,
+	largeOrbYMax;
+
+const float SMALL_TIMER = 4.1;
+const float MEDIUM_TIMER = 12.1;
+const float LARGE_TIMER = 45.1;
+
+float 
+	orbTimerDecay = .03, 
+	smallOrbTimer, 
+	mediumOrbTimer, 
+	largeOrbTimer;
 
 float distanceSquared(int p1x, int p1y, int p2x, int p2y)
 {
 	return (p2x - p1x) * (p2x - p1x) + (p2y - p1y) * (p2y - p1y);
 }
 
+void createOrb(
+		Size size, int numFrames, int min, int xMax, int yMax, 
+		int hitPointsMin, int hitPointsMax, int moveMin, int moveMax)
+{
+	Orb o;
+	if(uniform(0,2)) // yes/no positive y
+	{
+		o.y = uniform((app.currentDisplay.h + orbMargin), yMax);
+		o.x = uniform(min, xMax);
+	}
+
+	else if(uniform(0,2)) // yes/no positive x
+	{
+		o.x = uniform((app.currentDisplay.w + orbMargin), xMax);
+		o.y = uniform(min, yMax);
+	}
+	else // neg x
+	{
+		o.x = uniform(min, min + orbMargin);
+		o.y = uniform(min, yMax);
+	}
+
+	o.hitPoints = uniform(hitPointsMin, hitPointsMax);
+	o.hitSFXindex = 4; // ------------------------------------------- diff sound
+	o.shakeTimer = 6;
+	o.moveSpeed = uniform(moveMin,moveMax);
+	o.angle = uniform(0,2f*PI);
+	o.size = size;
+	o.radius = size/2;
+	o.radiusSquared = o.radius * o.radius;
+	o.dx = cast(int) (o.moveSpeed * cos(o.angle));
+	o.dy = cast(int) (o.moveSpeed * sin(o.angle));
+	o.animationOffset = uniform(0, numFrames);
+	o.animationDivisor = uniform(50, 80); ///---------------------------------------------- spin/speed
+	o.spinningSpeed = uniform(-0.5f, 0.5f);
+
+	// set timer for size
+	if(size == Size.SMALL)
+	{
+		int orbIndex = uniform(0, smallOrbTextures.length);
+		o.texture = smallOrbTextures[orbIndex];
+		smallOrbTimer = SMALL_TIMER; // ----------------------- inc/dec over time
+	}
+	else if(size == Size.MEDIUM)
+	{
+		int orbIndex = uniform(0, mediumOrbTextures.length);
+		o.texture = mediumOrbTextures[orbIndex];
+		mediumOrbTimer = 8.1;
+	}
+	
+	activeOrbs ~= o;
+}
+
+void resetTimers()
+{
+	smallOrbTimer = SMALL_TIMER;
+	mediumOrbTimer = MEDIUM_TIMER;
+	largeOrbTimer = LARGE_TIMER;
+}
+
+void orbSpawner()
+{
+	if(player.dead) return;
+
+	if(smallOrbTimer < 0)
+	{
+		// size, numFrames, XYmin, xMax, yMax, 
+		// hitPointsMin, hitPointsMax, 										 moveMax, moveMin
+		createOrb(Size.SMALL, ORB_FRAMES_SMALL, smallOrbMin, smallOrbXMax, smallOrbYMax, 3, 6, 5, 7);
+	}
+	else
+	{
+		smallOrbTimer -= orbTimerDecay;
+	}
+
+	if(mediumOrbTimer < 0)
+	{																			  //movespeed
+		createOrb(Size.MEDIUM, ORB_FRAMES_MEDIUM, mediumOrbMin, mediumOrbXMax, mediumOrbYMax, 10, 15, 3,5);
+	}
+	else
+	{
+		mediumOrbTimer -= orbTimerDecay;
+	}
+
+	if(largeOrbTimer < 0)
+	{
+		//createOrb(Size.LARGE, ORB_FRAMES_LARGE, largeOrbMin, largeOrbXMax, largeOrbYMax, 100, 200, 1, 2);
+	}
+}
+
+void checkBounds(ref Orb orb, int min, int xMax, int yMax)
+{
+		if(orb.y < min)
+		{
+			orb.y = (yMax + orb.y);
+		}
+		else if(orb.y > yMax)
+		{
+			orb.y = 0 + (orb.y - yMax);
+		}
+
+		if(orb.x < min)
+		{
+			orb.x = (xMax + orb.x);
+		}
+		else if(orb.x > xMax)
+		{
+			orb.x = 0 + (orb.x - xMax);
+		}
+}
+
 void setup()
 {
+	resetTimers();
 	orbSRect = new SDL_Rect();
 	orbDRect = new SDL_Rect();
 
-	/// --------------------------------------------------------------------------------- temp, need different sized orbs
-	orbSRect.w = 128; orbSRect.h = 128;
 	orbSRect.y = 0;
 
-	orbDRect.w = 128; orbDRect.h = 128;
 	app.loadGFXFromDisk("img/orbs/small/", renderer, smallOrbTextures);
 	foreach(texture; smallOrbTextures) assert(texture);
-}
 
+	app.loadGFXFromDisk("img/orbs/medium/", renderer, mediumOrbTextures);
+	foreach(texture; mediumOrbTextures) assert(texture);
+
+	// setting spawn area limits for orbs, also use these for teleport edges
+	orbMargin = 20;
+	smallOrbMin = -Size.SMALL - orbMargin;
+	smallOrbXMax = app.currentDisplay.w + Size.SMALL + orbMargin;
+	smallOrbYMax = app.currentDisplay.h + Size.SMALL + orbMargin;
+	mediumOrbMin = -Size.MEDIUM - orbMargin;
+	mediumOrbXMax = app.currentDisplay.w + Size.MEDIUM + orbMargin;
+	mediumOrbYMax = app.currentDisplay.h + Size.MEDIUM + orbMargin;
+	largeOrbMin = -Size.LARGE - orbMargin;
+	largeOrbXMax = app.currentDisplay.w + Size.LARGE + orbMargin;
+	largeOrbYMax = app.currentDisplay.h + Size.LARGE + orbMargin;
+}
 
 void updateAndDraw() 
 {
@@ -69,7 +184,7 @@ void updateAndDraw()
 		if(playerDist < (orb.radius + player.radius)^^2)
 		{
 			player.currentlyBeingHit = true;
-		} 
+		}
 
 		foreach(ref bullet; bullets)
 		{
@@ -78,8 +193,8 @@ void updateAndDraw()
 			{
 				if(--orb.hitPoints == 0) orb.del = true;
 				orb.isShaking = true;
-				ringblasts.createBlast(bullet.x, bullet.y, BlastSize.SMALL);
-				score.currentScore += uniform(250000, 500000); // --------------------------------------------------
+				ringblasts.createBlast(bullet.x, bullet.y, orb.size);
+				score.addOrbHitScore(orb.size);
 				sparks.createSparks(bullet.x, bullet.y, bullet.dx, bullet.dy, bullet.angle, uniform(3,8));
 				Mix_PlayChannel(-1, orbHitSFX[uniform(0, orbHitSFX.length)], 0);
 				bullet.del = true;
@@ -90,81 +205,57 @@ void updateAndDraw()
 	primaryfire.bullets = remove!(bullet => bullet.del)(bullets);
 	activeOrbs = remove!(orb => orb.del)(activeOrbs);
 
-
-	if(orbSpawnTimer < 0 && !player.dead)
-	{
-		// size, divisor name, texture, radius, spawntimer - keeps getting faster over time,  ------------------------------
-		Orb o;
-		o.x = uniform(0, currentDisplay.w);
-		o.hitPoints = uniform(3,6);
-		o.hitSFXindex = 4;
-		o.shakeTimer = 6;
-		o.y = uniform(0, currentDisplay.h);
-		o.moveSpeed = uniform(3,6);
-		o.angle = uniform(0,359);
-		o.radius = 64;
-		o.radiusSquared = o.radius * o.radius;
-		o.dx = cast(int) (o.moveSpeed * cos(o.angle));
-		o.dy = cast(int) (o.moveSpeed * sin(o.angle));
-		int orbIndex = uniform(0, smallOrbTextures.length);
-		o.texture = smallOrbTextures[orbIndex];
-		o.animationOffset = uniform(0, SMALL_ORB_FRAMES);
-		o.animationDivisor = uniform(50, 80);
-		o.spinningSpeed = uniform(-0.5f, 0.5f);
-		activeOrbs ~= o;
-		orbSpawnTimer = uniform(2,4);
-	}
-
-	else
-	{
-		orbSpawnTimer -= orbTimerDecay;
-	}
+	orbSpawner();
 
 	foreach(ref orb; activeOrbs)
 	{
 		orb.x += orb.dx;
 		orb.y += orb.dy;
 
-		if(orb.y < 0)
+		if(orb.size == Size.SMALL)
 		{
-			orb.y = (currentDisplay.h + orb.y);
+			checkBounds(orb, smallOrbMin, smallOrbXMax, smallOrbYMax);
 		}
-		else if(orb.y > currentDisplay.h)
+		else if(orb.size == Size.MEDIUM) 
 		{
-			orb.y = 0 + (orb.y - currentDisplay.h);
+			checkBounds(orb, mediumOrbMin, mediumOrbXMax, mediumOrbYMax);
 		}
-
-		if(orb.x < 0)
+		else 
 		{
-			orb.x = (currentDisplay.w + orb.x);
-		}
-		else if(orb.x > currentDisplay.w)
-		{
-			orb.x = 0 + (orb.x - currentDisplay.w);
-		}
+			checkBounds(orb, largeOrbMin, largeOrbXMax, largeOrbYMax);
+		} 
 
 		orb.angle += orb.spinningSpeed;
 
-		if(orb.isShaking || player.shake)
+		orbDRect.w = orb.size;
+		orbDRect.h = orb.size;
+
+		//if(orb.isShaking || player.shake)
+		//{
+		//	orbDRect.x = orb.x - orb.size/2 + uniform(-7, 7);
+		//	orbDRect.y = orb.y - orb.size/2 + uniform(-7, 7);
+		//	orb.shakeTimer -= 0.1;
+		//	if(orb.shakeTimer < 0)
+		//	{
+		//		orb.isShaking = false;
+		//		orb.shakeTimer = 4;
+		//	}
+		//}
+		//else
 		{
-			orbDRect.x = orb.x - 64 + uniform(-7, 7); // size -----------------------------------------------------------
-			orbDRect.y = orb.y - 64 + uniform(-7, 7);
-			orb.shakeTimer -= 0.1;
-			if(orb.shakeTimer < 0)
-			{
-				orb.isShaking = false;
-				orb.shakeTimer = 4;
-			}
-		}
-		else
-		{
-			orbDRect.x = orb.x - 64; // size -----------------------------------------------------------
-			orbDRect.y = orb.y - 64;                    
+			orbDRect.x = orb.x - orb.size/2; 
+			orbDRect.y = orb.y - orb.size/2;                    
 		}
 
-		sprite = ((app.ticks / orb.animationDivisor) + orb.animationOffset) % SMALL_ORB_FRAMES;
-		orbSRect.x = sprite * 128;
+		orbSRect.w = orb.size;
+		orbSRect.h = orb.size;
 
+		sprite = ((app.ticks / orb.animationDivisor) + orb.animationOffset);
+		if(orb.size == Size.SMALL) sprite %= ORB_FRAMES_SMALL;
+		else if(orb.size == Size.MEDIUM) sprite %= ORB_FRAMES_MEDIUM;
+		else sprite %= ORB_FRAMES_LARGE;
+
+		orbSRect.x = sprite * orb.size;
 		SDL_RenderCopyEx(renderer, orb.texture, orbSRect, orbDRect, orb.angle, null, 0);
 	}
 }

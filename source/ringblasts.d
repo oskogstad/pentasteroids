@@ -1,16 +1,9 @@
 import app;
 
-enum BlastSize
-{
-	SMALL,
-	MEDIUM,
-	LARGE
-}
-
 struct Blast 
 {
 	SDL_Texture* texture;
-	BlastSize size;
+	Size size;
 	bool del, shake;
 	int 
 		x, 
@@ -26,7 +19,7 @@ SDL_Rect* blastSRect, blastDRect;
 
 const int SMALL_BLAST_FRAMES = 49;
 const int MEDIUM_BLAST_FRAMES = 20;
-const int BIG_BLAST_FRAMES = 30;
+const int LARGE_BLAST_FRAMES = 30;
 
 void setup()
 {
@@ -73,13 +66,13 @@ void updateAndDraw()
 	}
 }
 
-void createBlast(int x, int y, BlastSize bs)
+void createBlast(int x, int y, Size bs)
 {
 	Blast b;
 	b.x = x;
 	b.y = y;
 
-	if(bs == BlastSize.SMALL)
+	if(bs == Size.SMALL)
 	{
 		b.texture = blastTextures[0];
 		b.w = 256;
@@ -87,17 +80,19 @@ void createBlast(int x, int y, BlastSize bs)
 		b.animationFrame = SMALL_BLAST_FRAMES - 1;
 
 	} 
-	else if(bs == BlastSize.MEDIUM)
+	else if(bs == Size.MEDIUM)
 	{
-		b.texture = blastTextures[1];
+		b.texture = blastTextures[0];
 		b.w = 512;
 		b.h = 512;
+		b.animationFrame = MEDIUM_BLAST_FRAMES - 1;
 	} 
 	else
 	{
 		b.texture = blastTextures[2];
 		b.w = 1024;
 		b.h = 1024;
+		b.animationFrame = LARGE_BLAST_FRAMES - 1;
 	} 
 	b.size = bs;
 
