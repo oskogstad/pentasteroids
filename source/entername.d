@@ -34,14 +34,16 @@ MenuTexture[7] menuTextures;
 
 void setup()
 {
+	int scaler = cast(int) (1080.0 / app.currentDisplay.h);
+
     initials ~= ['-', '-', '-'];
-	menuTextures[0].create(app.middleX, 200, "new highscore!", app.fontLarge);
-	menuTextures[1].create(app.middleX, 400, "enter initials", app.fontMedium);
-	menuTextures[2].create(app.middleX - charOffset, 700, "-", app.fontLarge);
-	menuTextures[3].create(app.middleX, 700, "-", app.fontLarge);
-	menuTextures[4].create(app.middleX + charOffset, 700, "-", app.fontLarge);
-	menuTextures[5].create(app.middleX,	900, "or press escape", app.fontSmall);
-	menuTextures[6].create(app.middleX, 1000, "press enter to confirm", app.fontMedium);	
+	menuTextures[0].create(app.middleX, scaler * 200, "new highscore!", app.fontLarge);
+	menuTextures[1].create(app.middleX, scaler * 400, "enter initials", app.fontMedium);
+	menuTextures[2].create(app.middleX - charOffset, scaler * 700, "-", app.fontLarge);
+	menuTextures[3].create(app.middleX, scaler * 700, "-", app.fontLarge);
+	menuTextures[4].create(app.middleX + charOffset, scaler * 700, "-", app.fontLarge);
+	menuTextures[5].create(app.middleX,	scaler * 900, "or press escape", app.fontSmall);
+	menuTextures[6].create(app.middleX, scaler * 1000, "press enter to confirm", app.fontMedium);	
 }
 		
 

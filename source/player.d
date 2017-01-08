@@ -47,9 +47,8 @@ void setup()
 	dyingOverlayBottom = IMG_LoadTexture(renderer, "img/dying_overlay_bottom.png");
 	assert(dyingOverlayBottom);
 
-	int overlayW, overlayH;
-	SDL_QueryTexture(dyingOverlayTop, null, null, &overlayW, &overlayH);
-	dyingOverlayRect.w = overlayW; dyingOverlayRect.h = overlayH;
+	dyingOverlayRect.w = app.currentDisplay.w; 
+	dyingOverlayRect.h = app.currentDisplay.h;
 
 	crossHairRect = new SDL_Rect();
 	crossHair = IMG_LoadTexture(renderer, "img/crosshair.png");
@@ -163,24 +162,13 @@ void updateAndDraw()
 	auto mouseState = SDL_GetMouseState(&mouseX, &mouseY);
 	// w and h allready /2
 	crossHairRect.y = mouseY - crossHairHeight, crossHairRect.x = mouseX - crossHairWidth; 
-	
-	// trying something 
-	//if (mouseState & SDL_BUTTON(SDL_BUTTON_LEFT)) 
-	//{
-	//	primaryfire.primaryFire = true;
-	//}
-	//else 
-	//{
-	//	primaryfire.primaryFire = false;
-	//	primaryfire.sequencePlaying = false;
-	//}
 
 	if (mouseState & SDL_BUTTON(SDL_BUTTON_RIGHT)) {writeln("RIGHT FIRE");}
 	if (mouseState & SDL_BUTTON(SDL_BUTTON_MIDDLE)) {writeln("MID FIRE");}
 
 
-	playerTextureRect.x = xPos - 80; // temp, trying to find bug
-	playerTextureRect.y = yPos - 80;
+	playerTextureRect.x = xPos - playerTextureRect.w/2;
+	playerTextureRect.y = yPos - playerTextureRect.h/2;
 
 	if(currentlyBeingHit)
 	{
