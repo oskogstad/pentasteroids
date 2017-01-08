@@ -85,8 +85,8 @@ void updateAndDraw()
 {
 	SDL_RenderCopy(renderer, header, null, headerRect);
 
-	int yOffset = 200;
-	int xOffset = 300;
+	int yOffset = (app.currentDisplay.h / 1080) * 200;
+	int xOffset = (app.currentDisplay.w / 1080) * 300;
 
 	foreach(highscore; highscores)
 	{
