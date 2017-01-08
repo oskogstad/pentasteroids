@@ -132,6 +132,7 @@ void updateAndDraw()
 	menuRect.x = 0; menuRect.y = 450;
 	SDL_RenderCopy(renderer, menuGFX["logo"], null, menuRect);
 
+	
 	menuRect.h = spacing;
 	menuRect.y = 650;
 
