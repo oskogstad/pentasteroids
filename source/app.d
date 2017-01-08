@@ -25,10 +25,8 @@ public import std.json;
 
 public import derelict.sdl2.sdl;
 public import derelict.sdl2.image;
-public import derelict.sdl2.gfx.gfx;
 public import derelict.sdl2.mixer;
 public import derelict.sdl2.ttf;
-public import derelict.fmod.fmod;
 
 
 enum AppState

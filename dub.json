@@ -5,8 +5,6 @@
 	],
 	"dependencies": {
 		"derelict-sdl2": "~>2.1.0",
-		"derelict-sdl2_gfx": "~master",
-		"derelict-fmod": "~>2.0.4",
 	},
 	"description": "pentasteroid, space orb shooter",
 	"targetPath": "build/"
