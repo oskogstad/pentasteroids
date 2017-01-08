@@ -1,4 +1,4 @@
-import app;
+import everything;
 
 bool playedSFX = false;
 Mix_Chunk* gameOverSFX;

@@ -1,33 +1,4 @@
-public import game;
-public import gameover;
-public import world;
-public import menu;
-public import primaryfire;
-public import player;
-public import orbs;
-public import orb;
-public import stars;
-public import sparks;
-public import ringblasts;
-public import score;
-public import highscore;
-public import entername;
-
-public import std.string;
-public import std.stdio;
-public import std.conv;
-public import std.math;
-public import std.algorithm;
-public import std.random;
-public import std.datetime;
-public import std.file;
-public import std.json;
-
-public import derelict.sdl2.sdl;
-public import derelict.sdl2.image;
-public import derelict.sdl2.mixer;
-public import derelict.sdl2.ttf;
-
+import everything;
 
 enum AppState
 {
@@ -37,6 +8,7 @@ enum AppState
     GAME,
     ENTER_NAME
 }
+
 const int FPS = 60;
 int state = AppState.MENU;
 bool running = true;
@@ -81,8 +53,10 @@ void main()
 
     fontMedium = TTF_OpenFont(fontPath.toStringz(), 70);
     assert(fontMedium);
+
     fontLarge = TTF_OpenFont(fontPath.toStringz(), 100);
     assert(fontLarge);
+
     fontSmall = TTF_OpenFont(fontPath.toStringz(), 40);
     assert(fontSmall);
 
@@ -95,7 +69,7 @@ void main()
     
     SDL_ShowCursor(SDL_DISABLE);
     
-    Mix_ReserveChannels(1);
+    //Mix_ReserveChannels(1);
 
     menu.setup();
     game.setup();

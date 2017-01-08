@@ -1,15 +1,24 @@
-import app;
+import everything;
 
 struct Blast 
 {
-	bool del, shake;
-	float radius, targetRadius;
-	int x, y;
+	bool 
+		del, 
+		shake;
+	
+	float 
+		radius, 
+		targetRadius;
+	
+	int 
+		x, 
+		y;
+
 	ubyte	
-	red,
-	green,
-	blue,
-	alpha;
+		red,
+		green,
+		blue,
+		alpha;
 }
 
 

@@ -1,4 +1,4 @@
-import app;
+import everything;
 
 SDL_Rect* orbSRect, orbDRect;
 SDL_Texture*[] smallOrbTextures;

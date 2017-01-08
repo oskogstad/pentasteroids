@@ -1,8 +1,9 @@
-import app;
+import everything;
 
 JSONValue scoreJSON;
 string filename = "highscore.json";
 Highscore[] highscores;
+
 SDL_Rect* 
 	highscoRect, 
 	headerRect, 

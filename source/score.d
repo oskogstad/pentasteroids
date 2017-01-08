@@ -1,4 +1,4 @@
-import app;
+import everything;
 
 ulong currentScore = 0;
 SDL_Texture* texture;

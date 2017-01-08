@@ -1,4 +1,4 @@
-import app;
+import everything;
 
 Mix_Chunk *playerHitSFX;
 bool currentlyBeingHit;
