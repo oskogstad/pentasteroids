@@ -79,13 +79,13 @@ void createOrb(
 	// set timer for size
 	if(size == Size.SMALL)
 	{
-		int orbIndex = uniform(0, smallOrbTextures.length);
+		int orbIndex = cast(int)uniform(0, smallOrbTextures.length);
 		o.texture = smallOrbTextures[orbIndex];
 		smallOrbTimer = SMALL_TIMER; // ----------------------- inc/dec over time
 	}
 	else if(size == Size.MEDIUM)
 	{
-		int orbIndex = uniform(0, mediumOrbTextures.length);
+		int orbIndex = cast(int)uniform(0, mediumOrbTextures.length);
 		o.texture = mediumOrbTextures[orbIndex];
 		mediumOrbTimer = 8.1;
 	}
