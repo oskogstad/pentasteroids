@@ -133,7 +133,7 @@ void createHighScoreTextures()
 {
 	highscores.length = 0;
 
-	foreach(uint index, highscore; scoreJSON["highscores"])
+	foreach(int index, highscore; scoreJSON["highscores"].array)
 	{
 		Highscore h;
 		h.score = highscore["score"].integer;
