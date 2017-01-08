@@ -203,7 +203,7 @@ void updateAndDraw()
 		{
 			Mix_Pause(0);
 		}
-		if(damageTaken > 0) --damageTaken;
+		if(damageTaken > 0 && !primaryfire.primaryFire) --damageTaken;
 	}
 
 	if(shake)
