@@ -29,11 +29,12 @@ struct MenuTexture
 }
 
 int letterCount;
-char[] initials = "---".dup;
+char[] initials;
 MenuTexture[7] menuTextures;
 
 void setup()
 {
+    initials ~= ['-', '-', '-'];
 	menuTextures[0].create(app.middleX, 200, "new highscore!", app.fontLarge);
 	menuTextures[1].create(app.middleX, 400, "enter initials", app.fontMedium);
 	menuTextures[2].create(app.middleX - charOffset, 700, "-", app.fontLarge);
@@ -82,10 +83,10 @@ void handleInput(SDL_Event event)
 
 	else if(s >= SDLK_a && s <= SDLK_z)
 	{
-		if(charIndex <= 4)
-		{
-			initials[charIndex - 2] = cast(char) s;
-			menuTextures[charIndex++].updateTexture(cast(char) s, app.fontLarge);
-		}
+        if(charIndex <= 4)
+        {
+            initials[charIndex - 2] = cast(char) s;
+            menuTextures[charIndex++].updateTexture(cast(char) s, app.fontLarge);
+        }
 	}
 }
