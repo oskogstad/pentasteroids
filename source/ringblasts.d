@@ -3,11 +3,8 @@ import app;
 struct Blast 
 {
 	bool del, shake;
-	int 
-		x, 
-		y,
-		radius,
-		targetRadius;
+	float radius, targetRadius;
+	int x, y;
 }
 
 Blast[] activeBlasts;
@@ -35,26 +32,25 @@ void updateAndDraw()
 			y = blast.y;
 		}
 
-		calcCirclePoints(x, y);
-		blast.radius += 0.1;
+		drawCircle(x, y, blast.radius);
+		blast.radius += 2.5;
 		if(blast.radius >= blast.targetRadius) blast.del = true;
 	}
-
-	SDL_RenderDrawLines(renderer, circlePoints[0], circlePoints.length);
 }
 
-void calcCirclePoints(int x, int y)
+void drawCircle(int x, int y, float radius)
 {
-	circlePoints.length = 0;
+	SDL_Point[361] points;
 
-	for(int i = 0; i != NUM_SIDES; i++)
-	{
-		SDL_Point* start = new SDL_Point();
-		SDL_Point* end = new SDL_Point();
+    float theta = 0;
+    float thetaInc = 2f*3.1415f / 360.0f;
+    for (int i=0; i<=360; ++i)
+    {
+        points[i] = SDL_Point(cast(int)(x+cos(theta)*radius), cast(int)(y+sin(theta)*radius));
+        theta += thetaInc;
+    }
 
-		
-		circlePoints ~= p;
-	}
+    SDL_RenderDrawLines(renderer, points.ptr, points.length);
 }
 
 void createBlast(int x, int y, Size bs)
