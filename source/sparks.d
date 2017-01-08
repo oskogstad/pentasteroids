@@ -39,9 +39,10 @@ void updateAndDraw()
 
 		spark.x += spark.dx;
 		spark.y += spark.dy;
-		spark.red+=1;
-		spark.blue+=1;
-		spark.green+=1;
+
+		spark.red += uniform(1, 5);
+		spark.blue += uniform(1, 5);
+		spark.green += uniform(1, 5);
 		
 		if(spark.ttl < spark.ttl*0.9)
 		{

@@ -5,11 +5,18 @@ SDL_Texture*[] smallOrbTextures;
 SDL_Texture*[] mediumOrbTextures;
 Orb[] activeOrbs;
 
-const int ORB_FRAMES_SMALL = 40;
-const int ORB_FRAMES_MEDIUM = 5;
-const int ORB_FRAMES_LARGE = 40;
+const int 
+	ORB_FRAMES_SMALL = 40, 
+	ORB_FRAMES_MEDIUM = 5,
+	ORB_FRAMES_LARGE = 40;
+
+const float 
+	SMALL_TIMER = 4.1, 
+	MEDIUM_TIMER = 12.1,
+	LARGE_TIMER = 45.1;
 
 uint sprite;
+
 int
 	orbMargin,
 	smallOrbMin,
@@ -21,10 +28,6 @@ int
 	largeOrbMin,
 	largeOrbXMax,
 	largeOrbYMax;
-
-const float SMALL_TIMER = 4.1;
-const float MEDIUM_TIMER = 12.1;
-const float LARGE_TIMER = 45.1;
 
 float 
 	orbTimerDecay = .03, 
@@ -184,6 +187,9 @@ void updateAndDraw()
 		if(playerDist < (orb.radius + player.radius)^^2)
 		{
 			player.currentlyBeingHit = true;
+			int x = (orb.x + player.xPos)/2;
+			int y = (orb.y + player.yPos)/2;
+			ringblasts.createBlast(x, y, orb.size);
 		}
 
 		foreach(ref bullet; bullets)
@@ -230,18 +236,18 @@ void updateAndDraw()
 		orbDRect.w = orb.size;
 		orbDRect.h = orb.size;
 
-		//if(orb.isShaking || player.shake)
-		//{
-		//	orbDRect.x = orb.x - orb.size/2 + uniform(-7, 7);
-		//	orbDRect.y = orb.y - orb.size/2 + uniform(-7, 7);
-		//	orb.shakeTimer -= 0.1;
-		//	if(orb.shakeTimer < 0)
-		//	{
-		//		orb.isShaking = false;
-		//		orb.shakeTimer = 4;
-		//	}
-		//}
-		//else
+		if(orb.isShaking || player.shake)
+		{
+			orbDRect.x = orb.x - orb.size/2 + uniform(-7, 7);
+			orbDRect.y = orb.y - orb.size/2 + uniform(-7, 7);
+			orb.shakeTimer -= 0.1;
+			if(orb.shakeTimer < 0)
+			{
+				orb.isShaking = false;
+				orb.shakeTimer = 4;
+			}
+		}
+		else
 		{
 			orbDRect.x = orb.x - orb.size/2; 
 			orbDRect.y = orb.y - orb.size/2;                    

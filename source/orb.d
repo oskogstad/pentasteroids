@@ -2,6 +2,7 @@ import app;
 
 enum Size
 {
+	TINY = 64,
 	SMALL = 128,
 	MEDIUM = 512,
 	LARGE = 1024

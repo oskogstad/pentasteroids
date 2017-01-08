@@ -5,18 +5,19 @@ struct Blast
 	bool del, shake;
 	float radius, targetRadius;
 	int x, y;
+	ubyte	
+	red,
+	green,
+	blue,
+	alpha;
 }
 
+
 Blast[] activeBlasts;
-SDL_Point*[] circlePoints;
-const int NUM_SIDES = 120;
-const float ANGLE_STEP = (PI * 2) / NUM_SIDES;
 
 void updateAndDraw()
 {
 	activeBlasts = remove!(blast => blast.del)(activeBlasts);
-
-	// set draw color to black
 
 	foreach(ref blast; activeBlasts)
 	{
@@ -32,25 +33,35 @@ void updateAndDraw()
 			y = blast.y;
 		}
 
+		SDL_SetRenderDrawColor(renderer, blast.red, blast.green, blast.blue, blast.alpha);
+
 		drawCircle(x, y, blast.radius);
-		blast.radius += 2.5;
+		blast.red += uniform(1,3);
+		drawCircle(x, y, blast.radius - 1);
+		blast.green += uniform(2,5);
+		drawCircle(x, y, blast.radius - 2);
+		blast.blue += uniform(3,12);
+
+		blast.radius += 2.6;
 		if(blast.radius >= blast.targetRadius) blast.del = true;
 	}
 }
 
 void drawCircle(int x, int y, float radius)
 {
-	SDL_Point[361] points;
+	immutable static int NUM_SEGMENTS= 181;
+	SDL_Point[NUM_SEGMENTS] points;
 
-    float theta = 0;
-    float thetaInc = 2f*3.1415f / 360.0f;
-    for (int i=0; i<=360; ++i)
-    {
-        points[i] = SDL_Point(cast(int)(x+cos(theta)*radius), cast(int)(y+sin(theta)*radius));
-        theta += thetaInc;
-    }
-
-    SDL_RenderDrawLines(renderer, points.ptr, points.length);
+	float theta = 0;
+	float thetaInc = 2f*3.1415f / NUM_SEGMENTS;
+	for (int i=0; i<NUM_SEGMENTS; ++i)
+	{
+		points[i] = SDL_Point(
+			cast(int)(x+cos(theta)*radius),
+			cast(int)(y+sin(theta)*radius));
+		theta += thetaInc;
+	}
+	SDL_RenderDrawLines(renderer, points.ptr, points.length);
 }
 
 void createBlast(int x, int y, Size bs)
@@ -59,6 +70,10 @@ void createBlast(int x, int y, Size bs)
 	b.x = x;
 	b.y = y;
 	b.radius = 2;
+	b.red = cast(ubyte)uniform(0, 256);
+	b.green = cast(ubyte)uniform(0, 256);
+	b.blue = cast(ubyte)uniform(0, 256);
+	b.alpha = cast(ubyte) 255;
 
 	if(bs == Size.SMALL)
 	{
@@ -68,10 +83,10 @@ void createBlast(int x, int y, Size bs)
 	{
 		b.targetRadius = bs/2;
 	} 
-	else
+	else if(bs == Size.TINY)
 	{
-		b.targetRadius = bs/2;
-	} 
+		b.targetRadius = bs;
+	}
 
 	activeBlasts ~= b;
 }

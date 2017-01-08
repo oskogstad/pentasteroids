@@ -7,5 +7,4 @@
 		"derelict-sdl2": "~>2.1.0",
 	},
 	"description": "pentasteroid, space orb shooter",
-	"targetPath": "build/"
 }

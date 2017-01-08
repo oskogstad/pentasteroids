@@ -3,7 +3,11 @@ import app;
 JSONValue scoreJSON;
 string filename = "highscore.json";
 Highscore[] highscores;
-SDL_Rect* highscoRect, headerRect, goBackRect;
+SDL_Rect* 
+	highscoRect, 
+	headerRect, 
+	goBackRect;
+
 SDL_Texture* header, goBack;
 
 struct Highscore
@@ -29,7 +33,8 @@ void setup()
 
 	scope(failure)
 	{
-		
+		// todo
+		// if file load/write fails
 	}
 
 	if(exists(filename))
