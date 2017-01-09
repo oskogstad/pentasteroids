@@ -63,7 +63,7 @@ void setup()
 	SDL_QueryTexture(playerTexture, null, null, &twidth, &theight);
 	playerTextureRect.w = twidth, playerTextureRect.h = theight;
 	radius = twidth / 2;
-	player.radiusSquared = radius * radius; // something is broken with orb-player-crash-detection
+	player.radiusSquared = radius * radius;
 
 	xPos = app.middleX;
 	yPos = app.middleY;

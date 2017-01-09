@@ -20,10 +20,12 @@ SDL_Rect* menuRect;
 Mix_Chunk*[] menuSFX;
 
 int selectedIndex;
-int spacing = 100;
+int spacing;
 
 void setup()
 {	    
+	spacing = cast(int)(100 * yScale);
+
 	selectedIndex = MenuItem.START;
 
 	menuRect = new SDL_Rect();
@@ -48,7 +50,7 @@ void playSFX()
 {
 	menuSFXIndexOne = uniform(0, 4);
 	menuSFXIndexTwo = uniform(4, 8);
-	menuSFXIndexThree = uniform(8, 11); // last one cut, a bit dist ---------------------------------------------------------
+	menuSFXIndexThree = uniform(8, 11); 
 
 	Mix_PlayChannel(-1, menuSFX[menuSFXIndexOne], 0);
 	Mix_PlayChannel(-1, menuSFX[menuSFXIndexTwo], 0);
@@ -128,12 +130,12 @@ void drawMenuItem(string item, string item_, bool condition)
 
 void updateAndDraw()
 {
-	menuRect.w = app.currentDisplay.w; menuRect.h = 160; 
-	menuRect.x = 0; menuRect.y = 450;
+	menuRect.w = app.currentDisplay.w; menuRect.h = cast(int)(160 * app.yScale); 
+	menuRect.x = 0; menuRect.y = cast(int)(450 * app.yScale);
 	SDL_RenderCopy(renderer, menuGFX["logo"], null, menuRect);
 
 	menuRect.h = spacing;
-	menuRect.y = 650;
+	menuRect.y = cast(int)(650 * yScale);
 
 	if(selectedIndex == MenuItem.START)
 	{

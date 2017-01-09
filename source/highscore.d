@@ -4,7 +4,7 @@ JSONValue scoreJSON;
 string filename = "highscore.json";
 Highscore[] highscores;
 
-SDL_Rect* 
+SDL_Rect 
 	highscoRect, 
 	headerRect, 
 	goBackRect;
@@ -28,9 +28,7 @@ struct Highscore
 
 void setup()
 {
-	highscoRect = new SDL_Rect();
-	headerRect = new SDL_Rect();
-	goBackRect = new SDL_Rect();
+	writeln(to!string(yScale) ~ ", " ~ to!string(xScale));
 
 	scope(failure)
 	{
@@ -73,7 +71,7 @@ void setup()
 		app.fontLarge, &header, score.color);
 	assert(header);
 	headerRect.x = app.middleX - headerRect.w/2;
-	headerRect.y = 50;
+	headerRect.y = cast(int)(50 * yScale);
 
 	app.createTexture(renderer, goBackRect.w, goBackRect.h, "press esc to go back",
 		app.fontSmall, &goBack, score.color);
@@ -83,32 +81,32 @@ void setup()
 
 void updateAndDraw()
 {
-	SDL_RenderCopy(renderer, header, null, headerRect);
+	SDL_RenderCopy(renderer, header, null, &headerRect);
 
-	int yOffset = (app.currentDisplay.h / 1080) * 200;
-	int xOffset = (app.currentDisplay.w / 1080) * 300;
+	int yOffset = cast(int)(yScale * 200);
+	int xOffset = cast(int)(xScale * 300);
 
 	foreach(highscore; highscores)
 	{
 		// score
-		highscoRect.w = highscore.scoreWidth;
-		highscoRect.h = highscore.scoreHeight;
-		highscoRect.x = app.currentDisplay.w - highscoRect.w - xOffset;
+		highscoRect.w = cast(int)(highscore.scoreWidth * xScale);
+		highscoRect.h = cast(int)(highscore.scoreHeight * yScale);
+		highscoRect.x = cast(int)(app.currentDisplay.w - highscoRect.w - xOffset);
 		highscoRect.y = yOffset;
-		SDL_RenderCopy(renderer, highscore.scoreTexture, null, highscoRect);
+		SDL_RenderCopy(renderer, highscore.scoreTexture, null, &highscoRect);
 
 		// name
-		highscoRect.w = highscore.nameWidth;
-		highscoRect.h = highscore.nameHeight;
+		highscoRect.w = cast(int)(highscore.nameWidth * xScale);
+		highscoRect.h = cast(int)(highscore.nameHeight * yScale);
 		highscoRect.x = xOffset;
 		highscoRect.y = yOffset;
-		SDL_RenderCopy(renderer, highscore.nameTexture, null, highscoRect);
+		SDL_RenderCopy(renderer, highscore.nameTexture, null, &highscoRect);
 
-		yOffset += highscore.scoreHeight;
+		yOffset += cast(int)(highscore.scoreHeight * yScale);
 	}
 
-	goBackRect.y = yOffset + 20;
-	SDL_RenderCopy(renderer, goBack, null, goBackRect);
+	goBackRect.y = cast(int)(yOffset + (20 * yScale));
+	SDL_RenderCopy(renderer, goBack, null, &goBackRect);
 }
 
 bool checkScore(ulong score)

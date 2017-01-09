@@ -1,18 +1,19 @@
 import everything;
 
-const int charOffset = 120;
+int charOffset;
 int charIndex = 2;
 
 struct MenuTexture
 {
 	SDL_Texture* texture;
-	SDL_Rect* rect;
+	SDL_Rect rect;
 
 	void create(int x, int y, string text, TTF_Font* font)
 	{
-		rect = new SDL_Rect();
 		this.text = text;
 		app.createTexture(renderer, rect.w, rect.h, text, font, &texture, score.color);
+		rect.w = cast(int)(rect.w * app.xScale);
+		rect.h = cast(int)(rect.h*app.yScale);
 		rect.x = x - rect.w/2;
 		rect.y = y - rect.h/2;
 	}
@@ -24,7 +25,7 @@ struct MenuTexture
 
 	void render()
 	{
-		SDL_RenderCopy(renderer, texture, null, rect);
+		SDL_RenderCopy(renderer, texture, null, &rect);
 	}
 }
 
@@ -34,16 +35,16 @@ MenuTexture[7] menuTextures;
 
 void setup()
 {
-	int scaler = cast(int) (1080.0 / app.currentDisplay.h);
+	charOffset = cast(int)(120 * app.xScale);
 
     initials ~= ['-', '-', '-'];
-	menuTextures[0].create(app.middleX, scaler * 200, "new highscore!", app.fontLarge);
-	menuTextures[1].create(app.middleX, scaler * 400, "enter initials", app.fontMedium);
-	menuTextures[2].create(app.middleX - charOffset, scaler * 700, "-", app.fontLarge);
-	menuTextures[3].create(app.middleX, scaler * 700, "-", app.fontLarge);
-	menuTextures[4].create(app.middleX + charOffset, scaler * 700, "-", app.fontLarge);
-	menuTextures[5].create(app.middleX,	scaler * 900, "or press escape", app.fontSmall);
-	menuTextures[6].create(app.middleX, scaler * 1000, "press enter to confirm", app.fontMedium);	
+	menuTextures[0].create(app.middleX, cast(int)(app.yScale * 200), "new highscore!", app.fontLarge);
+	menuTextures[1].create(app.middleX, cast(int)(app.yScale * 400), "enter initials", app.fontMedium);
+	menuTextures[2].create(app.middleX - charOffset, cast(int)(app.yScale * 700), "-", app.fontLarge);
+	menuTextures[3].create(app.middleX, cast(int)(app.yScale * 700), "-", app.fontLarge);
+	menuTextures[4].create(app.middleX + charOffset, cast(int)(app.yScale * 700), "-", app.fontLarge);
+	menuTextures[5].create(app.middleX,	cast(int)(app.yScale * 900), "or press escape", app.fontSmall);
+	menuTextures[6].create(app.middleX, cast(int)(app.yScale * 1000), "press enter to confirm", app.fontMedium);	
 }
 		
 

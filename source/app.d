@@ -18,6 +18,7 @@ uint ticks;
 TTF_Font* fontSmall, fontMedium, fontLarge, fontYuge;
 const string fontPath = "font/Cornerstone.ttf";
 int middleX, middleY;
+float xScale, yScale;
 
 void main()
 {
@@ -50,7 +51,10 @@ void main()
     
     middleX = currentDisplay.w/2;
     middleY = currentDisplay.h/2;
-
+    
+    yScale = app.currentDisplay.h / 1080f;
+    xScale = app.currentDisplay.w / 1920f;
+    
     fontMedium = TTF_OpenFont(fontPath.toStringz(), 70);
     assert(fontMedium);
 
