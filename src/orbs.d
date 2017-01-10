@@ -1,6 +1,6 @@
 import everything;
 
-SDL_Rect* orbSRect, orbDRect;
+SDL_Rect orbSRect, orbDRect;
 SDL_Texture*[] smallOrbTextures;
 SDL_Texture*[] mediumOrbTextures;
 Orb[] activeOrbs;
@@ -45,22 +45,9 @@ void createOrb(
 		int hitPointsMin, int hitPointsMax, int moveMin, int moveMax)
 {
 	Orb o;
-	if(uniform(0,2)) // yes/no positive y
-	{
-		o.y = uniform((app.currentDisplay.h + orbMargin), yMax);
-		o.x = uniform(min, xMax);
-	}
 
-	else if(uniform(0,2)) // yes/no positive x
-	{
-		o.x = uniform((app.currentDisplay.w + orbMargin), xMax);
-		o.y = uniform(min, yMax);
-	}
-	else // neg x
-	{
-		o.x = uniform(min, min + orbMargin);
-		o.y = uniform(min, yMax);
-	}
+	o.x = uniform(app.currentDisplay.w + 5 + size, xMax);
+	o.y = uniform(app.currentDisplay.h + 5 + size, yMax);
 
 	o.hitPoints = uniform(hitPointsMin, hitPointsMax);
 	o.hitSFXindex = 4; // ------------------------------------------- diff sound
@@ -138,7 +125,7 @@ void checkBounds(ref Orb orb, int min, int xMax, int yMax)
 		}
 		else if(orb.y > yMax)
 		{
-			orb.y = 0 + (orb.y - yMax);
+			orb.y = (min);
 		}
 
 		if(orb.x < min)
@@ -147,15 +134,13 @@ void checkBounds(ref Orb orb, int min, int xMax, int yMax)
 		}
 		else if(orb.x > xMax)
 		{
-			orb.x = 0 + (orb.x - xMax);
+			orb.x = (min);
 		}
 }
 
 void setup()
 {
 	resetTimers();
-	orbSRect = new SDL_Rect();
-	orbDRect = new SDL_Rect();
 
 	orbSRect.y = 0;
 
@@ -273,6 +258,6 @@ void updateAndDraw()
 		else sprite %= ORB_FRAMES_LARGE;
 
 		orbSRect.x = sprite * orb.size;
-		SDL_RenderCopyEx(renderer, orb.texture, orbSRect, orbDRect, orb.angle, null, 0);
+		SDL_RenderCopyEx(renderer, orb.texture, &orbSRect, &orbDRect, orb.angle, null, 0);
 	}
 }

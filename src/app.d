@@ -12,6 +12,8 @@ enum AppState
 const int FPS = 60;
 int state = AppState.MENU;
 bool running = true;
+bool windowVisible = false;
+
 SDL_DisplayMode currentDisplay;
 SDL_Renderer* renderer;
 uint ticks;
@@ -92,6 +94,22 @@ void main()
         {
             switch(event.type)
             {
+                case SDL_WINDOWEVENT:
+                {
+                    if(event.window.event == SDL_WINDOWEVENT_FOCUS_GAINED)
+                    {
+                        windowVisible = true;
+                        writeln("visible");
+                    }
+                    else if(event.window.event == SDL_WINDOWEVENT_FOCUS_LOST)
+                    {
+                        windowVisible = false;
+                        writeln("invisible");
+                    }
+                    break;
+                }                     
+
+
                 case SDL_QUIT:
                 {
                     running = false;
@@ -110,6 +128,16 @@ void main()
                                 primaryfire.fireCooldown = 0;
                                 primaryfire.sequencePlaying = false;
                             } 
+                        }
+                        
+                        else if(event.button.button == SDL_BUTTON_MIDDLE)
+                        {
+                            secondaryfire.secondaryFire = !secondaryfire.secondaryFire;
+                        }
+
+                        else if(event.button.button == SDL_BUTTON_RIGHT)
+                        {
+                            tertiaryfire.detonate();
                         }
 
                     }
@@ -151,7 +179,7 @@ void main()
                         }
 
                         default:
-                            break;
+                        break;
                     }
                     break;
                 }

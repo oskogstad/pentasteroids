@@ -28,8 +28,6 @@ struct Highscore
 
 void setup()
 {
-	writeln(to!string(yScale) ~ ", " ~ to!string(xScale));
-
 	scope(failure)
 	{
 		// todo

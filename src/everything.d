@@ -4,7 +4,6 @@ public import
     gameover,
     world,
     menu,
-    primaryfire,
     player,
     orbs,
     orb,
@@ -14,6 +13,9 @@ public import
     score,
     highscore,
     entername,
+    primaryfire,
+    secondaryfire,
+    tertiaryfire,
 
     std.string,
     std.stdio,

@@ -18,21 +18,20 @@ PrimaryGFX[] bullets;
 
 SDL_Texture *bulletGFX;
 int bulletGFXHeight, bulletGFXWidth;
-SDL_Rect *bulletGFXRect;
+SDL_Rect bulletGFXRect;
 int bulletMoveLength = 20;
 ubyte bulletVolume = 55;
 ubyte orbHitVolume = 70; // ---------------------------------------------------- tune with music
 float fireCooldown = -1;
 float angleOffset = 0.1;
 int radius = 10; // eyeballed from photoshop :D
-bool primaryFire = false;
-bool sequencePlaying = false;
+bool primaryFire;
+bool sequencePlaying;
 int sequenceIndex = 0;
-
+int bulletMargin = 10;
 
 void setup()
 {
-	bulletGFXRect = new SDL_Rect();
 	bulletGFX = IMG_LoadTexture(renderer, "img/primaryBullet.png");
 	SDL_QueryTexture(bulletGFX, null, null, &bulletGFXWidth, &bulletGFXHeight);
 	assert(bulletGFX);
@@ -56,7 +55,6 @@ void setup()
 
 void updateAndDraw()
 {
-
 	if(primaryFire && !player.dead)
 	{
 		if(fireCooldown > 0) 
@@ -103,15 +101,15 @@ void updateAndDraw()
 
 	foreach(ref bullet; bullets)
 	{
-		if((bullet.x < - 50) || (bullet.x > (app.currentDisplay.w + 50)) || 
-			(bullet.y < - 50) || (bullet.y > (app.currentDisplay.h + 50)))
+		if((bullet.x < - bulletMargin) || (bullet.x > (app.currentDisplay.w + bulletMargin)) || 
+			(bullet.y < - bulletMargin) || (bullet.y > (app.currentDisplay.h + bulletMargin)))
 		{
 			bullet.del = true;
 		}
 
 		bulletGFXRect.x = bullet.x - bulletGFXRect.w/2;
 		bulletGFXRect.y = bullet.y - bulletGFXRect.h/2;
-		SDL_RenderCopy(renderer, bulletGFX, null, bulletGFXRect);
+		SDL_RenderCopy(renderer, bulletGFX, null, &bulletGFXRect);
 
 		bullet.x += bullet.dx;
 		bullet.y += bullet.dy;

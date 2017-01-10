@@ -14,6 +14,7 @@ void setup()
 	orbs.setup();
 	player.setup();
 	primaryfire.setup();
+	secondaryfire.setup();
 	sparks.setup();
 	score.setup();
 }
@@ -37,6 +38,7 @@ void updateAndDraw()
 	
 	primaryfire.updateAndDraw();
 	orbs.updateAndDraw();
+	secondaryfire.updateAndDraw();
 	ringblasts.updateAndDraw();
 	sparks.updateAndDraw();
 

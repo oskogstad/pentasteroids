@@ -163,10 +163,6 @@ void updateAndDraw()
 	// w and h allready /2
 	crossHairRect.y = mouseY - crossHairHeight, crossHairRect.x = mouseX - crossHairWidth; 
 
-	if (mouseState & SDL_BUTTON(SDL_BUTTON_RIGHT)) {writeln("RIGHT FIRE");}
-	if (mouseState & SDL_BUTTON(SDL_BUTTON_MIDDLE)) {writeln("MID FIRE");}
-
-
 	playerTextureRect.x = xPos - playerTextureRect.w/2;
 	playerTextureRect.y = yPos - playerTextureRect.h/2;
 
