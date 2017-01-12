@@ -21,31 +21,21 @@ void setup()
 	sfSRect.w = 2300; 
 	sfSRect.h = 200;
 	sfSRect.x = 0;
-
-	sfDRect.x = 1;
-	sfDRect.y = 1;
 }
 
 void updateAndDraw()
 {
 	if(secondaryFire && fuel > 0)
 	{
-		sfSprite = (app.ticks/25) % SF_NUM_FRAMES;
-		sfSRect.y = sfSprite * 200;
- 		
- 		float s = sin(angle);
-  		float c = cos(angle);
+		sfSprite = (app.ticks/25) % SF_NUM_FRAMES; // /25 for slowing down animation
+		sfSRect.y = sfSprite * 200; // 200 height of texture-----------------------------------------------------------------------------------------
 		
-		//sfDRect.x = -player.xPos;
-		//sfDRect.y = -player.yPos;
+		sfDRect.x = player.xPos;
+		sfDRect.y = player.yPos - sfDRect.h/2;
 		
-		float xnew = sfDRect.x * c - sfDRect.y * s;
-  		float ynew = sfDRect.x * s + sfDRect.y * c;
+		SDL_Point p; p.x = 0 ; p.y = sfDRect.h/2;
 
-  		sfDRect.x = cast(int)xnew;
-  		sfDRect.y = cast(int)ynew;
-		SDL_Point p; p.x = player.xPos; p.y = player.yPos;
 		SDL_RenderCopyEx(renderer, sfGFX, &sfSRect, &sfDRect, angle*TO_DEG, &p, 0);
-		//fuel-=0.1f;
+		//fuel-=1f;
 	}	
 }
