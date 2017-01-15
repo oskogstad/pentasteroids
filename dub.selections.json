@@ -1,10 +1,13 @@
 {
 	"fileVersion": 1,
 	"versions": {
+		"derelict-al": "1.0.3",
 		"derelict-fmod": "2.0.4",
 		"derelict-gl3": "1.0.19",
+		"derelict-ogg": "1.0.2",
 		"derelict-sdl2": "2.1.0",
 		"derelict-sdl2_gfx": "~master",
-		"derelict-util": "2.0.6"
+		"derelict-util": "2.0.6",
+		"derelict-vorbis": "1.0.2"
 	}
 }

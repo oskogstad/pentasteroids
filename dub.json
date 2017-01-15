@@ -5,6 +5,8 @@
 	],
 	"dependencies": {
 		"derelict-sdl2": "~>2.1.0",
+		"derelict-al": "~>1.0.3",
+		"derelict-vorbis": "~>1.0.2"
 	},
 	"description": "pentasteroid, space orb shooter",
 }
