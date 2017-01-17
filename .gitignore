@@ -8,3 +8,4 @@ __test__*__
 build/
 highscore.json
 *.bmp
+screenshots/
