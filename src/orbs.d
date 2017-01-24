@@ -171,7 +171,7 @@ void updateAndDraw()
 		// secondary wep
 		if(secondaryfire.secondaryFire)
 		{
-			if(secondaryfire.hitByBeam(orb.x, orb.y, orb.radius, player.xPos, player.yPos, game.angle, player.radius*2))
+			if(secondaryfire.hitByBeam(orb.x, orb.y, orb.radius, player.xPos, player.yPos, game.angle, 120f)) // beam-hit-radius ----------------------------------------------
 			{
 				orb.del = true; // ----------------------------------------------------------------------
 			}
