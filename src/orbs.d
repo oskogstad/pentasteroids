@@ -168,6 +168,16 @@ void updateAndDraw()
 	player.currentlyBeingHit = false;
 	foreach(ref orb; activeOrbs)
 	{
+		// secondary wep
+		if(secondaryfire.secondaryFire)
+		{
+			if(secondaryfire.hitByBeam(orb.x, orb.y, orb.radius, player.xPos, player.yPos, game.angle, player.radius*2))
+			{
+				orb.del = true; // ----------------------------------------------------------------------
+			}
+		}
+
+		// player/orb
 		float playerDist = distanceSquared(orb.x, orb.y, player.xPos, player.yPos);
 		if(playerDist < (orb.radius + player.radius)^^2)
 		{	
@@ -188,6 +198,8 @@ void updateAndDraw()
 			ringblasts.createBlast(x, y, orb.size);
 		}
 
+
+		// bullets
 		foreach(ref bullet; bullets)
 		{
 			float dist = distanceSquared(orb.x, orb.y, bullet.x, bullet.y);

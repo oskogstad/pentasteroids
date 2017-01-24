@@ -39,3 +39,38 @@ void updateAndDraw()
 		//fuel-=1f;
 	}	
 }
+
+bool hitByBeam(float enemyX, float enemyY, float enemyRadius, float beamOriginX, float beamOriginY, float beamAngle, float beamWidth)
+{
+    float vx, vy; // Direction vector of the beam
+    vx = cos(beamAngle);
+    vy = sin(beamAngle);
+
+    float ex, ey; // Vector from beam origin to enemy position
+    ex = enemyX - beamOriginX;
+    ey = enemyY - beamOriginY;
+
+    float distanceFromCenterLine = abs(vx*ey - vy*ex); // the distance from the enemy center to the middle ray of the beam
+    if (distanceFromCenterLine < (enemyRadius + beamWidth/2))
+    {
+        // Normalize the vector from beam origin to enemy. eLength is the distance from the enemy to the beam origin
+        float eLength = sqrt(ex*ex + ey*ey);
+        ex /= eLength;
+        ey /= eLength;
+
+        if ((vx*ex + vy*ey) <= 0)
+        {
+            // This is an edge case where the enemy origin is behind the beam, but it's radius might still be large enoughfor it to be hit.
+            // We handle this case using normal circle vs circle collision test.
+            return eLength < enemyRadius+beamWidth/2;
+        }
+        else
+        {
+            return true;
+        }
+    }
+    else
+    {
+        return false;
+    }
+}
