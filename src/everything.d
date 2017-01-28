@@ -16,6 +16,9 @@ public import
     primaryfire,
     secondaryfire,
     tertiaryfire,
+    soundsystem,
+    soundchannels,
+    utils,
 
     std.string,
     std.stdio,

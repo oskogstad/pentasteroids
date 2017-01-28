@@ -144,10 +144,10 @@ void setup()
 
 	orbSRect.y = 0;
 
-	app.loadGFXFromDisk("img/orbs/small/", renderer, smallOrbTextures);
+	utils.loadGFXFromDisk("img/orbs/small/", renderer, smallOrbTextures);
 	foreach(texture; smallOrbTextures) assert(texture);
 
-	app.loadGFXFromDisk("img/orbs/medium/", renderer, mediumOrbTextures);
+	utils.loadGFXFromDisk("img/orbs/medium/", renderer, mediumOrbTextures);
 	foreach(texture; mediumOrbTextures) assert(texture);
 
 	// setting spawn area limits for orbs, also use these for teleport edges

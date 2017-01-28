@@ -44,7 +44,7 @@ void setup()
 	xMargin = 800;
 	yMargin = 600;
 
-	app.loadGFXFromDisk("img/backgrounds/", renderer, backgrounds);
+	utils.loadGFXFromDisk("img/backgrounds/", renderer, backgrounds);
 	foreach(texture; backgrounds) assert(texture);
 
 	for(int i = 0; i < WORLD_WIDTH * WORLD_HEIGHT; ++i)

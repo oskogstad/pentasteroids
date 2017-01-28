@@ -45,7 +45,7 @@ void updateAndDraw()
 	if(!playedSFX)
 	{
 		Mix_PlayChannel(-1, gameOverSFX, 0);
-		app.createTexture(renderer, finalScoRect.w, finalScoRect.h, 
+		utils.createTexture(renderer, finalScoRect.w, finalScoRect.h, 
 			"Score: " ~ to!string(currentScore), 
 			app.fontMedium, &finalScore, score.color);
 		assert(finalScore);

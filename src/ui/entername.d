@@ -11,7 +11,7 @@ struct MenuTexture
 	void create(int x, int y, string text, TTF_Font* font)
 	{
 		this.text = text;
-		app.createTexture(renderer, rect.w, rect.h, text, font, &texture, score.color);
+		utils.createTexture(renderer, rect.w, rect.h, text, font, &texture, score.color);
 		rect.w = cast(int)(rect.w * app.xScale);
 		rect.h = cast(int)(rect.h*app.yScale);
 		rect.x = x - rect.w/2;
@@ -20,7 +20,7 @@ struct MenuTexture
 
 	void updateTexture(char c, TTF_Font* font)
 	{
-		app.createTexture(renderer, rect.w, rect.h, [c], font, &texture, score.color);
+		utils.createTexture(renderer, rect.w, rect.h, [c], font, &texture, score.color);
 	}
 
 	void render()

@@ -1,8 +1,13 @@
 import everything;
 
+Mix_Chunk* music01;
+
 void setup()
 {
 	// load all chunks
+	music01 = Mix_LoadWAV("sfx/music/menu_pad01_arp.wav");
+	assert(music01);
+	Mix_PlayChannel(-1, music01, -1);
 }
 
 void updateAndPlay()

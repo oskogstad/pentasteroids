@@ -37,14 +37,14 @@ void setup()
 	assert(bulletGFX);
 	bulletGFXRect.w = bulletGFXWidth, bulletGFXRect.h = bulletGFXHeight;
 
-	app.loadSFXFromDisk("sfx/orbHitScale/", orbHitSFX);
+	utils.loadSFXFromDisk("sfx/orbHitScale/", orbHitSFX);
 	foreach(audio; orbHitSFX)
 	{
 		assert(audio);
 		audio.volume = orbHitVolume;
 	} 
 
-	app.loadSFXFromDisk("sfx/primaryScale/", bulletFireSFX);
+	utils.loadSFXFromDisk("sfx/primaryScale/", bulletFireSFX);
 
 	foreach(audio; bulletFireSFX) 
 	{

@@ -38,7 +38,7 @@ void setup()
 	}
 	foreach(sfx; menuGFX) assert(sfx);
 
-	app.loadSFXFromDisk("sfx/menuScale/", menuSFX);
+	utils.loadSFXFromDisk("sfx/menuScale/", menuSFX);
 	foreach(sfx;menuSFX) 
 	{
 		assert(sfx);

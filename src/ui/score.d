@@ -14,7 +14,7 @@ void updateAndDraw()
 {
 	currentScore++;
 	scoRect.x = 20; scoRect.y = 20;
-	app.createTexture(renderer, scoRect.w, scoRect.h, to!string(currentScore), app.fontMedium, &texture, color);
+	utils.createTexture(renderer, scoRect.w, scoRect.h, to!string(currentScore), app.fontMedium, &texture, color);
 	SDL_RenderCopy(renderer, texture, null, scoRect);
 }
 

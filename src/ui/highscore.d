@@ -65,13 +65,13 @@ void setup()
 
 	createHighScoreTextures();
 
-	app.createTexture(renderer, headerRect.w, headerRect.h, "highscore",
+	utils.createTexture(renderer, headerRect.w, headerRect.h, "highscore",
 		app.fontLarge, &header, score.color);
 	assert(header);
 	headerRect.x = app.middleX - headerRect.w/2;
 	headerRect.y = cast(int)(50 * yScale);
 
-	app.createTexture(renderer, goBackRect.w, goBackRect.h, "press esc to go back",
+	utils.createTexture(renderer, goBackRect.w, goBackRect.h, "press esc to go back",
 		app.fontSmall, &goBack, score.color);
 	assert(header);
 	goBackRect.x = app.middleX - goBackRect.w/2;
@@ -137,12 +137,12 @@ void createHighScoreTextures()
 
 		// name texture
         string nameAndNumber = to!string(index + 1) ~ ". "~ highscore["name"].str;
-        app.createTexture(app.renderer, h.nameWidth, h.nameHeight, nameAndNumber,
+        utils.createTexture(app.renderer, h.nameWidth, h.nameHeight, nameAndNumber,
         	app.fontMedium, &h.nameTexture, score.color);
         assert(h.nameTexture);
 
 		// score texture
-		app.createTexture(app.renderer, h.scoreWidth, h.scoreHeight, to!string(highscore["score"]),
+		utils.createTexture(app.renderer, h.scoreWidth, h.scoreHeight, to!string(highscore["score"]),
         	app.fontMedium, &h.scoreTexture, score.color);
         assert(h.scoreTexture);
         
