@@ -66,10 +66,12 @@ void main()
     fontSmall = TTF_OpenFont(fontPath.toStringz(), 40);
     assert(fontSmall);
 
-    auto icon = SDL_LoadBMP("img/icon.bmp");
-    assert(icon);
-
-    SDL_SetWindowIcon(window, icon);
+    version(Windows)
+    {
+        auto icon = SDL_LoadBMP("img/icon.bmp");
+        assert(icon);
+        SDL_SetWindowIcon(window, icon);
+    }
 
     SDL_SetHint(SDL_HINT_RENDER_VSYNC, "1");
     SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
