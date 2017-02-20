@@ -181,20 +181,7 @@ void updateAndDraw()
 		float playerDist = distanceSquared(orb.x, orb.y, player.xPos, player.yPos);
 		if(playerDist < (orb.radius + player.radius)^^2)
 		{	
-			float vx = orb.x - player.xPos;
-			float vy = orb.y - player.yPos;
-			float len = sqrt(vx^^2 + vy^^2);
-			if(len != 0)
-			{
-				vx = vx/len * player.radius;
-				vy = vy/len * player.radius;
-			}
-
 			player.currentlyBeingHit = true;
-			
-			int x = cast(int) (player.xPos + vx);
-			int y = cast(int) (player.yPos + vy);
-
 		}
 
 
