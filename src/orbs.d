@@ -195,7 +195,6 @@ void updateAndDraw()
 			int x = cast(int) (player.xPos + vx);
 			int y = cast(int) (player.yPos + vy);
 
-			ringblasts.createBlast(x, y, orb.size);
 		}
 
 
@@ -265,6 +264,8 @@ void updateAndDraw()
 		orbSRect.h = orb.size;
 
 		sprite = ((app.ticks / orb.animationDivisor) + orb.animationOffset);
+		//sprite = app.ticks + orb.animationOffset;
+
 		if(orb.size == Size.SMALL) sprite %= ORB_FRAMES_SMALL;
 		else if(orb.size == Size.MEDIUM) sprite %= ORB_FRAMES_MEDIUM;
 		else sprite %= ORB_FRAMES_LARGE;
