@@ -6,7 +6,7 @@ SDL_Texture*[] mediumOrbTextures;
 Orb[] activeOrbs;
 
 const int 
-	ORB_FRAMES_SMALL = 40, 
+	ORB_FRAMES_SMALL = 4, 
 	ORB_FRAMES_MEDIUM = 5,
 	ORB_FRAMES_LARGE = 40;
 
