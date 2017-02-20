@@ -71,6 +71,7 @@ void main()
 
     SDL_SetWindowIcon(window, icon);
 
+    SDL_SetHint(SDL_HINT_RENDER_VSYNC, "1");
     SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
     
     SDL_ShowCursor(SDL_DISABLE);
