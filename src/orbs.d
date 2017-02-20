@@ -42,12 +42,19 @@ float distanceSquared(int p1x, int p1y, int p2x, int p2y)
 
 void createOrb(
 		Size size, int numFrames, int min, int xMax, int yMax, 
-		int hitPointsMin, int hitPointsMax, int moveMin, int moveMax)
+		int hitPointsMin, int hitPointsMax, int moveMin, int moveMax, int x, int y)
 {
 	Orb o;
-
-	o.x = uniform(app.currentDisplay.w + 5 + size, xMax);
-	o.y = uniform(app.currentDisplay.h + 5 + size, yMax);
+	if(x == int.max)
+	{
+		o.x = uniform(app.currentDisplay.w + 5 + size, xMax);
+		o.y = uniform(app.currentDisplay.h + 5 + size, yMax);
+	}
+	else
+	{
+		o.x = x + uniform(-5, 5);
+		o.y = y + uniform(-5, 5);
+	}
 
 	o.hitPoints = uniform(hitPointsMin, hitPointsMax);
 	o.hitSFXindex = 4; // ------------------------------------------- diff sound
@@ -94,8 +101,8 @@ void orbSpawner()
 	if(smallOrbTimer < 0)
 	{
 		// size, numFrames, XYmin, xMax, yMax, 
-		// hitPointsMin, hitPointsMax, 										 moveMax, moveMin
-		createOrb(Size.SMALL, ORB_FRAMES_SMALL, smallOrbMin, smallOrbXMax, smallOrbYMax, 3, 6, 5, 7);
+		// hitPointsMin, hitPointsMax, 										 moveMax, moveMin        spawn x / ;
+		createOrb(Size.SMALL, ORB_FRAMES_SMALL, smallOrbMin, smallOrbXMax, smallOrbYMax, 3, 6, 5, 7, int.max, int.max);
 	}
 	else
 	{
@@ -104,7 +111,7 @@ void orbSpawner()
 
 	if(mediumOrbTimer < 0)
 	{																			  //movespeed
-		createOrb(Size.MEDIUM, ORB_FRAMES_MEDIUM, mediumOrbMin, mediumOrbXMax, mediumOrbYMax, 10, 15, 3,5);
+		createOrb(Size.MEDIUM, ORB_FRAMES_MEDIUM, mediumOrbMin, mediumOrbXMax, mediumOrbYMax, 10, 15, 3,5, int.max, int.max);
 	}
 	else
 	{
@@ -184,14 +191,30 @@ void updateAndDraw()
 			player.currentlyBeingHit = true;
 		}
 
-
 		// bullets
 		foreach(ref bullet; bullets)
 		{
 			float dist = distanceSquared(orb.x, orb.y, bullet.x, bullet.y);
 			if(dist < (orb.radius + primaryfire.radius)^^2)
 			{
-				if(--orb.hitPoints == 0) orb.del = true;
+				if(--orb.hitPoints == 0) 
+				{
+					orb.del = true;
+					if(orb.size == Size.MEDIUM) 
+					{
+						// spawn small orbs
+						int numChildren = uniform(4,8);
+						for(int i = 0; i < numChildren; ++i)
+						{
+							createOrb(Size.SMALL, ORB_FRAMES_SMALL, smallOrbMin, smallOrbXMax, smallOrbYMax, 3, 6, 5, 7, orb.x, orb.y);
+						}
+					}
+					else if(orb.size == Size.LARGE)
+					{
+						// spawn medium orbs
+					}
+				}
+
 				orb.isShaking = true;
 				ringblasts.createBlast(bullet.x, bullet.y, orb.size);
 				score.addOrbHitScore(orb.size);
