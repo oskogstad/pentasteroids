@@ -103,7 +103,7 @@ void updateAndDraw()
 		yOffset += cast(int)(highscore.scoreHeight * yScale);
 	}
 
-	goBackRect.y = cast(int)(yOffset + (20 * yScale));
+	goBackRect.y = cast(int)(currentDisplay.h - ((goBackRect.h + 30) * yScale));
 	SDL_RenderCopy(renderer, goBack, null, &goBackRect);
 }
 
@@ -149,6 +149,7 @@ void createHighScoreTextures()
         highscores ~= h;
 	}
 }
+
 void handleInput(SDL_Event event)
 {
 	switch(event.key.keysym.sym)

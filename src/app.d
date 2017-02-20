@@ -174,6 +174,12 @@ void main()
                             break;
                         }
 
+                        case CREDITS:
+                        {
+                            credits.handleInput(event);
+                            break;
+                        }
+                        
                         case ENTER_NAME:
                         {
                             entername.handleInput(event);
@@ -221,6 +227,7 @@ void main()
 
             case CREDITS:
             {
+                credits.updateAndDraw();
                 break;
             }
 

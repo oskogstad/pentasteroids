@@ -4,6 +4,7 @@ public import
     gameover,
     world,
     menu,
+    credits,
     player,
     orbs,
     orb,

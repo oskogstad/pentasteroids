@@ -83,6 +83,7 @@ void handleInput(SDL_Event event)
 				break;
 
 				case CREDITS:
+				app.state = AppState.CREDITS;
 				break;
 
 				case QUIT:
