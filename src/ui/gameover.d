@@ -56,13 +56,13 @@ void updateAndDraw()
 
 	player.dyingOverlayRect.x = uniform(-3, 1);
 	player.dyingOverlayRect.y = uniform(-3, 1);
-	SDL_RenderCopy(renderer, player.dyingOverlayBottom, null, player.dyingOverlayRect);
+	SDL_RenderCopy(renderer, player.dyingOverlayBottom, null, &player.dyingOverlayRect);
 	player.dyingOverlayRect.x = uniform(-3, 1);
 	player.dyingOverlayRect.y = uniform(-3, 1);
-	SDL_RenderCopy(renderer, player.dyingOverlayMiddle, null, player.dyingOverlayRect);
+	SDL_RenderCopy(renderer, player.dyingOverlayMiddle, null, &player.dyingOverlayRect);
 	player.dyingOverlayRect.x = uniform(-3, 1);
 	player.dyingOverlayRect.y = uniform(-3, 1);
-	SDL_RenderCopy(renderer, player.dyingOverlayTop, null, player.dyingOverlayRect);
+	SDL_RenderCopy(renderer, player.dyingOverlayTop, null, &player.dyingOverlayRect);
 	
 	if(fadeScreenAlpha != 255) fadeScreenAlpha += 5;
 

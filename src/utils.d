@@ -42,3 +42,12 @@ void createTexture(SDL_Renderer* renderer, ref int width, ref int height, string
     height = surface.h;
     SDL_FreeSurface(surface);
 }
+
+// From the Arduino docs. Maps a number t that falls in the range minFrom to maxFrom, to another number in
+// the range between minTo and maxTo
+import std.traits : isNumeric;
+T mapToRange(T)(T t, T minFrom, T maxFrom, T minTo, T maxTo) if(isNumeric!T)
+{
+    return (t - minFrom) * (maxTo - minTo) / (maxFrom - minFrom) + minTo;
+}
+

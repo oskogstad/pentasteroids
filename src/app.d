@@ -136,7 +136,16 @@ void main()
                         
                         else if(event.button.button == SDL_BUTTON_MIDDLE)
                         {
-                            secondaryfire.secondaryFire = !secondaryfire.secondaryFire;
+                            if(secondaryFire) {
+                                secondaryFire = false;
+                            }
+                            else {
+                                // Only allow activating secondaryFire if fuel is full.
+                                if(secondaryfire.fuel >= secondaryfire.maxFuel) {
+                                    secondaryFire = true;
+                                }
+                            }
+                            //secondaryfire.secondaryFire = !secondaryfire.secondaryFire;
                         }
 
                         else if(event.button.button == SDL_BUTTON_RIGHT)

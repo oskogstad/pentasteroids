@@ -7,14 +7,25 @@ int hitPoints, hitPointsMidThreshold, hitPointsTopThreshold;
 bool shake, dead;
 
 SDL_Texture* playerTexture;
-SDL_Rect* playerTextureRect;
+SDL_Texture* playerBGTexture;
+SDL_Rect bgRect;
+SDL_Rect playerSrcRect;
+SDL_Rect playerTextureRect;
+int playerSpriteSize;
 SDL_Texture* crossHair;
-SDL_Rect* crossHairRect;
+SDL_Rect crossHairRect;
 SDL_Texture* 
 	dyingOverlayTop,
 	dyingOverlayMiddle,
 	dyingOverlayBottom;
-SDL_Rect* dyingOverlayRect;
+SDL_Rect dyingOverlayRect;
+
+int framesInAnim = 3;
+int currentAnimFrame = 0;
+int ticksPerFrame = 10;
+int tickCounter = 0;
+
+SDL_Rect fuelRect;
 
 int moveLength = 10;
 float thrustX = 0;    
@@ -39,7 +50,6 @@ void setup()
 	hitPointsMidThreshold = cast(int) (hitPoints * 0.4);
 	hitPointsTopThreshold = cast(int) (hitPoints * 0.6);
 
-	dyingOverlayRect = new SDL_Rect();
 	dyingOverlayTop = IMG_LoadTexture(renderer, "img/dying_overlay_top.png");
 	assert(dyingOverlayTop);
 	dyingOverlayMiddle = IMG_LoadTexture(renderer, "img/dying_overlay_middle.png");
@@ -50,20 +60,25 @@ void setup()
 	dyingOverlayRect.w = app.currentDisplay.w; 
 	dyingOverlayRect.h = app.currentDisplay.h;
 
-	crossHairRect = new SDL_Rect();
 	crossHair = IMG_LoadTexture(renderer, "img/crosshair.png");
 	assert(crossHair);
 	SDL_QueryTexture(crossHair, null, null, &crossHairWidth, &crossHairHeight);
 
-	playerTextureRect = new SDL_Rect();
 	playerTexture = IMG_LoadTexture(renderer, "img/player.png");
 	assert(playerTexture);
 
-	int twidth, theight;
-	SDL_QueryTexture(playerTexture, null, null, &twidth, &theight);
-	playerTextureRect.w = twidth, playerTextureRect.h = theight;
-	radius = twidth / 2;
+	radius = 81;
+    playerSpriteSize = 162;
 	player.radiusSquared = radius * radius;
+	playerTextureRect.w = radius*2, playerTextureRect.h = radius*2;
+
+    playerBGTexture = IMG_LoadTexture(renderer, "img/playerbg.png");
+    bgRect.w = bgRect.h = 100;
+
+    fuelRect.w = 40;
+    fuelRect.h = 64;
+
+    playerSrcRect.w = playerSpriteSize, playerSrcRect.h = playerSpriteSize;
 
 	xPos = app.middleX;
 	yPos = app.middleY;
@@ -74,6 +89,7 @@ void setup()
 
     // further /2 for offset when drawing in main loop
     crossHairWidth /= 2; crossHairHeight /= 2;
+
     playerHitSFX = Mix_LoadWAV("sfx/player_hit.wav");
     assert(playerHitSFX); 
 }
@@ -196,9 +212,34 @@ void updateAndDraw()
 		playerTextureRect.y += uniform(-7,7);
 	}
 
+    // Do anim stuff
+    if(++tickCounter >= ticksPerFrame) {
+        tickCounter = 0;
+        if(++currentAnimFrame >= framesInAnim) currentAnimFrame = 0;
+        playerSrcRect.x = playerSpriteSize * currentAnimFrame;
+    }
 
-	SDL_RenderCopyEx(renderer, playerTexture, null, playerTextureRect, (game.angle * TO_DEG + 90), null, 0); // +90 because rotation stuff 
-	if(!game.angleMode) SDL_RenderCopy(renderer, crossHair, null, crossHairRect);
+    // Update fuel rect
+    fuelRect.x = xPos;
+    fuelRect.y = yPos - fuelRect.h/2;
+    fuelRect.w = cast(int)mapToRange!float(secondaryfire.fuel, 0, secondaryfire.maxFuel, 10, 40);
+    immutable SDL_Point pivot = SDL_Point(0, fuelRect.h/2);
+
+    bgRect.x = xPos - bgRect.w/2;
+    bgRect.y = yPos - bgRect.h/2;
+
+    // Now we make the light gree when fuel is full, but when bombs are implemented, it should probably be used for that instead
+    if(secondaryfire.fuel >= maxFuel) {
+        playerSrcRect.y = playerSpriteSize;
+    }
+    else {
+        playerSrcRect.y = 0;
+    }
+
+    SDL_RenderCopy(renderer, playerBGTexture, null, &bgRect);
+    SDL_RenderCopyEx(renderer, secondaryfire.sfGFX, &secondaryfire.sfSRect, &fuelRect, (game.angle * TO_DEG), &pivot, 0);
+	SDL_RenderCopyEx(renderer, playerTexture, &playerSrcRect, &playerTextureRect, (game.angle * TO_DEG + 90), null, 0); // +90 because rotation stuff 
+	if(!game.angleMode) SDL_RenderCopy(renderer, crossHair, null, &crossHairRect);
 
 	if(damageTaken > 0)
 	{
@@ -213,7 +254,7 @@ void updateAndDraw()
 			dyingOverlayRect.x = uniform(-3, 1); // textures are 1923*1083
 			dyingOverlayRect.y = uniform(-3, 1);
 			SDL_SetTextureAlphaMod(dyingOverlayBottom, alphaMod);
-			SDL_RenderCopy(renderer, dyingOverlayBottom, null, dyingOverlayRect);
+			SDL_RenderCopy(renderer, dyingOverlayBottom, null, &dyingOverlayRect);
 		}
 		
 		if(damageTaken > hitPointsMidThreshold)
@@ -224,13 +265,13 @@ void updateAndDraw()
 			dyingOverlayRect.x = uniform(-3, 1); // textures are 1923*1083
 			dyingOverlayRect.y = uniform(-3, 1);
 			SDL_SetTextureAlphaMod(dyingOverlayMiddle, alphaMod);
-			SDL_RenderCopy(renderer, dyingOverlayMiddle, null, dyingOverlayRect);
+			SDL_RenderCopy(renderer, dyingOverlayMiddle, null, &dyingOverlayRect);
 		}
 
 		ubyte alphaMod = cast(ubyte) (((cast(float)damageTaken)/hitPoints) * 255);
 		dyingOverlayRect.x = uniform(-3, 1);
 		dyingOverlayRect.y = uniform(-3, 1);
 		SDL_SetTextureAlphaMod(dyingOverlayTop, alphaMod);
-		SDL_RenderCopy(renderer, dyingOverlayTop, null, dyingOverlayRect);
+		SDL_RenderCopy(renderer, dyingOverlayTop, null, &dyingOverlayRect);
 	}
 }

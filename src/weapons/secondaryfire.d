@@ -8,9 +8,13 @@ uint sfSprite;
 
 const int SF_NUM_FRAMES = 14;
 
+immutable float maxFuel = 180;
+immutable float fuelDepletionRate = 1.0f;
+immutable float fuelRegenRate = 0.1f;
+
 void setup()
 {
-	fuel = 180;
+	fuel = maxFuel;
 	
 	sfGFX = IMG_LoadTexture(renderer, "img/secondaryFire.png");
 	assert(sfGFX);
@@ -25,19 +29,28 @@ void setup()
 
 void updateAndDraw()
 {
+    // Keep this outside the if, because we use it to animate the fuel meter in Player as well
+    sfSprite = (app.ticks/25) % SF_NUM_FRAMES; // /25 for slowing down animation
+    sfSRect.y = sfSprite * 200; // 200 height of texture-----------------------------------------------------------------------------------------
+
 	if(secondaryFire && fuel > 0)
 	{
-		sfSprite = (app.ticks/25) % SF_NUM_FRAMES; // /25 for slowing down animation
-		sfSRect.y = sfSprite * 200; // 200 height of texture-----------------------------------------------------------------------------------------
-		
 		sfDRect.x = player.xPos;
 		sfDRect.y = player.yPos - sfDRect.h/2;
 		
-		SDL_Point p; p.x = 0 ; p.y = sfDRect.h/2;
+		immutable SDL_Point p = SDL_Point(0, sfDRect.h/2);
 
 		SDL_RenderCopyEx(renderer, sfGFX, &sfSRect, &sfDRect, angle*TO_DEG, &p, 0);
-		//fuel-=1f;
+
+		fuel -= fuelDepletionRate;
+        if(fuel < 0) {
+            fuel = 0;
+            secondaryFire = false;
+        }
 	}	
+    else {
+        if((fuel += fuelRegenRate) > 180) fuel = maxFuel;
+    }
 }
 
 bool hitByBeam(float enemyX, float enemyY, float enemyRadius, float beamOriginX, float beamOriginY, float beamAngle, float beamWidth)
