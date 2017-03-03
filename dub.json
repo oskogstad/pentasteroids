@@ -3,6 +3,7 @@
 	"authors": [
 		"oskogstad"
 	],
+    "dflags-dmd": ["-vgc"],
 	"dependencies": {
 		"derelict-sdl2": "~>2.1.0",
 	},
