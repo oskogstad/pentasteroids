@@ -17,13 +17,13 @@ void setup()
 	continueTexture = IMG_LoadTexture(renderer, "img/menu/anykey.png");
 
 	fadeScreenRect = new SDL_Rect();
-	fadeScreenRect.w = app.currentDisplay.w;
-	fadeScreenRect.h = app.currentDisplay.h;
+	fadeScreenRect.w = app.display_width;
+	fadeScreenRect.h = app.display_height;
 	fadeScreenRect.x = 0;
 	fadeScreenRect.y = 0;
 
 	continueRect = new SDL_Rect();
-	continueRect.w = app.currentDisplay.w;
+	continueRect.w = app.display_width;
 	continueRect.h = 100; // magic!
 	continueRect.x = 0;
 	continueRect.y = 650;

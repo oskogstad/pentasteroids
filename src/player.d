@@ -14,10 +14,9 @@ SDL_Rect playerTextureRect;
 int playerSpriteSize;
 SDL_Texture* crossHair;
 SDL_Rect crossHairRect;
-SDL_Texture* 
-	dyingOverlayTop,
-	dyingOverlayMiddle,
-	dyingOverlayBottom;
+SDL_Texture* dyingOverlayTop,
+	         dyingOverlayMiddle,
+	         dyingOverlayBottom;
 SDL_Rect dyingOverlayRect;
 
 int framesInAnim = 3;
@@ -57,8 +56,7 @@ void setup()
 	dyingOverlayBottom = IMG_LoadTexture(renderer, "img/dying_overlay_bottom.png");
 	assert(dyingOverlayBottom);
 
-	dyingOverlayRect.w = app.currentDisplay.w; 
-	dyingOverlayRect.h = app.currentDisplay.h;
+    SDL_QueryTexture(dyingOverlayBottom, null, null, &dyingOverlayRect.w, &dyingOverlayRect.h);
 
 	crossHair = IMG_LoadTexture(renderer, "img/crosshair.png");
 	assert(crossHair);
@@ -155,23 +153,23 @@ void updateAndDraw()
 
 	if(yPos < 0)
 	{
-		yPos = (app.currentDisplay.h + yPos);
+		yPos = (app.display_height + yPos);
 		world.cellIndexY = abs(++world.cellIndexY % world.worldHeight);
 	}
-	else if(yPos > app.currentDisplay.h)
+	else if(yPos > app.display_height)
 	{
-		yPos = 0 + (yPos - app.currentDisplay.h);
+		yPos = 0 + (yPos - app.display_height);
 		world.cellIndexY = abs(--world.cellIndexY % world.worldHeight);
 	}
 
 	if(xPos < 0)
 	{
-		xPos = (app.currentDisplay.w + xPos);
+		xPos = (app.display_width + xPos);
 		world.cellIndexX = abs(++world.cellIndexX % world.worldWidth);
 	}
-	else if(xPos > app.currentDisplay.w)
+	else if(xPos > app.display_width)
 	{
-		xPos = 0 + (xPos - app.currentDisplay.w);
+		xPos = 0 + (xPos - app.display_width);
 		world.cellIndexX = abs(--world.cellIndexX % world.worldWidth);
 	}
 
@@ -251,8 +249,8 @@ void updateAndDraw()
 			ubyte alphaMod = cast(ubyte)( 
 				(((cast(float)damageTaken) - hitPointsTopThreshold) / (hitPoints - hitPointsTopThreshold)) * 255
 				);
-			dyingOverlayRect.x = uniform(-3, 1); // textures are 1923*1083
-			dyingOverlayRect.y = uniform(-3, 1);
+			dyingOverlayRect.x = uniform(-2, 2); // textures are 1923*1083
+			dyingOverlayRect.y = uniform(-2, 2);
 			SDL_SetTextureAlphaMod(dyingOverlayBottom, alphaMod);
 			SDL_RenderCopy(renderer, dyingOverlayBottom, null, &dyingOverlayRect);
 		}
@@ -262,15 +260,15 @@ void updateAndDraw()
 			ubyte alphaMod = cast(ubyte)(
 				(((cast(float)damageTaken) - hitPointsMidThreshold) / (hitPoints - hitPointsMidThreshold)) * 255
 				);
-			dyingOverlayRect.x = uniform(-3, 1); // textures are 1923*1083
-			dyingOverlayRect.y = uniform(-3, 1);
+			dyingOverlayRect.x = uniform(-2, 2); // textures are 1923*1083
+			dyingOverlayRect.y = uniform(-2, 2);
 			SDL_SetTextureAlphaMod(dyingOverlayMiddle, alphaMod);
 			SDL_RenderCopy(renderer, dyingOverlayMiddle, null, &dyingOverlayRect);
 		}
 
 		ubyte alphaMod = cast(ubyte) (((cast(float)damageTaken)/hitPoints) * 255);
-		dyingOverlayRect.x = uniform(-3, 1);
-		dyingOverlayRect.y = uniform(-3, 1);
+		dyingOverlayRect.x = uniform(-2, 2);
+		dyingOverlayRect.y = uniform(-2, 2);
 		SDL_SetTextureAlphaMod(dyingOverlayTop, alphaMod);
 		SDL_RenderCopy(renderer, dyingOverlayTop, null, &dyingOverlayRect);
 	}

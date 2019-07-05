@@ -110,8 +110,8 @@ void updateAndDraw()
 		int ay = (app.middleY) - yMargin;
 		int by = (app.middleY) + yMargin;
 		
-		int newX = ((player.xPos / app.currentDisplay.w) * (bx - ax)) + ax;
-		int newY = ((player.yPos / app.currentDisplay.h) * (by - ay)) + ay;
+		int newX = ((player.xPos / app.display_width) * (bx - ax)) + ax;
+		int newY = ((player.yPos / app.display_height) * (by - ay)) + ay;
 
 		backgroundRect.x = newX - currentCell.backgroundWidth/2; 
 		backgroundRect.y = newY - currentCell.backgroundHeight/2;

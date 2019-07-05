@@ -14,13 +14,12 @@ int state = AppState.MENU;
 bool running = true;
 bool windowVisible = false;
 
-SDL_DisplayMode currentDisplay;
+enum display_width = 1920, display_height = 1080;
 SDL_Renderer* renderer;
 uint ticks;
 TTF_Font* fontSmall, fontMedium, fontLarge, fontYuge;
 const string fontPath = "font/Cornerstone.ttf";
 int middleX, middleY;
-float xScale, yScale;
 
 void main()
 {
@@ -30,6 +29,7 @@ void main()
         cleanupSDL();
     }
 
+    SDL_DisplayMode currentDisplay;
     SDL_GetCurrentDisplayMode(0, &currentDisplay);
     
     auto window = SDL_CreateWindow(
@@ -51,11 +51,10 @@ void main()
         SDL_DestroyWindow(window);
     }
     
-    middleX = currentDisplay.w/2;
-    middleY = currentDisplay.h/2;
+    middleX = display_width/2;
+    middleY = display_height/2;
     
-    yScale = app.currentDisplay.h / 1080f;
-    xScale = app.currentDisplay.w / 1920f;
+    SDL_RenderSetLogicalSize(renderer, display_width, display_height);
     
     fontMedium = TTF_OpenFont(fontPath.toStringz(), 70);
     assert(fontMedium);
@@ -83,6 +82,7 @@ void main()
     game.setup();
     highscore.setup();
     entername.setup();
+	credits.setup();
 
     soundsystem.setup();
 

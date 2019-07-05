@@ -101,8 +101,8 @@ void updateAndDraw()
 
 	foreach(ref bullet; bullets)
 	{
-		if((bullet.x < - bulletMargin) || (bullet.x > (app.currentDisplay.w + bulletMargin)) || 
-			(bullet.y < - bulletMargin) || (bullet.y > (app.currentDisplay.h + bulletMargin)))
+		if((bullet.x < - bulletMargin) || (bullet.x > (app.display_width + bulletMargin)) || 
+			(bullet.y < - bulletMargin) || (bullet.y > (app.display_height + bulletMargin)))
 		{
 			bullet.del = true;
 		}

@@ -17,7 +17,6 @@ void setup()
 	secondaryfire.setup();
 	sparks.setup();
 	score.setup();
-	credits.setup();
 }
 
 void updateAndDraw()

@@ -15,8 +15,8 @@ void setup()
 	for(int i = 0; i < 100; i++)
 	{
 		Star s;
-		s.x = uniform(0, app.currentDisplay.w);
-		s.y = uniform(0, app.currentDisplay.h);
+		s.x = uniform(0, app.display_width);
+		s.y = uniform(0, app.display_height);
 		s.pulseSpeed = uniform(1,3);
 		s.currentOpacity = cast(ubyte)uniform(20, 200);
 		s.rising = uniform(0,2) == 1 ? true : false;

@@ -19,7 +19,7 @@ void setup()
 	sfGFX = IMG_LoadTexture(renderer, "img/secondaryFire.png");
 	assert(sfGFX);
 	
-	sfDRect.w = cast(int)(2300 * app.xScale);
+	sfDRect.w = 2300;
 	sfDRect.h = 200;
 	
 	sfSRect.w = 2300; 

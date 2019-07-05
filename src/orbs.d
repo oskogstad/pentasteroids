@@ -47,8 +47,8 @@ void createOrb(
 	Orb o;
 	if(x == int.max)
 	{
-		o.x = uniform(app.currentDisplay.w + 5 + size, xMax);
-		o.y = uniform(app.currentDisplay.h + 5 + size, yMax);
+		o.x = uniform(app.display_width + 5 + size, xMax);
+		o.y = uniform(app.display_height + 5 + size, yMax);
 	}
 	else
 	{
@@ -160,14 +160,14 @@ void setup()
 	// setting spawn area limits for orbs, also use these for teleport edges
 	orbMargin = 20;
 	smallOrbMin = -Size.SMALL - orbMargin;
-	smallOrbXMax = app.currentDisplay.w + Size.SMALL + orbMargin;
-	smallOrbYMax = app.currentDisplay.h + Size.SMALL + orbMargin;
+	smallOrbXMax = app.display_width + Size.SMALL + orbMargin;
+	smallOrbYMax = app.display_height + Size.SMALL + orbMargin;
 	mediumOrbMin = -Size.MEDIUM - orbMargin;
-	mediumOrbXMax = app.currentDisplay.w + Size.MEDIUM + orbMargin;
-	mediumOrbYMax = app.currentDisplay.h + Size.MEDIUM + orbMargin;
+	mediumOrbXMax = app.display_width + Size.MEDIUM + orbMargin;
+	mediumOrbYMax = app.display_height + Size.MEDIUM + orbMargin;
 	largeOrbMin = -Size.LARGE - orbMargin;
-	largeOrbXMax = app.currentDisplay.w + Size.LARGE + orbMargin;
-	largeOrbYMax = app.currentDisplay.h + Size.LARGE + orbMargin;
+	largeOrbXMax = app.display_width + Size.LARGE + orbMargin;
+	largeOrbYMax = app.display_height + Size.LARGE + orbMargin;
 }
 
 void updateAndDraw() 

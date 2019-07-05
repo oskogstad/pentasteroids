@@ -10,159 +10,132 @@ const string HALLGEIR = "hallgeir loekken";
 const string CREDITS = "credits";
 const string GO_BACK = "press esc to go back";
 
-SDL_Rect 
-	creditsRect,
-	freelandRect,
-	freeLandWWWRect,
-	ojsRect,
-	hallgeirRect,
-	protomagicRect,
-	fontByRect,
-	codeByRect,
-	goBackRect;
+SDL_Rect
+    creditsRect,
+    freelandRect,
+    freeLandWWWRect,
+    ojsRect,
+    hallgeirRect,
+    protomagicRect,
+    fontByRect,
+    codeByRect,
+    goBackRect;
 
-SDL_Texture* 
-	creditsT,
-	fontBy,
-	freeland,
-	freeLandWWW,
-	ojs,
-	hallgeir,
-	protomagic,
-	codeBy,
-	goBack;
+SDL_Texture*
+    creditsT,
+    fontBy,
+    freeland,
+    freeLandWWW,
+    ojs,
+    hallgeir,
+    protomagic,
+    codeBy,
+    goBack;
 
 void setup()
 {
-	// header
-	utils.createTexture(renderer, creditsRect.w, creditsRect.h, CREDITS,
-		app.fontLarge, &creditsT, score.color);
-	assert(creditsT);
+    int spacer = 220;
+    int smallSpacer = 180;
 
-	creditsRect.x = app.middleX - creditsRect.w/2;
-	creditsRect.y = cast(int)(50 * yScale);
+    // header
+    utils.createTexture(renderer, creditsRect.w, creditsRect.h, CREDITS,
+            app.fontLarge, &creditsT, score.color);
+    assert(creditsT);
 
-	// code by
-	utils.createTexture(renderer, codeByRect.w, codeByRect.h, CODE_BY,
-		app.fontMedium, &codeBy, score.color);
-	assert(codeBy);
+    creditsRect.x = app.middleX - creditsRect.w/2;
+    creditsRect.y = 50;
 
-	codeByRect.x = app.middleX - codeByRect.w/2;
+    // code by
+    utils.createTexture(renderer, codeByRect.w, codeByRect.h, CODE_BY,
+            app.fontMedium, &codeBy, score.color);
+    assert(codeBy);
 
-	// ole j skogstad
-	utils.createTexture(renderer, ojsRect.w, ojsRect.h, OJS,
-		app.fontMedium, &ojs, score.color);
-	assert(ojs);
+    codeByRect.x = app.middleX - codeByRect.w/2;
+    codeByRect.y = creditsRect.y + spacer; // the last one + spacer
 
-	ojsRect.x = app.middleX - ojsRect.w/2;
-	
-	// hallgeir loekken
-	utils.createTexture(renderer, hallgeirRect.w, hallgeirRect.h, HALLGEIR,
-		app.fontMedium, &hallgeir, score.color);
-	assert(hallgeir);
+    // ole j skogstad
+    utils.createTexture(renderer, ojsRect.w, ojsRect.h, OJS,
+            app.fontMedium, &ojs, score.color);
+    assert(ojs);
 
-	hallgeirRect.x = app.middleX - hallgeirRect.w/2;
+    ojsRect.x = app.middleX - ojsRect.w/2;
+    ojsRect.y = codeByRect.y + smallSpacer; // the last one + spacer
 
-	// protomagic.no
-	utils.createTexture(renderer, protomagicRect.w, protomagicRect.h, PROTOMAGIC,
-		app.fontSmall, &protomagic, score.color);
-	assert(protomagic);
+    // hallgeir loekken
+    utils.createTexture(renderer, hallgeirRect.w, hallgeirRect.h, HALLGEIR,
+            app.fontMedium, &hallgeir, score.color);
+    assert(hallgeir);
 
-	protomagicRect.x = app.middleX - protomagicRect.w/2;
+    hallgeirRect.x = app.middleX - hallgeirRect.w/2;
+    hallgeirRect.y = ojsRect.y + smallSpacer; // the last one + spacer
 
-	// font by
-	utils.createTexture(renderer, fontByRect.w, fontByRect.h, FONT_BY,
-		app.fontMedium, &fontBy, score.color);
-	assert(fontBy);
+    // protomagic.no
+    utils.createTexture(renderer, protomagicRect.w, protomagicRect.h, PROTOMAGIC,
+            app.fontSmall, &protomagic, score.color);
+    assert(protomagic);
 
-	fontByRect.x = app.middleX - fontByRect.w/2;
+    protomagicRect.x = app.middleX - protomagicRect.w/2;
+    protomagicRect.y = hallgeirRect.y + smallSpacer; // the last one + spacer
 
-	// zac freeland
-	utils.createTexture(renderer, freelandRect.w, freelandRect.h, ZAC_FREELAND,
-		app.fontMedium, &freeland, score.color);
-	assert(freeland);
+    // font by
+    utils.createTexture(renderer, fontByRect.w, fontByRect.h, FONT_BY,
+            app.fontMedium, &fontBy, score.color);
+    assert(fontBy);
 
-	freelandRect.x = app.middleX - freelandRect.w/2;
+    fontByRect.x = app.middleX - fontByRect.w/2;
+    fontByRect.y = protomagicRect.y + spacer; // the last one + spacer
 
-	// freeland www
-	utils.createTexture(renderer, freeLandWWWRect.w, freeLandWWWRect.h, ZAC_WEBSITE,
-		app.fontSmall, &freeLandWWW, score.color);
-	assert(freeLandWWW);
+    // zac freeland
+    utils.createTexture(renderer, freelandRect.w, freelandRect.h, ZAC_FREELAND,
+            app.fontMedium, &freeland, score.color);
+    assert(freeland);
 
-	freeLandWWWRect.x = app.middleX - freeLandWWWRect.w/2;
+    freelandRect.x = app.middleX - freelandRect.w/2;
+    freelandRect.y = fontByRect.y + smallSpacer; // the last one + spacer
 
-	// go back 
-	utils.createTexture(renderer, goBackRect.w, goBackRect.h, GO_BACK,
-		app.fontSmall, &goBack, score.color);
-	assert(goBack);
+    // freeland www
+    utils.createTexture(renderer, freeLandWWWRect.w, freeLandWWWRect.h, ZAC_WEBSITE,
+            app.fontSmall, &freeLandWWW, score.color);
+    assert(freeLandWWW);
 
-	goBackRect.x = app.middleX - goBackRect.w/2;
+    freeLandWWWRect.x = app.middleX - freeLandWWWRect.w/2;
+    freeLandWWWRect.y = freelandRect.y + smallSpacer; // the last one + spacer
+
+    // go back
+    utils.createTexture(renderer, goBackRect.w, goBackRect.h, GO_BACK,
+            app.fontSmall, &goBack, score.color);
+    assert(goBack);
+
+    goBackRect.x = app.middleX - goBackRect.w/2;
+    goBackRect.y = display_height - ((goBackRect.h + 30)); // the last one + spacer
 
 }
 
 void updateAndDraw()
 {
-	creditsRect.h = cast(int) (creditsRect.h * yScale);
-	creditsRect.w = cast(int) (creditsRect.w * xScale);
-	SDL_RenderCopy(renderer, creditsT, null, &creditsRect);
-
-	int spacer = cast(int) (150 * yScale);
-	int smallSpacer = cast(int) (80 * yScale);
-
-	codeByRect.h = cast(int) (codeByRect.h * yScale);
-	codeByRect.w = cast(int) (codeByRect.w * xScale);
-	codeByRect.y = cast(int) ((creditsRect.y + spacer) * yScale); // the last one + spacer
-	SDL_RenderCopy(renderer, codeBy, null, &codeByRect);
-
-	ojsRect.h = cast(int) (ojsRect.h * yScale);
-	ojsRect.w = cast(int) (ojsRect.w * xScale);
-	ojsRect.y = cast(int) ((codeByRect.y + smallSpacer) * yScale); // the last one + spacer
-	SDL_RenderCopy(renderer, ojs, null, &ojsRect);
-
-	hallgeirRect.h = cast(int) (hallgeirRect.h * yScale);
-	hallgeirRect.w = cast(int) (hallgeirRect.w * xScale);
-	hallgeirRect.y = cast(int) ((ojsRect.y + smallSpacer) * yScale); // the last one + spacer
-	SDL_RenderCopy(renderer, hallgeir, null, &hallgeirRect);
-
-	protomagicRect.h = cast(int) (protomagicRect.h * yScale);
-	protomagicRect.w = cast(int) (protomagicRect.w * xScale);
-	protomagicRect.y = cast(int) ((hallgeirRect.y + smallSpacer) * yScale); // the last one + spacer
-	SDL_RenderCopy(renderer, protomagic, null, &protomagicRect);
-
-	fontByRect.h = cast(int) (fontByRect.h * yScale);
-	fontByRect.w = cast(int) (fontByRect.w * xScale);
-	fontByRect.y = cast(int) ((protomagicRect.y + spacer) * yScale); // the last one + spacer
-	SDL_RenderCopy(renderer, fontBy, null, &fontByRect);
-
-	freelandRect.h = cast(int) (freelandRect.h * yScale);
-	freelandRect.w = cast(int) (freelandRect.w * xScale);
-	freelandRect.y = cast(int) ((fontByRect.y + smallSpacer) * yScale); // the last one + spacer
-	SDL_RenderCopy(renderer, freeland, null, &freelandRect);
-
-	freeLandWWWRect.h = cast(int) (freeLandWWWRect.h * yScale);
-	freeLandWWWRect.w = cast(int) (freeLandWWWRect.w * xScale);
-	freeLandWWWRect.y = cast(int) ((freelandRect.y + smallSpacer) * yScale); // the last one + spacer
-	SDL_RenderCopy(renderer, freeLandWWW, null, &freeLandWWWRect);
-
-	goBackRect.h = cast(int) (goBackRect.h * yScale);
-	goBackRect.w = cast(int) (goBackRect.w * xScale);
-	goBackRect.y = cast(int)(currentDisplay.h - ((goBackRect.h + 30) * yScale)); // the last one + spacer
-	SDL_RenderCopy(renderer, goBack, null, &goBackRect);
-
+    SDL_RenderCopy(renderer, creditsT, null, &creditsRect);
+    SDL_RenderCopy(renderer, codeBy, null, &codeByRect);
+    SDL_RenderCopy(renderer, ojs, null, &ojsRect);
+    SDL_RenderCopy(renderer, hallgeir, null, &hallgeirRect);
+    SDL_RenderCopy(renderer, protomagic, null, &protomagicRect);
+    SDL_RenderCopy(renderer, fontBy, null, &fontByRect);
+    SDL_RenderCopy(renderer, freeland, null, &freelandRect);
+    SDL_RenderCopy(renderer, freeLandWWW, null, &freeLandWWWRect);
+    SDL_RenderCopy(renderer, goBack, null, &goBackRect);
 }
 
 void handleInput(SDL_Event event)
 {
-	switch(event.key.keysym.sym)
-	{
-		case SDLK_ESCAPE:
-		{
-			app.state = AppState.MENU;
-			menu.selectedIndex = MenuItem.START; 
-			break;			
-		}
+    switch(event.key.keysym.sym)
+    {
+        case SDLK_ESCAPE:
+            {
+                app.state = AppState.MENU;
+                menu.selectedIndex = MenuItem.START;
+                break;
+            }
 
-		default:
-			break;
-	}
+        default:
+            break;
+    }
 }
