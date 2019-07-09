@@ -1,7 +1,8 @@
 {
 	"name": "pentasteriod",
 	"authors": [
-		"oskogstad"
+		"oskogstad",
+		"istarnion"
 	],
     "dflags-dmd": [],
 	"dependencies": {
