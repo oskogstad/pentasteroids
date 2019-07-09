@@ -10,3 +10,4 @@ highscore.json
 *.bmp
 screenshots/
 psd/
+.DS_Store
