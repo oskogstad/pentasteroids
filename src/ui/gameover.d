@@ -44,7 +44,8 @@ void updateAndDraw()
 	
 	if(!playedSFX)
 	{
-		Mix_PlayChannel(-1, gameOverSFX, 0);
+		Mix_FadeOutChannel(1, 250);
+		Mix_PlayChannel(2, gameOverSFX, 0);
 		utils.createTexture(renderer, finalScoRect.w, finalScoRect.h, 
 			"Score: " ~ to!string(currentScore), 
 			app.fontMedium, &finalScore, score.color);
