@@ -41,6 +41,7 @@ To do:
 * Rewrite orb creation, less messed up params, remove magic numbers
 * Make initial orb spawn timer shorter
 * Make compact sprite with sprite packer
+* Make better damage frame texture
 * Bomb weapon on right mouse button, instantly kill everything.
 * Death animations
 * More color variations for enemies
