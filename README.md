@@ -21,15 +21,31 @@ To do:
     * Animation struct
     * Current appstate struct
 * Clear vfx arrays on death
+* Make animated wave like gradient colored background:
+    * Make 9 different versions
+    * 9 different color palettes
+* Move all sfx to soundsystem.d
+* Make sfx trigger functions in soundsystem.d
+* Make hit and shoot sfx not so random, see code from lego project
+* Make channels for all sfx
+* Add layered background music 
+* Fade in playerHit sfx
+* Play random background music layers when changing grid position
+* Mix music/sfx volumes
 * Make scoring sensible again
 * Draw score last
+* Highlight new entry on highscore list
+* Make use of 'gamesPlayed' in highscore.json
 * Add alternative shoot buttons
+* Make beam do dmg, not insta kill
+* Rewrite orb creation, less messed up params, remove magic numbers
+* Make initial orb spawn timer shorter
 * Make compact sprite with sprite packer
 * Bomb weapon on right mouse button, instantly kill everything.
 * Death animations
 * More color variations for enemies
 * Huge enemy orb, need bomb or beam to kill
-* Background music, multilayered/random per background square
+* Spawn medium orb when huge orb dies
 * Accelerating spawn timers (maybe not, spawning small from the big might be enough)
 * ~~Beam weapon on middle mouse button, long range and OP~~.
 * ~~Big orbs spawn smaller orbs on death~~

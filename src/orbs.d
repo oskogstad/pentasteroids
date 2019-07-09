@@ -57,7 +57,6 @@ void createOrb(
 	}
 
 	o.hitPoints = uniform(hitPointsMin, hitPointsMax);
-	o.hitSFXindex = 4; // ------------------------------------------- diff sound
 	o.shakeTimer = 6;
 	o.moveSpeed = uniform(moveMin,moveMax);
 	o.angle = uniform(0,2f*PI);
@@ -67,7 +66,7 @@ void createOrb(
 	o.dx = cast(int) (o.moveSpeed * cos(o.angle));
 	o.dy = cast(int) (o.moveSpeed * sin(o.angle));
 	o.animationOffset = uniform(0, numFrames);
-	o.animationDivisor = uniform(50, 80); ///---------------------------------------------- spin/speed
+	o.animationDivisor = uniform(50, 80); // spin/speed
 	o.spinningSpeed = uniform(-0.5f, 0.5f);
 
 	// set timer for size
@@ -75,7 +74,7 @@ void createOrb(
 	{
 		int orbIndex = cast(int)uniform(0, smallOrbTextures.length);
 		o.texture = smallOrbTextures[orbIndex];
-		smallOrbTimer = SMALL_TIMER; // ----------------------- inc/dec over time
+		smallOrbTimer = SMALL_TIMER;
 	}
 	else if(size == Size.MEDIUM)
 	{
@@ -178,9 +177,9 @@ void updateAndDraw()
 		// secondary wep
 		if(secondaryfire.secondaryFire)
 		{
-			if(secondaryfire.hitByBeam(orb.x, orb.y, orb.radius, player.xPos, player.yPos, gameState.angle, 120f)) // beam-hit-radius ----------------------------------------------
+			if(secondaryfire.hitByBeam(orb.x, orb.y, orb.radius, player.xPos, player.yPos, gameState.angle, 120f)) // beam-hit-radius
 			{
-				orb.del = true; // ----------------------------------------------------------------------
+				orb.del = true;
 			}
 		}
 
@@ -274,7 +273,6 @@ void updateAndDraw()
 		orbSRect.h = orb.size;
 
 		sprite = ((app.ticks / orb.animationDivisor) + orb.animationOffset);
-		//sprite = app.ticks + orb.animationOffset;
 
 		if(orb.size == Size.SMALL) sprite %= ORB_FRAMES_SMALL;
 		else if(orb.size == Size.MEDIUM) sprite %= ORB_FRAMES_MEDIUM;

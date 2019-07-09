@@ -77,7 +77,6 @@ final class GameState : AppState
     {
         if(player.dead)
         {
-            // what have i done -----------------------------------------------------
             if(!(gameover.continueAlpha == 250)) return;
             resetGame();
             return;
@@ -159,3 +158,4 @@ final class GameState : AppState
         }
     }
 }
+
