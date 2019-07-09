@@ -21,7 +21,9 @@ To do:
     * Animation struct
     * Current appstate struct
 * Clear vfx arrays on death
-* Make animated wave like gradient colored background
+* Make animated wave like gradient colored background:
+    * Make 9 different versions
+    * 9 different color palettes
 * Move all sfx to soundsystem.d
 * Make sfx trigger functions in soundsystem.d
 * Make channels for all sfx
