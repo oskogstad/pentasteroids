@@ -141,7 +141,7 @@ final class HighscoreState : AppState
             assert(h.nameTexture);
 
             // score texture
-            utils.createTexture(app.renderer, h.scoreWidth, h.scoreHeight, to!string(highscore["score"]),
+            utils.createTexture(app.renderer, h.scoreWidth, h.scoreHeight, h.score.toHex(),
                     app.fontMedium, &h.scoreTexture, score.color);
             assert(h.scoreTexture);
 
