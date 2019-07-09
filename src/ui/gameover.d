@@ -36,9 +36,9 @@ void setup()
 
 void updateAndDraw()
 {
-	if(highscore.checkScore(score.currentScore)) 
+	if(highscoreState.checkScore(score.currentScore)) 
 	{
-		app.state = AppState.ENTER_NAME;
+        gotoAppState(enterNameState);
 		return;
 	}
 	

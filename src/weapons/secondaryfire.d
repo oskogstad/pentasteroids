@@ -40,7 +40,7 @@ void updateAndDraw()
 		
 		immutable SDL_Point p = SDL_Point(0, sfDRect.h/2);
 
-		SDL_RenderCopyEx(renderer, sfGFX, &sfSRect, &sfDRect, angle*TO_DEG, &p, 0);
+		SDL_RenderCopyEx(renderer, sfGFX, &sfSRect, &sfDRect, gameState.angle*GameState.TO_DEG, &p, 0);
 
 		fuel -= fuelDepletionRate;
         if(fuel < 0) {

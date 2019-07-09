@@ -1,16 +1,30 @@
 import everything;
 
-enum AppState
+abstract class AppState
 {
-    MENU,
-    HIGHSCORE,
-    CREDITS,
-    GAME,
-    ENTER_NAME
+    void setup() {}                          // Called once at the beginning
+    void init() {}                           // Called when the state becomes the current state
+    void updateAndDraw() {}                  // Called once every frame when the state is the current
+    void handleInput(ref SDL_Event event) {} // Called several times per frame when the state is current
+    void finalize() {}                       // Called when the state is no longer current
+    void teardown() {}                       // Called once at the end
+}
+
+MenuState menuState;
+HighscoreState highscoreState;
+CreditsState creditsState;
+GameState gameState;
+EnterNameState enterNameState;
+
+private AppState currentAppState;
+void gotoAppState(AppState state)
+{
+    if(currentAppState) currentAppState.finalize();
+    currentAppState = state;
+    currentAppState.init();
 }
 
 const int FPS = 60;
-int state = AppState.MENU;
 bool running = true;
 bool windowVisible = false;
 
@@ -76,24 +90,30 @@ void main()
     SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
     
     SDL_ShowCursor(SDL_DISABLE);
+
+    menuState = new MenuState();
+    gameState = new GameState();
+    highscoreState = new HighscoreState();
+    enterNameState = new EnterNameState();
+	creditsState = new CreditsState();
     
-    
-    menu.setup();
-    game.setup();
-    highscore.setup();
-    entername.setup();
-	credits.setup();
+    menuState.setup();
+    gameState.setup();
+    highscoreState.setup();
+    enterNameState.setup();
+	creditsState.setup();
 
     soundsystem.setup();
 
-    SDL_Event event;
-    ticks = SDL_GetTicks();
+    gotoAppState(menuState);
 
+    ticks = SDL_GetTicks();
     immutable int FRAME_TIME = cast(uint)(1e3 / FPS);
     immutable float FRAME_TIME_SEC = FRAME_TIME / 1e3f;
     
     while(running)
     {
+        SDL_Event event;
         while(SDL_PollEvent(&event))
         {
             switch(event.type)
@@ -113,107 +133,16 @@ void main()
                     break;
                 }                     
 
-
                 case SDL_QUIT:
                 {
                     running = false;
                     break;
                 }
 
-                case SDL_MOUSEBUTTONDOWN:
+                default:
                 {
-                    if(state == AppState.GAME)
-                    {
-                        if(event.button.button == SDL_BUTTON_LEFT)
-                        {
-                            primaryfire.primaryFire = !primaryfire.primaryFire;
-                            if(!primaryfire.primaryFire)
-                            {
-                                primaryfire.fireCooldown = 0;
-                                primaryfire.sequencePlaying = false;
-                            } 
-                        }
-                        
-                        else if(event.button.button == SDL_BUTTON_MIDDLE)
-                        {
-                            if(secondaryFire) {
-                                secondaryFire = false;
-                            }
-                            else {
-                                // Only allow activating secondaryFire if fuel is full.
-                                if(secondaryfire.fuel >= secondaryfire.maxFuel) {
-                                    secondaryFire = true;
-                                }
-                            }
-                            //secondaryfire.secondaryFire = !secondaryfire.secondaryFire;
-                        }
-
-                        else if(event.button.button == SDL_BUTTON_RIGHT)
-                        {
-                            tertiaryfire.detonate();
-                        }
-
-                    }
+                    currentAppState.handleInput(event);
                     break;
-                }
-
-                case SDL_KEYUP:
-                {
-                    if(event.key.keysym.sym == SDLK_1)
-                    {
-                        screenshot();
-                        break;
-                    }
-
-                    switch(state) with (AppState)
-                    {
-                        case MENU:
-                        {
-                            menu.handleInput(event);
-                            break;
-                        }
-
-                        case GAME:
-                        {
-                            game.handleInput(event);
-                            break;
-                        }
-
-                        case HIGHSCORE:
-                        {
-                            highscore.handleInput(event);
-                            break;
-                        }
-
-                        case CREDITS:
-                        {
-                            credits.handleInput(event);
-                            break;
-                        }
-                        
-                        case ENTER_NAME:
-                        {
-                            entername.handleInput(event);
-                            break;
-                        }
-
-                        default:
-                        break;
-                    }
-                    break;
-                }
-
-                case SDL_MOUSEWHEEL:
-                {
-                    primaryfire.angleOffset += 0.05;
-                    if(primaryfire.angleOffset > 1.3) primaryfire.angleOffset = 0.05;
-                    break;
-                }
-                
-                default: 
-                {
-                    break;
-
                 }
             }
         }
@@ -222,51 +151,19 @@ void main()
 
         world.updateAndDraw();
 
-        switch(state) with (AppState)
-        {
-            case MENU:
-            {
-                menu.updateAndDraw();      
-                break;
-            }
-
-            case HIGHSCORE:
-            {
-                highscore.updateAndDraw();
-                break;
-            }
-
-            case CREDITS:
-            {
-                credits.updateAndDraw();
-                break;
-            }
-
-            case GAME:
-            {
-                game.updateAndDraw();
-                break;
-            }
-
-            case ENTER_NAME:
-            {
-                entername.updateAndDraw();
-                break;
-            }
-
-            default:
-            {
-                writeln("Something bad happened, state switch called default.");
-                running = false;
-                break;
-            }
-        }
+        currentAppState.updateAndDraw();
 
         SDL_RenderPresent(renderer); 
 
         int sleepTime = FRAME_TIME - (SDL_GetTicks() - ticks);
         if (sleepTime > 0) SDL_Delay(sleepTime);
     }
+
+    menuState.teardown();
+    gameState.teardown();
+    highscoreState.teardown();
+    enterNameState.teardown();
+	creditsState.teardown();
 }
 
 bool initSDL()

@@ -1,158 +1,165 @@
 import everything;
 
-enum MenuItem
+final class MenuState : AppState
 {
-    START,
-    HIGHSCORE,
-    CREDITS,
-    QUIT
-}
-
-SDL_Texture*[string] menuGFX;
-ubyte menuSFXVolume = 60;
-
-int menuSFXIndexOne,
-    menuSFXIndexTwo,
-    menuSFXIndexThree;
-
-SDL_Rect* menuRect;
-Mix_Chunk*[] menuSFX;
-
-int selectedIndex;
-int spacing;
-
-void setup()
-{
-    spacing = 100;
-
-    selectedIndex = MenuItem.START;
-
-    menuRect = new SDL_Rect();
-
-    foreach(path; dirEntries("img/menu/", SpanMode.depth))
+    enum MenuItem
     {
-        string chomp = chomp(path, ".png");
-        chomp = chompPrefix(chomp, "img/menu/");
-        menuGFX[chomp] = IMG_LoadTexture(renderer, path.toStringz());
+        START,
+        HIGHSCORE,
+        CREDITS,
+        QUIT
     }
-    foreach(sfx; menuGFX) assert(sfx);
 
-    utils.loadSFXFromDisk("sfx/menuScale/", menuSFX);
-    foreach(sfx;menuSFX)
+    SDL_Texture*[string] menuGFX;
+    ubyte menuSFXVolume = 60;
+
+    int menuSFXIndexOne,
+        menuSFXIndexTwo,
+        menuSFXIndexThree;
+
+    SDL_Rect* menuRect;
+    Mix_Chunk*[] menuSFX;
+
+    int selectedIndex;
+    int spacing;
+
+    override void setup()
     {
-        assert(sfx);
-        sfx.volume = menuSFXVolume;
+        spacing = 100;
+
+        selectedIndex = MenuItem.START;
+
+        menuRect = new SDL_Rect();
+
+        foreach(path; dirEntries("img/menu/", SpanMode.depth))
+        {
+            string chomp = chomp(path, ".png");
+            chomp = chompPrefix(chomp, "img/menu/");
+            menuGFX[chomp] = IMG_LoadTexture(renderer, path.toStringz());
+        }
+        foreach(sfx; menuGFX) assert(sfx);
+
+        utils.loadSFXFromDisk("sfx/menuScale/", menuSFX);
+        foreach(sfx;menuSFX)
+        {
+            assert(sfx);
+            sfx.volume = menuSFXVolume;
+        }
     }
-}
 
-void playSFX()
-{
-    menuSFXIndexOne = uniform(0, 4);
-    menuSFXIndexTwo = uniform(4, 8);
-    menuSFXIndexThree = uniform(8, 11);
-
-    Mix_PlayChannel(-1, menuSFX[menuSFXIndexOne], 0);
-    Mix_PlayChannel(-1, menuSFX[menuSFXIndexTwo], 0);
-    Mix_PlayChannel(-1, menuSFX[menuSFXIndexThree], 0);
-}
-
-void handleInput(SDL_Event event)
-{
-    playSFX();
-
-    switch(event.key.keysym.sym)
+    override void updateAndDraw()
     {
-        case SDLK_ESCAPE:
-            {
-                running = false;
-                break;
-            }
+        menuRect.w = app.display_width;
+        menuRect.h = 160;
+        menuRect.x = 0; menuRect.y = 450;
+        SDL_RenderCopy(renderer, menuGFX["logo"], null, menuRect);
 
-        case SDLK_RETURN:
+        menuRect.h = spacing;
+        menuRect.y = 650;
+
+        if(selectedIndex == MenuItem.START)
+        {
+            drawMenuItem("continue", "start", gameState.gameInProgress);
+        }
+        else
+        {
+            drawMenuItem("continue_", "start_", gameState.gameInProgress);
+        }
+
+        menuRect.y += spacing;
+        drawMenuItem("highscore", "highscore_", selectedIndex == MenuItem.HIGHSCORE);
+
+        menuRect.y += spacing;
+        drawMenuItem("credits", "credits_", selectedIndex == MenuItem.CREDITS);
+
+        menuRect.y += spacing;
+        drawMenuItem("quit", "quit_", selectedIndex == MenuItem.QUIT);
+    }
+
+    void drawMenuItem(string item, string item_, bool condition)
+    {
+        if(condition)
+        {
+            SDL_RenderCopy(renderer, menuGFX[item], null, menuRect);
+        }
+        else
+        {
+            SDL_RenderCopy(renderer, menuGFX[item_], null, menuRect);
+        }
+    }
+
+    override void handleInput(ref SDL_Event event)
+    {
+        playSFX();
+
+        if(event.type == SDL_KEYUP)
+        {
+            auto sym = event.key.keysym.sym;
+
+            switch(sym)
             {
-                switch(selectedIndex) with (MenuItem)
+                case SDLK_ESCAPE:
                 {
-                    case START:
-                        app.state = AppState.GAME;
-                        game.gameInProgress = true;
-                        break;
-
-                    case HIGHSCORE:
-                        app.state = AppState.HIGHSCORE;
-                        break;
-
-                    case CREDITS:
-                        app.state = AppState.CREDITS;
-                        break;
-
-                    case QUIT:
-                        app.running = false;
-                        break;
-
-                    default:
-                        break;
+                    running = false;
+                    break;
                 }
-                break;
+
+                case SDLK_RETURN:
+                {
+                    switch(selectedIndex) with (MenuItem)
+                    {
+                        case START:
+                            gotoAppState(gameState);
+                            gameState.gameInProgress = true;
+                            break;
+
+                        case HIGHSCORE:
+                            gotoAppState(highscoreState);
+                            break;
+
+                        case CREDITS:
+                            gotoAppState(creditsState);
+                            break;
+
+                        case QUIT:
+                            app.running = false;
+                            break;
+
+                        default:
+                            break;
+                    }
+                    break;
+                }
+
+                case SDLK_w:
+                case SDLK_UP:
+                {
+                    if(--selectedIndex < MenuItem.min) selectedIndex = MenuItem.max;
+                    break;
+                }
+
+                case SDLK_s:
+                case SDLK_DOWN:
+                {
+                    if(++selectedIndex > MenuItem.max) selectedIndex = MenuItem.min;
+                    break;
+                }
+
+                default:
+                    break;
             }
+        }
+    }
 
-        case SDLK_w:
-        case SDLK_UP:
-            {
-                if(--selectedIndex < MenuItem.min) selectedIndex = MenuItem.max;
-                break;
-            }
+    void playSFX()
+    {
+        menuSFXIndexOne = uniform(0, 4);
+        menuSFXIndexTwo = uniform(4, 8);
+        menuSFXIndexThree = uniform(8, 11);
 
-
-        case SDLK_s:
-        case SDLK_DOWN:
-            {
-                if(++selectedIndex > MenuItem.max) selectedIndex = MenuItem.min;
-                break;
-            }
-
-        default:
-            break;
+        Mix_PlayChannel(-1, menuSFX[menuSFXIndexOne], 0);
+        Mix_PlayChannel(-1, menuSFX[menuSFXIndexTwo], 0);
+        Mix_PlayChannel(-1, menuSFX[menuSFXIndexThree], 0);
     }
 }
 
-
-void drawMenuItem(string item, string item_, bool condition)
-{
-    if(condition)
-    {
-        SDL_RenderCopy(renderer, menuGFX[item], null, menuRect);
-    }
-    else
-    {
-        SDL_RenderCopy(renderer, menuGFX[item_], null, menuRect);
-    }
-}
-
-void updateAndDraw()
-{
-    menuRect.w = app.display_width;
-    menuRect.h = 160;
-    menuRect.x = 0; menuRect.y = 450;
-    SDL_RenderCopy(renderer, menuGFX["logo"], null, menuRect);
-
-    menuRect.h = spacing;
-    menuRect.y = 650;
-
-    if(selectedIndex == MenuItem.START)
-    {
-        drawMenuItem("continue", "start", game.gameInProgress);
-    }
-    else
-    {
-        drawMenuItem("continue_", "start_", game.gameInProgress);
-    }
-
-    menuRect.y += spacing;
-    drawMenuItem("highscore", "highscore_", selectedIndex == MenuItem.HIGHSCORE);
-
-    menuRect.y += spacing;
-    drawMenuItem("credits", "credits_", selectedIndex == MenuItem.CREDITS);
-
-    menuRect.y += spacing;
-    drawMenuItem("quit", "quit_", selectedIndex == MenuItem.QUIT);
-}

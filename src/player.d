@@ -235,9 +235,9 @@ void updateAndDraw()
     }
 
     SDL_RenderCopy(renderer, playerBGTexture, null, &bgRect);
-    SDL_RenderCopyEx(renderer, secondaryfire.sfGFX, &secondaryfire.sfSRect, &fuelRect, (game.angle * TO_DEG), &pivot, 0);
-	SDL_RenderCopyEx(renderer, playerTexture, &playerSrcRect, &playerTextureRect, (game.angle * TO_DEG + 90), null, 0); // +90 because rotation stuff 
-	if(!game.angleMode) SDL_RenderCopy(renderer, crossHair, null, &crossHairRect);
+    SDL_RenderCopyEx(renderer, secondaryfire.sfGFX, &secondaryfire.sfSRect, &fuelRect, (gameState.angle * gameState.TO_DEG), &pivot, 0);
+	SDL_RenderCopyEx(renderer, playerTexture, &playerSrcRect, &playerTextureRect, (gameState.angle * gameState.TO_DEG + 90), null, 0); // +90 because rotation stuff 
+	if(!gameState.angleMode) SDL_RenderCopy(renderer, crossHair, null, &crossHairRect);
 
 	if(damageTaken > 0)
 	{

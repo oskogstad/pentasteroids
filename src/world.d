@@ -97,11 +97,11 @@ void updateAndDraw()
 
 	backgroundRect.w = currentCell.backgroundWidth, backgroundRect.h = currentCell.backgroundHeight;
 
-	if(game.angleMode)
+	if(gameState.angleMode)
 	{
 		backgroundRect.x = currentCell.backgroundWidth/2; 
 		backgroundRect.y =  currentCell.backgroundHeight/2;
-		SDL_RenderCopyEx(renderer, currentCell.background, null, backgroundRect, -game.angle*TO_DEG, null, 0);
+		SDL_RenderCopyEx(renderer, currentCell.background, null, backgroundRect, -gameState.angle*GameState.TO_DEG, null, 0);
 	}
 	else
 	{

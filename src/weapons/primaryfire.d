@@ -78,7 +78,7 @@ void updateAndDraw()
 			}
 
 			PrimaryGFX left;
-			left.angle = angle + angleOffset;
+			left.angle = gameState.angle + angleOffset;
 			left.x = cast(int) (player.xPos + player.radius * cos(left.angle)); 
 			left.y = cast(int) (player.yPos + player.radius * sin(left.angle));
 
@@ -87,7 +87,7 @@ void updateAndDraw()
 			bullets ~= left;
 
 			PrimaryGFX right;
-			right.angle = angle - angleOffset;
+			right.angle = gameState.angle - angleOffset;
 			right.x = cast(int) (player.xPos + player.radius * cos(right.angle));
 			right.y = cast(int) (player.yPos + player.radius * sin(right.angle));
 

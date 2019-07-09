@@ -1,164 +1,172 @@
 import everything;
 
-JSONValue scoreJSON;
-string filename = "highscore.json";
-Highscore[] highscores;
-
-SDL_Rect highscoRect,
-         headerRect,
-         goBackRect;
-
-SDL_Texture* header, goBack;
-
-struct Highscore
+final class HighscoreState : AppState
 {
-    SDL_Texture* scoreTexture,
-                 nameTexture;
-
-    ulong score;
-
-    int scoreWidth,
-        scoreHeight,
-        nameWidth,
-        nameHeight;
-}
-
-void setup()
-{
-    scope(failure)
+    struct Highscore
     {
-        // todo
-        // if file load/write fails
+        SDL_Texture* scoreTexture,
+                     nameTexture;
+
+        ulong score;
+
+        int scoreWidth,
+            scoreHeight,
+            nameWidth,
+            nameHeight;
     }
 
-    if(exists(filename))
+    JSONValue scoreJSON;
+    string filename = "highscore.json";
+    Highscore[] highscores;
+
+    SDL_Rect highscoRect,
+             headerRect,
+             goBackRect;
+
+    SDL_Texture* header, goBack;
+
+    override void setup()
     {
-        string filetext = to!string(read(filename));
-        scoreJSON = parseJSON(filetext);
+        scope(failure)
+        {
+            // todo
+            // if file load/write fails
+        }
+
+        if(exists(filename))
+        {
+            string filetext = to!string(read(filename));
+            scoreJSON = parseJSON(filetext);
+        }
+
+        else
+        {
+            string j = `{"highscores":[
+                {"name":"OJS","score":9999999999999},
+                    {"name":"HAL","score":900090009000},
+                    {"name":"CET","score":88888888888},
+                    {"name":"PET","score":7777777777},
+                    {"name":"ETLA","score":666666666},
+                    {"name":"TUT","score":55555555},
+                    {"name":"WTD","score":4444444},
+                    {"name":"OMG","score":333333},
+                    {"name":"ADN","score":22222},
+                    {"name":"EOF","score":1111}]}`;
+
+            scoreJSON = parseJSON(j);
+            scoreJSON["lastEntry"] = "---";
+            scoreJSON["gamesPlayed"] = "0";
+
+            append(filename, scoreJSON.toString());
+        }
+
+        assert(exists(filename));
+
+        createHighScoreTextures();
+
+        utils.createTexture(renderer, headerRect.w, headerRect.h, "highscore",
+                app.fontLarge, &header, score.color);
+        assert(header);
+        headerRect.x = app.middleX - headerRect.w/2;
+        headerRect.y = 50;
+
+        utils.createTexture(renderer, goBackRect.w, goBackRect.h, "press esc to go back",
+                app.fontSmall, &goBack, score.color);
+        assert(header);
+        goBackRect.x = app.middleX - goBackRect.w/2;
     }
 
-    else
+    override void updateAndDraw()
     {
-        string j = `{"highscores":[
-            {"name":"OJS","score":9999999999999},
-                {"name":"HAL","score":900090009000},
-                {"name":"CET","score":88888888888},
-                {"name":"PET","score":7777777777},
-                {"name":"ETLA","score":666666666},
-                {"name":"TUT","score":55555555},
-                {"name":"WTD","score":4444444},
-                {"name":"OMG","score":333333},
-                {"name":"ADN","score":22222},
-                {"name":"EOF","score":1111}]}`;
+        SDL_RenderCopy(renderer, header, null, &headerRect);
 
-        scoreJSON = parseJSON(j);
-        scoreJSON["lastEntry"] = "---";
-        scoreJSON["gamesPlayed"] = "0";
+        int yOffset = 200;
+        int xOffset = 300;
 
-        append(filename, scoreJSON.toString());
+        foreach(highscore; highscores)
+        {
+            // score
+            highscoRect.w = highscore.scoreWidth;
+            highscoRect.h = highscore.scoreHeight;
+            highscoRect.x = app.display_width - highscoRect.w - xOffset;
+            highscoRect.y = yOffset;
+            SDL_RenderCopy(renderer, highscore.scoreTexture, null, &highscoRect);
+
+            // name
+            highscoRect.w = highscore.nameWidth;
+            highscoRect.h = highscore.nameHeight;
+            highscoRect.x = xOffset;
+            highscoRect.y = yOffset;
+            SDL_RenderCopy(renderer, highscore.nameTexture, null, &highscoRect);
+
+            yOffset += highscore.scoreHeight;
+        }
+
+        goBackRect.y = display_height - (goBackRect.h + 30);
+        SDL_RenderCopy(renderer, goBack, null, &goBackRect);
     }
 
-    assert(exists(filename));
-
-    createHighScoreTextures();
-
-    utils.createTexture(renderer, headerRect.w, headerRect.h, "highscore",
-            app.fontLarge, &header, score.color);
-    assert(header);
-    headerRect.x = app.middleX - headerRect.w/2;
-    headerRect.y = 50;
-
-    utils.createTexture(renderer, goBackRect.w, goBackRect.h, "press esc to go back",
-            app.fontSmall, &goBack, score.color);
-    assert(header);
-    goBackRect.x = app.middleX - goBackRect.w/2;
-}
-
-void updateAndDraw()
-{
-    SDL_RenderCopy(renderer, header, null, &headerRect);
-
-    int yOffset = 200;
-    int xOffset = 300;
-
-    foreach(highscore; highscores)
+    bool checkScore(BigInt score)
     {
-        // score
-        highscoRect.w = highscore.scoreWidth;
-        highscoRect.h = highscore.scoreHeight;
-        highscoRect.x = app.display_width - highscoRect.w - xOffset;
-        highscoRect.y = yOffset;
-        SDL_RenderCopy(renderer, highscore.scoreTexture, null, &highscoRect);
-
-        // name
-        highscoRect.w = highscore.nameWidth;
-        highscoRect.h = highscore.nameHeight;
-        highscoRect.x = xOffset;
-        highscoRect.y = yOffset;
-        SDL_RenderCopy(renderer, highscore.nameTexture, null, &highscoRect);
-
-        yOffset += highscore.scoreHeight;
+        foreach(highscore; highscores)
+        {
+            if(highscore.score < score) return true;
+        }
+        return false;
     }
 
-    goBackRect.y = display_height - (goBackRect.h + 30);
-    SDL_RenderCopy(renderer, goBack, null, &goBackRect);
-}
-
-bool checkScore(BigInt score)
-{
-    foreach(highscore; highscores)
+    void addNewScore(string name, BigInt score)
     {
-        if(highscore.score < score) return true;
+        string j = `{"name":"` ~ name ~ `","score":` ~ to!string(score) ~ `}`;
+        scoreJSON["highscores"].array ~= parseJSON(j);
+        scoreJSON["highscores"].array.sort!((a, b) => a["score"].integer > b["score"].integer);
+        scoreJSON["highscores"].array.length = 10;
+        createHighScoreTextures();
+        std.file.write(filename, scoreJSON.toString());
     }
-    return false;
-}
 
-void addNewScore(string name, BigInt score)
-{
-    string j = `{"name":"` ~ name ~ `","score":` ~ to!string(score) ~ `}`;
-    scoreJSON["highscores"].array ~= parseJSON(j);
-    scoreJSON["highscores"].array.sort!((a, b) => a["score"].integer > b["score"].integer);
-    scoreJSON["highscores"].array.length = 10;
-    createHighScoreTextures();
-    std.file.write(filename, scoreJSON.toString());
-}
-
-void createHighScoreTextures()
-{
-    highscores.length = 0;
-
-    foreach(int index, highscore; scoreJSON["highscores"].array)
+    void createHighScoreTextures()
     {
-        Highscore h;
-        h.score = highscore["score"].integer;
+        highscores.length = 0;
 
-        // name texture
-        string nameAndNumber = to!string(index + 1) ~ ". "~ highscore["name"].str;
-        utils.createTexture(app.renderer, h.nameWidth, h.nameHeight, nameAndNumber,
-                app.fontMedium, &h.nameTexture, score.color);
-        assert(h.nameTexture);
+        foreach(int index, highscore; scoreJSON["highscores"].array)
+        {
+            Highscore h;
+            h.score = highscore["score"].integer;
 
-        // score texture
-        utils.createTexture(app.renderer, h.scoreWidth, h.scoreHeight, to!string(highscore["score"]),
-                app.fontMedium, &h.scoreTexture, score.color);
-        assert(h.scoreTexture);
+            // name texture
+            string nameAndNumber = to!string(index + 1) ~ ". "~ highscore["name"].str;
+            utils.createTexture(app.renderer, h.nameWidth, h.nameHeight, nameAndNumber,
+                    app.fontMedium, &h.nameTexture, score.color);
+            assert(h.nameTexture);
 
-        highscores ~= h;
+            // score texture
+            utils.createTexture(app.renderer, h.scoreWidth, h.scoreHeight, to!string(highscore["score"]),
+                    app.fontMedium, &h.scoreTexture, score.color);
+            assert(h.scoreTexture);
+
+            highscores ~= h;
+        }
     }
-}
 
-void handleInput(SDL_Event event)
-{
-    switch(event.key.keysym.sym)
+    override void handleInput(ref SDL_Event event)
     {
-        case SDLK_ESCAPE:
+        if(event.type == SDL_KEYUP)
+        {
+            auto sym = event.key.keysym.sym;
+            switch(sym)
             {
-                app.state = AppState.MENU;
-                menu.selectedIndex = MenuItem.START;
-                break;
-            }
+                case SDLK_ESCAPE:
+                {
+                    gotoAppState(menuState);
+                    menuState.selectedIndex = MenuState.MenuItem.START;
+                    break;
+                }
 
-        default:
-            break;
+                default:
+                    break;
+            }
+        }
     }
 }
+

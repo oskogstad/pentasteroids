@@ -1,114 +1,161 @@
 import everything;
 
-double angle;
-bool angleMode = false;
-bool gameInProgress = false;
-
-const float TO_DEG = 180/PI;
-const float TO_RAD = PI/180;
-
-void setup()
+final class GameState : AppState
 {
- 	gameover.setup();
-	world.setup();
-	orbs.setup();
-	player.setup();
-	primaryfire.setup();
-	secondaryfire.setup();
-	sparks.setup();
-	score.setup();
-}
+    double angle;
+    bool angleMode = false;
+    bool gameInProgress = false;
 
-void updateAndDraw()
-{
-	if(angleMode)
-	{
-		angle = atan2(
-			cast(float)(app.middleY) - player.yPos,
-			cast(float)(app.middleX) - player.xPos
-			);
-	}
-	else
-	{
-		angle = atan2(
-			cast(float) mouseY - player.yPos,
-			cast(float) mouseX - player.xPos
-			);
-	}
-	
-	primaryfire.updateAndDraw();
-	orbs.updateAndDraw();
-	secondaryfire.updateAndDraw();
-	ringblasts.updateAndDraw();
-	sparks.updateAndDraw();
+    enum TO_DEG = 180/PI;
+    enum TO_RAD = PI/180;
 
-	if(!player.dead)
-	{
-		score.updateAndDraw();
-		player.updateAndDraw();
-	}
-	else
-	{
-		gameover.updateAndDraw();
-	}
-}
+    override void setup()
+    {
+        gameover.setup();
+        world.setup();
+        orbs.setup();
+        player.setup();
+        primaryfire.setup();
+        secondaryfire.setup();
+        sparks.setup();
+        score.setup();
+    }
 
-void resetGame()
-{
-	app.state = AppState.MENU;
-	gameInProgress = false;
-	player.dead = false;
-	player.damageTaken = 0;
-	orbs.activeOrbs.length = 0;
-	orbs.resetTimers();
-	ringblasts.activeBlasts.length = 0;
-	primaryfire.bullets.length = 0;
-	gameover.continueAlpha = 0;
-	gameover.fadeScreenAlpha = 0;
-	gameover.playedSFX = false;
-	score.currentScore = 0;
-	primaryfire.primaryFire = false;
-	primaryfire.sequencePlaying = false;
-}
+    override void updateAndDraw()
+    {
+        if(angleMode)
+        {
+            angle = atan2(
+                cast(float)(app.middleY) - player.yPos,
+                cast(float)(app.middleX) - player.xPos
+                );
+        }
+        else
+        {
+            angle = atan2(
+                cast(float) mouseY - player.yPos,
+                cast(float) mouseX - player.xPos
+                );
+        }
+        
+        primaryfire.updateAndDraw();
+        orbs.updateAndDraw();
+        secondaryfire.updateAndDraw();
+        ringblasts.updateAndDraw();
+        sparks.updateAndDraw();
 
-void handleInput(SDL_Event event)
-{
-	if(player.dead)
-	{
-		// what have i done -----------------------------------------------------------------------------
-		if(!(gameover.continueAlpha == 250)) return;
-		resetGame();
-		return;
-	}
+        if(!player.dead)
+        {
+            score.updateAndDraw();
+            player.updateAndDraw();
+        }
+        else
+        {
+            gameover.updateAndDraw();
+        }
+    }
 
-	switch(event.key.keysym.sym)
-	{
-		case SDLK_ESCAPE:
-		{
-			app.state = AppState.MENU;
-			menu.selectedIndex = MenuItem.START; 
-			break;			
-		}
+    void resetGame()
+    {
+        gotoAppState(menuState);
+        gameInProgress = false;
+        player.dead = false;
+        player.damageTaken = 0;
+        orbs.activeOrbs.length = 0;
+        orbs.resetTimers();
+        ringblasts.activeBlasts.length = 0;
+        primaryfire.bullets.length = 0;
+        gameover.continueAlpha = 0;
+        gameover.fadeScreenAlpha = 0;
+        gameover.playedSFX = false;
+        score.currentScore = 0;
+        primaryfire.primaryFire = false;
+        primaryfire.sequencePlaying = false;
+    }
 
-		case SDLK_k:
-		{
-			angleMode = !angleMode;
-			break;
-		}
-		
-		case SDLK_o:
-		{
-			//orbs.orbSpawnTimer = -1;
-			break;	
-		}
+    override void handleInput(ref SDL_Event event)
+    {
+        if(player.dead)
+        {
+            // what have i done -----------------------------------------------------
+            if(!(gameover.continueAlpha == 250)) return;
+            resetGame();
+            return;
+        }
 
-		case SDLK_c:
-		{
-			orbs.activeOrbs.length = 0;
-			break;	
-		}
+        if(event.type == SDL_KEYUP)
+        {
+            auto sym = event.key.keysym.sym;
+            switch(sym)
+            {
+                case SDLK_ESCAPE:
+                {
+                    gotoAppState(menuState);
+                    menuState.selectedIndex = MenuState.MenuItem.START; 
+                    break;			
+                }
 
-		default:
-		break;           
-	}
+                case SDLK_k:
+                {
+                    angleMode = !angleMode;
+                    break;
+                }
+                
+                debug case SDLK_o:
+                {
+                    // orbs.orbSpawnTimer = -1;
+                    break;	
+                }
+
+                case SDLK_c:
+                {
+                    orbs.activeOrbs.length = 0;
+                    break;	
+                }
+
+                default:
+                break;           
+            }
+        }
+        else if(event.type == SDL_MOUSEWHEEL)
+        {
+            primaryfire.angleOffset += 0.05;
+            if(primaryfire.angleOffset > 1.3)
+            {
+                primaryfire.angleOffset = 0.05;
+            }
+        }
+        else if(event.type == SDL_MOUSEBUTTONDOWN)
+        {
+            if(event.button.button == SDL_BUTTON_LEFT)
+            {
+                primaryfire.primaryFire = !primaryfire.primaryFire;
+                if(!primaryfire.primaryFire)
+                {
+                    primaryfire.fireCooldown = 0;
+                    primaryfire.sequencePlaying = false;
+                }
+            }
+            else if(event.button.button == SDL_BUTTON_MIDDLE)
+            {
+                if(secondaryFire)
+                {
+                    secondaryFire = false;
+                }
+                else
+                {
+                    // Only allow activating secondaryFire if fuel is full.
+                    if(secondaryfire.fuel >= secondaryfire.maxFuel)
+                    {
+                        secondaryFire = true;
+                    }
+                }
+                //secondaryfire.secondaryFire = !secondaryfire.secondaryFire;
+            }
+            else if(event.button.button == SDL_BUTTON_RIGHT)
+            {
+                tertiaryfire.detonate();
+            }
+        }
+    }
 }
