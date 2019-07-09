@@ -26,6 +26,7 @@ To do:
     * 9 different color palettes
 * Move all sfx to soundsystem.d
 * Make sfx trigger functions in soundsystem.d
+* Make hit and shoot sfx not so random, see code from lego project
 * Make channels for all sfx
 * Add layered background music 
 * Fade in playerHit sfx
