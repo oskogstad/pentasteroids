@@ -1,6 +1,6 @@
 import everything;
 
-ulong currentScore = 0;
+BigInt currentScore = 0;
 SDL_Texture* texture;
 SDL_Rect* scoRect;
 SDL_Color color = { 255, 255, 255, 0 };
@@ -14,7 +14,7 @@ void updateAndDraw()
 {
 	currentScore++;
 	scoRect.x = 20; scoRect.y = 20;
-	utils.createTexture(renderer, scoRect.w, scoRect.h, to!string(currentScore), app.fontMedium, &texture, color);
+	utils.createTexture(renderer, scoRect.w, scoRect.h, currentScore.toHex(), app.fontMedium, &texture, color);
 	SDL_RenderCopy(renderer, texture, null, scoRect);
 }
 

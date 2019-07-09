@@ -104,7 +104,7 @@ void updateAndDraw()
     SDL_RenderCopy(renderer, goBack, null, &goBackRect);
 }
 
-bool checkScore(ulong score)
+bool checkScore(BigInt score)
 {
     foreach(highscore; highscores)
     {
@@ -113,7 +113,7 @@ bool checkScore(ulong score)
     return false;
 }
 
-void addNewScore(string name, ulong score)
+void addNewScore(string name, BigInt score)
 {
     string j = `{"name":"` ~ name ~ `","score":` ~ to!string(score) ~ `}`;
     scoreJSON["highscores"].array ~= parseJSON(j);

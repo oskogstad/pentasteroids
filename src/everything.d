@@ -25,6 +25,7 @@ public import
     std.stdio,
     std.conv,
     std.math,
+    std.bigint,
     std.algorithm,
     std.random,
     std.datetime,
