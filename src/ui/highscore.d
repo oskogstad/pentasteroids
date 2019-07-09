@@ -40,16 +40,16 @@ void setup()
     else
     {
         string j = `{"highscores":[
-            {"name":"OJS","score":9999999999999},
-                {"name":"HAL","score":900090009000},
-                {"name":"CET","score":88888888888},
-                {"name":"PET","score":7777777777},
-                {"name":"ETLA","score":666666666},
-                {"name":"TUT","score":55555555},
-                {"name":"WTD","score":4444444},
-                {"name":"OMG","score":333333},
-                {"name":"ADN","score":22222},
-                {"name":"EOF","score":1111}]}`;
+            {"name":"OJS","score":1010101010},
+                {"name":"HAL","score":999999999},
+                {"name":"CET","score":88888888},
+                {"name":"PET","score":7777777},
+                {"name":"ETLA","score":666666},
+                {"name":"TUT","score":55555},
+                {"name":"WTD","score":4444},
+                {"name":"OMG","score":333},
+                {"name":"ADN","score":22},
+                {"name":"EOF","score":1}]}`;
 
         scoreJSON = parseJSON(j);
         scoreJSON["lastEntry"] = "---";
