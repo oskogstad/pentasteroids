@@ -34,6 +34,8 @@ To do:
 * Mix music/sfx volumes
 * Make scoring sensible again
 * Draw score last
+* Highlight new entry on highscore list
+* Make use of 'gamesPlayed' in highscore.json
 * Add alternative shoot buttons
 * Make beam do dmg, not insta kill
 * Rewrite orb creation, less messed up params, remove magic numbers
