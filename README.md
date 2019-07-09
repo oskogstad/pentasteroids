@@ -39,6 +39,7 @@ To do:
 * Add alternative shoot buttons
 * Make beam do dmg, not insta kill
 * Rewrite orb creation, less messed up params, remove magic numbers
+* Make initial orb spawn timer shorter
 * Make compact sprite with sprite packer
 * Bomb weapon on right mouse button, instantly kill everything.
 * Death animations
