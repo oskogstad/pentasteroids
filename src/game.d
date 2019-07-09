@@ -75,7 +75,6 @@ void handleInput(SDL_Event event)
 {
 	if(player.dead)
 	{
-		// what have i done -----------------------------------------------------------------------------
 		if(!(gameover.continueAlpha == 250)) return;
 		resetGame();
 		return;

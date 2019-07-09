@@ -23,7 +23,6 @@ struct Orb
 		dy,
 		moveSpeed,
 		hitPoints,
-		hitSFXindex,
 		animationOffset, 
 		animationDivisor;
 

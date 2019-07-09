@@ -21,10 +21,10 @@ int bulletGFXHeight, bulletGFXWidth;
 SDL_Rect bulletGFXRect;
 int bulletMoveLength = 20;
 ubyte bulletVolume = 55;
-ubyte orbHitVolume = 70; // ---------------------------------------------------- tune with music
+ubyte orbHitVolume = 70;
 float fireCooldown = -1;
 float angleOffset = 0.1;
-int radius = 10; // eyeballed from photoshop :D
+int radius = 10;
 bool primaryFire;
 bool sequencePlaying;
 int sequenceIndex = 0;
