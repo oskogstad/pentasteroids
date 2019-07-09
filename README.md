@@ -21,6 +21,7 @@ To do:
     * Animation struct
     * Current appstate struct
 * Clear vfx arrays on death
+* Make scoring sensible again
 * Draw score last
 * Add alternative shoot buttons
 * Make compact sprite with sprite packer
