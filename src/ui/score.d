@@ -22,14 +22,14 @@ void addOrbHitScore(Size size)
 {
 	if(size == Size.SMALL)
 	{
-		currentScore += uniform(250000, 500000);
+		currentScore += uniform(25, 50);
 	}
 	else if(size == Size.MEDIUM)
 	{
-		currentScore += uniform(10000000, 20000000);
+		currentScore += uniform(1000, 2000);
 	}
 	else
 	{
-		currentScore += uniform(200000000, 300000000);
+		currentScore += uniform(20000, 30000);
 	}
 }
