@@ -3,6 +3,13 @@ You need DUB: https://code.dlang.org/download
 and a D compiler, for example DMD: https://dlang.org/download.html#dmd  
 Clone and "dub run" to play
 
+# MacOs
+For MacOs you also need to install sdl2, sdl2_image, sdl2_ttf, and sdl2_mixer
+
+```
+brew install sdl2 sdl2_image sdl2_ttf sdl2_mixer
+```
+
 Left mouse click toggles shooting
 Middle mouse click toggles beam (currently instant kills everything it hits :bowtie: )
 
